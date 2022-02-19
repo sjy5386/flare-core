@@ -38,6 +38,7 @@ INSTALLED_APPS = [
 
     'accounts.apps.AccountsConfig',
     'domains.apps.DomainsConfig',
+    'subdomains.apps.SubdomainsConfig',
 ]
 
 MIDDLEWARE = [
