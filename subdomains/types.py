@@ -56,3 +56,19 @@ class AaaaRecord(ARecord):  # IP6 Address
     def __init__(self, name: str, ttl: int, ip_address: str):
         super().__init__(name, ttl, ip_address)
         self.record_type = 'AAAA'
+
+
+class SrvRecord(Record):  # Server Selection
+    def __init__(self, name: str, ttl: int, service: str, protocol: str,
+                 priority: int, weight: int, port: int, server_host_name: str):
+        super().__init__(f'{service}.{protocol}.{name}', ttl, 'SRV', f'{priority} {weight} {port} {server_host_name}')
+
+    def get_name(self) -> Tuple[str, str, str]:
+        names = self.name.split('.')
+        service = names[0]
+        protocol = names[1]
+        name = ''.join(names[2:])
+        return name, service, protocol
+
+    def set_name(self, name: str, service: str, protocol: str):
+        self.name = f'{service}.{protocol}.{name}'
