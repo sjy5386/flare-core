@@ -13,3 +13,8 @@ class Record:
 
     def __str__(self):
         return f'{self.name} {self.ttl} {self.record_class} {self.record_type} {self.data}'
+
+
+class ARecord(Record):  # a host address
+    def __init__(self, name: str, ttl: int, ip_address: str):
+        super().__init__(name, ttl, 'A', ip_address)
