@@ -18,3 +18,8 @@ class Record:
 class ARecord(Record):  # a host address
     def __init__(self, name: str, ttl: int, ip_address: str):
         super().__init__(name, ttl, 'A', ip_address)
+
+
+class NsRecord(Record):  # an authoritative name server
+    def __init__(self, name: str, ttl: int, name_server: str):
+        super().__init__(name, ttl, 'NS', name_server)
