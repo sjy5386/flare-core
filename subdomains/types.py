@@ -50,3 +50,9 @@ class MxRecord(Record):  # mail exchange
 class TxtRecord(Record):  # text strings
     def __init__(self, name: str, ttl: int, value: str):
         super().__init__(name, ttl, 'TXT', value)
+
+
+class AaaaRecord(ARecord):  # IP6 Address
+    def __init__(self, name: str, ttl: int, ip_address: str):
+        super().__init__(name, ttl, ip_address)
+        self.record_type = 'AAAA'
