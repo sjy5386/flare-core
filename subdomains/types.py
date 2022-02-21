@@ -1,0 +1,15 @@
+class Record:
+    name: str
+    ttl: int
+    record_class: str = 'IN'
+    record_type: str
+    data: str
+
+    def __init__(self, name: str, ttl: int, record_type: str, data: str):
+        self.name = name
+        self.ttl = ttl
+        self.record_type = record_type
+        self.data = data
+
+    def __str__(self):
+        return f'{self.name} {self.ttl} {self.record_class} {self.record_type} {self.data}'
