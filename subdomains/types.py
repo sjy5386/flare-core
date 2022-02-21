@@ -23,3 +23,8 @@ class ARecord(Record):  # a host address
 class NsRecord(Record):  # an authoritative name server
     def __init__(self, name: str, ttl: int, name_server: str):
         super().__init__(name, ttl, 'NS', name_server)
+
+
+class CnameRecord(Record):  # the canonical name for an alias
+    def __init__(self, name: str, ttl: int, alias: str):
+        super().__init__(name, ttl, 'CNAME', alias)
