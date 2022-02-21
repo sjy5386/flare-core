@@ -1,3 +1,6 @@
+from typing import Tuple
+
+
 class Record:
     name: str
     ttl: int
@@ -28,3 +31,17 @@ class NsRecord(Record):  # an authoritative name server
 class CnameRecord(Record):  # the canonical name for an alias
     def __init__(self, name: str, ttl: int, alias: str):
         super().__init__(name, ttl, 'CNAME', alias)
+
+
+class MxRecord(Record):  # mail exchange
+    def __init__(self, name: str, ttl: int, mail_server: str, priority: int):
+        super().__init__(name, ttl, 'MX', f'{priority} {mail_server}')
+        self.mail_server = mail_server
+        self.priority = priority
+
+    def get_data(self) -> Tuple[str, str]:
+        priority, mail_server = self.data.split(' ')
+        return mail_server, priority
+
+    def set_data(self, mail_server: str, priority: int):
+        self.data = f'{priority} {mail_server}'
