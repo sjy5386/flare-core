@@ -45,3 +45,8 @@ class MxRecord(Record):  # mail exchange
 
     def set_data(self, mail_server: str, priority: int):
         self.data = f'{priority} {mail_server}'
+
+
+class TxtRecord(Record):  # text strings
+    def __init__(self, name: str, ttl: int, value: str):
+        super().__init__(name, ttl, 'TXT', value)
