@@ -66,7 +66,7 @@ class Subdomain(models.Model):
         CLIENT_TRANSFER_PROHIBITED = 'clientTransferProhibited', 'client transfer prohibited'
         CLIENT_UPDATE_PROHIBITED = 'clientUpdateProhibited', 'client update prohibited'
 
-    status = models.CharField(max_length=31, choices=StatusChoices, default=StatusChoices.OK)
+    status = models.CharField(max_length=31, choices=StatusChoices.choices, default=StatusChoices.OK)
 
     registrant = models.ForeignKey(Contact, on_delete=models.RESTRICT, related_name='registrant_contact')
     admin = models.ForeignKey(Contact, on_delete=models.RESTRICT, related_name='admin_contact')
