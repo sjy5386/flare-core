@@ -1,0 +1,17 @@
+{% block content %}
+    <h3>Subdomains</h3>
+    <table>
+        <thead>
+        <tr>
+            <th scope="col">Name</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for subdomain in object_list %}
+            <tr>
+                <td>{{ subdomain }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
