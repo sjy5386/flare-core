@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'accounts.apps.AccountsConfig',
+    'contacts.apps.ContactsConfig',
     'domains.apps.DomainsConfig',
     'subdomains.apps.SubdomainsConfig',
 ]
