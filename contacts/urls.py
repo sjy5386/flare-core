@@ -7,4 +7,5 @@ urlpatterns = [
     path('create/', views.ContactCreateView.as_view(), name='contact_create'),
     path('<int:id>/', views.ContactDetailView.as_view(), name='contact_detail'),
     path('<int:id>/update/', views.ContactUpdateView.as_view(), name='contact_update'),
+    path('<int:id>/delete/', views.ContactDeleteView.as_view(), name='contact_delete'),
 ]
