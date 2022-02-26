@@ -1,12 +1,6 @@
 from django import forms
 
-from .models import Contact, Subdomain
-
-
-class ContactForm(forms.ModelForm):
-    class Meta:
-        model = Contact
-        exclude = ['created_at', 'updated_at', 'user']
+from .models import Subdomain
 
 
 class SubdomainForm(forms.ModelForm):
