@@ -1,0 +1,42 @@
+{% extends 'common/base.html' %}
+{% block content %}
+    <h3>Subdomain detail</h3>
+    <table class="table">
+        <tr>
+            <th scope="row">Name</th>
+            <td>{{ object }}</td>
+        </tr>
+        <tr>
+            <th scope="row">Creation Date</th>
+            <td>{{ object.created_at }}</td>
+        </tr>
+        <tr>
+            <th scope="row">Updated Date</th>
+            <td>{{ object.updated_at }}</td>
+        </tr>
+        <tr>
+            <th scope="row">Expiry Date</th>
+            <td>{{ object.expiry }}</td>
+        </tr>
+        <tr>
+            <th scope="row">Status</th>
+            <td>{{ object.status }}</td>
+        </tr>
+        <tr>
+            <th scope="row">Registrant</th>
+            <td>{{ object.registrant }}</td>
+        </tr>
+        <tr>
+            <th scope="row">Admin</th>
+            <td>{{ object.admin }}</td>
+        </tr>
+        <tr>
+            <th scope="row">Tech</th>
+            <td>{{ object.tech }}</td>
+        </tr>
+        <tr>
+            <th scope="row">Billing</th>
+            <td>{{ object.billing }}</td>
+        </tr>
+    </table>
+{% endblock %}

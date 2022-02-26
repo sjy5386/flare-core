@@ -1,7 +1,8 @@
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
-from django.views.generic import ListView, CreateView
+from django.views.generic import ListView, CreateView, DetailView
 
 from .forms import SubdomainForm
 from .models import Subdomain
@@ -26,3 +27,11 @@ class SubdomainCreateView(CreateView):
         subdomain.user = self.request.user
         subdomain.save()
         return super(SubdomainCreateView, self).form_valid(form)
+
+
+@method_decorator(login_required, name='dispatch')
+class SubdomainDetailView(DetailView):
+    template_name = 'subdomains/detail.html'
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(Subdomain, id=self.kwargs['id'], user=self.request.user)
