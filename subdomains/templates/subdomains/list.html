@@ -1,16 +1,16 @@
 {% extends 'common/base.html' %}
 {% block content %}
     <h3>Subdomains</h3>
-    <table>
+    <table class="table">
         <thead>
         <tr>
             <th scope="col">Name</th>
         </tr>
         </thead>
         <tbody>
-        {% for subdomain in object_list %}
+        {% for object in object_list %}
             <tr>
-                <td>{{ subdomain }}</td>
+                <td>{{ object }}</td>
             </tr>
         {% endfor %}
         </tbody>

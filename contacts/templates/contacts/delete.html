@@ -1,9 +1,11 @@
 {% extends 'common/base.html' %}
+{% load django_bootstrap5 %}
 {% block content %}
     <h3>Delete a contact</h3>
-    <form method="post">{% csrf_token %}
+    <form method="post">
+        {% csrf_token %}
         <p>Are you sure you want to delete "{{ object }}"?</p>
-        {{ form }}
-        <input type="submit" value="Confirm">
+        {% bootstrap_form form %}
+        {% bootstrap_button button_type="submit" content="Delete" %}
     </form>
 {% endblock %}

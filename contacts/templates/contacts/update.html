@@ -1,9 +1,10 @@
 {% extends 'common/base.html' %}
+{% load django_bootstrap5 %}
 {% block content %}
     <h3>Update a contact</h3>
     <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="Update">
+        {% bootstrap_form form %}
+        {% bootstrap_button button_type="submit" content="Update" %}
     </form>
 {% endblock %}
