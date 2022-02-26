@@ -1,0 +1,35 @@
+{% block content %}
+    <h3>Contacts</h3>
+    <table>
+        <thead>
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Organization</th>
+            <th scope="col">Street</th>
+            <th scope="col">City</th>
+            <th scope="col">State/Province</th>
+            <th scope="col">Postal Code</th>
+            <th scope="col">Country</th>
+            <th scope="col">Phone</th>
+            <th scope="col">Fax</th>
+            <th scope="col">Email</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for contact in object_list %}
+            <tr>
+                <td>{{ contact.name }}</td>
+                <td>{{ contact.organization }}</td>
+                <td>{{ contact.street }}</td>
+                <td>{{ contact.city }}</td>
+                <td>{{ contact.state_province }}</td>
+                <td>{{ contact.postal_code }}</td>
+                <td>{{ contact.country }}</td>
+                <td>{{ contact.phone }}</td>
+                <td>{{ contact.fax }}</td>
+                <td>{{ contact.email }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
