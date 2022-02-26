@@ -3,6 +3,7 @@
     <table>
         <thead>
         <tr>
+            <th scope="col">ID</th>
             <th scope="col">Name</th>
             <th scope="col">Organization</th>
             <th scope="col">Street</th>
@@ -16,18 +17,19 @@
         </tr>
         </thead>
         <tbody>
-        {% for contact in object_list %}
+        {% for object in object_list %}
             <tr>
-                <td>{{ contact.name }}</td>
-                <td>{{ contact.organization }}</td>
-                <td>{{ contact.street }}</td>
-                <td>{{ contact.city }}</td>
-                <td>{{ contact.state_province }}</td>
-                <td>{{ contact.postal_code }}</td>
-                <td>{{ contact.country }}</td>
-                <td>{{ contact.phone }}</td>
-                <td>{{ contact.fax }}</td>
-                <td>{{ contact.email }}</td>
+                <td><a href="{% url 'contact_detail' object.id %}">{{ object.id }}</a></td>
+                <td>{{ object.name }}</td>
+                <td>{{ object.organization }}</td>
+                <td>{{ object.street }}</td>
+                <td>{{ object.city }}</td>
+                <td>{{ object.state_province }}</td>
+                <td>{{ object.postal_code }}</td>
+                <td>{{ object.country }}</td>
+                <td>{{ object.phone }}</td>
+                <td>{{ object.fax }}</td>
+                <td>{{ object.email }}</td>
             </tr>
         {% endfor %}
         </tbody>
