@@ -1,12 +1,13 @@
 from django.contrib.auth.decorators import login_required
+from django.core.mail import EmailMessage
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_GET
-from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView
+from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView, FormView
 
 from domains.models import Domain
-from .forms import SubdomainForm, SubdomainSearchForm, SubdomainWhoisForm
+from .forms import SubdomainForm, SubdomainSearchForm, SubdomainWhoisForm, SubdomainContactForm
 from .models import Subdomain
 
 
@@ -57,6 +58,44 @@ def whois(request):
         }),
         'object': subdomain
     })
+
+
+class SubdomainContactView(FormView):
+    template_name = 'subdomains/contact.html'
+    form_class = SubdomainContactForm
+    success_url = reverse_lazy('subdomain_contact')
+
+    def get_initial(self):
+        return {
+            'subdomain_name': self.request.GET.get('subdomain', ''),
+            'contacts': self.request.GET.getlist('contact', [])
+        }
+
+    def form_valid(self, form):
+        subdomain_name = form.cleaned_data.get('subdomain_name')
+        if '.' in subdomain_name:
+            i = subdomain_name.index('.')
+            name = subdomain_name[:i]
+            domain__name = subdomain_name[i + 1:]
+            subdomain = get_object_or_404(Subdomain, name=name, domain__name=domain__name)
+            contacts = form.cleaned_data.get('contacts')
+            recipient_list = set()
+            if 'registrant' in contacts:
+                recipient_list.add(subdomain.registrant.email)
+            if 'admin' in contacts:
+                recipient_list.add(subdomain.admin.email)
+            if 'tech' in contacts:
+                recipient_list.add(subdomain.tech.email)
+            if 'billing' in contacts:
+                recipient_list.add(subdomain.billing.email)
+            recipient_list = list(recipient_list)
+            EmailMessage(
+                subject=form.cleaned_data.get('subject'),
+                body=form.cleaned_data.get('message'),
+                to=recipient_list,
+                reply_to=[form.cleaned_data.get('your_email')]
+            ).send(fail_silently=True)
+        return super(SubdomainContactView, self).form_valid(form)
 
 
 @method_decorator(login_required, name='dispatch')
