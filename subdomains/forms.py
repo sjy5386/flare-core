@@ -1,6 +1,14 @@
 from django import forms
 
+from domains.models import Domain
 from .models import Subdomain
+
+
+class SubdomainSearchForm(forms.Form):
+    q = forms.CharField(label='Name', max_length=63)
+    domain = forms.ModelMultipleChoiceField(queryset=Domain.objects.filter(is_active=True),
+                                            widget=forms.CheckboxSelectMultiple)
+    hide_unavailable = forms.BooleanField(required=False)
 
 
 class SubdomainForm(forms.ModelForm):
