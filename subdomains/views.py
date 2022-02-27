@@ -22,6 +22,12 @@ class SubdomainCreateView(CreateView):
     form_class = SubdomainForm
     success_url = reverse_lazy('subdomain_list')
 
+    def get_initial(self):
+        return {
+            'name': self.request.GET.get('name', ''),
+            'domain': self.request.GET.get('domain', None)
+        }
+
     def form_valid(self, form):
         subdomain = form.save(commit=False)
         subdomain.user = self.request.user
