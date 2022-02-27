@@ -15,6 +15,17 @@ class SubdomainWhoisForm(forms.Form):
     q = forms.CharField(label='Subdomain Name')
 
 
+class SubdomainContactForm(forms.Form):
+    subdomain_name = forms.CharField()
+    contacts = forms.MultipleChoiceField(choices=[
+        ('registrant', 'Registrant'), ('admin', 'Admin'), ('tech', 'Tech'), ('billing', 'Billing')
+    ], widget=forms.CheckboxSelectMultiple)
+    your_name = forms.CharField()
+    your_email = forms.EmailField()
+    subject = forms.CharField()
+    message = forms.CharField(widget=forms.Textarea)
+
+
 class SubdomainForm(forms.ModelForm):
     class Meta:
         model = Subdomain
