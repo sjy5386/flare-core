@@ -1,0 +1,25 @@
+{% extends 'common/base.html' %}
+{% load django_bootstrap5 %}
+{% block content %}
+    <h3>Search subdomains</h3>
+    <form method="get">
+        {% bootstrap_form form %}
+        {% bootstrap_button button_type="submit" content="Search" %}
+    </form>
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">Subdomain</th>
+            <th scope="col">Availability</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for subdomain, availability in results %}
+            <tr>
+                <td>{{ subdomain }}</td>
+                <td>{{ availability }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
