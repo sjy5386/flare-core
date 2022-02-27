@@ -1,0 +1,153 @@
+{% extends 'common/base.html' %}
+{% load django_bootstrap5 %}
+{% block content %}
+    <h3>WHOIS</h3>
+    <form method="get">
+        {% bootstrap_form form %}
+        {% bootstrap_button button_type="submit" content="Lookup" %}
+    </form>
+    {% if object %}
+        <table class="table">
+            <tr>
+                <th scope="row">Subdomain Name</th>
+                <td>{{ object }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Updated Date</th>
+                <td>{{ object.updated_at }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Creation Date</th>
+                <td>{{ object.created_at }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Expiry Date</th>
+                <td>{{ object.expiry }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Status</th>
+                <td>{{ object.status }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Registrant Name</th>
+                <td>{{ object.registrant.name }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Registrant Organization</th>
+                <td>{{ object.registrant.organization }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Registrant Street</th>
+                <td>{{ object.registrant.street }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Registrant City</th>
+                <td>{{ object.registrant.city }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Registrant State/Province</th>
+                <td>{{ object.registrant.state_province }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Registrant Postal Code</th>
+                <td>{{ object.registrant.postal_code }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Registrant Country</th>
+                <td>{{ object.registrant.country }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Registrant Phone</th>
+                <td>{{ object.registrant.phone }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Registrant Fax</th>
+                <td>{{ object.registrant.fax }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Registrant Email</th>
+                <td>{{ object.registrant.email }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Admin Name</th>
+                <td>{{ object.admin.name }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Admin Organization</th>
+                <td>{{ object.admin.organization }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Admin Street</th>
+                <td>{{ object.admin.street }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Admin City</th>
+                <td>{{ object.admin.city }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Admin State/Province</th>
+                <td>{{ object.admin.state_province }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Admin Postal Code</th>
+                <td>{{ object.admin.postal_code }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Admin Country</th>
+                <td>{{ object.admin.country }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Admin Phone</th>
+                <td>{{ object.admin.phone }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Admin Fax</th>
+                <td>{{ object.admin.fax }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Admin Email</th>
+                <td>{{ object.admin.email }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Tech Name</th>
+                <td>{{ object.tech.name }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Tech Organization</th>
+                <td>{{ object.tech.organization }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Tech Street</th>
+                <td>{{ object.tech.street }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Tech City</th>
+                <td>{{ object.tech.city }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Tech State/Province</th>
+                <td>{{ object.tech.state_province }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Tech Postal Code</th>
+                <td>{{ object.tech.postal_code }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Tech Country</th>
+                <td>{{ object.tech.country }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Tech Phone</th>
+                <td>{{ object.tech.phone }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Tech Fax</th>
+                <td>{{ object.tech.fax }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Tech Email</th>
+                <td>{{ object.tech.email }}</td>
+            </tr>
+        </table>
+    {% endif %}
+{% endblock %}

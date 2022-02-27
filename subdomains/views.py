@@ -6,7 +6,7 @@ from django.views.decorators.http import require_GET
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView
 
 from domains.models import Domain
-from .forms import SubdomainForm, SubdomainSearchForm
+from .forms import SubdomainForm, SubdomainSearchForm, SubdomainWhoisForm
 from .models import Subdomain
 
 
@@ -36,6 +36,26 @@ def search(request):
             'hide_unavailable': hide_unavailable
         }),
         'results': results.items()
+    })
+
+
+@require_GET
+def whois(request):
+    q = request.GET.get('q', '')
+    subdomain = None
+    if '.' in q:
+        i = q.index('.')
+        name = q[:i]
+        domain__name = q[i + 1:]
+        try:
+            subdomain = Subdomain.objects.get(name=name, domain__name=domain__name)
+        except Subdomain.DoesNotExist:
+            pass
+    return render(request, 'subdomains/whois.html', {
+        'form': SubdomainWhoisForm(initial={
+            'q': q,
+        }),
+        'object': subdomain
     })
 
 
