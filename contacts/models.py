@@ -19,5 +19,18 @@ class Contact(models.Model):
     fax = models.CharField(max_length=15, blank=True)
     email = models.EmailField()
 
+    def redact_data(self, message: str = 'DATA REDACTED', is_registrant: bool = False, email: str = None):
+        self.name = message
+        self.street = message
+        self.city = message
+        self.postal_code = message
+        self.phone = message
+        self.fax = message
+        self.email = email if email else message
+        if not is_registrant:
+            self.organization = message
+            self.state_province = message
+            self.country = message
+
     def __str__(self):
         return self.name

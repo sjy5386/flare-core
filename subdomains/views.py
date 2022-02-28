@@ -50,6 +50,14 @@ def whois(request):
         domain__name = q[i + 1:]
         try:
             subdomain = Subdomain.objects.get(name=name, domain__name=domain__name)
+            if subdomain.is_private:
+                def make_contact_url(contact):
+                    return f'{reverse_lazy("subdomain_contact")}?subdomain={subdomain.__str__()}&contact={contact}'
+
+                subdomain.registrant.redact_data(is_registrant=True, email=make_contact_url('registrant'))
+                subdomain.admin.redact_data(email=make_contact_url('admin'))
+                subdomain.tech.redact_data(email=make_contact_url('tech'))
+                subdomain.billing.redact_data(email=make_contact_url('billing'))
         except Subdomain.DoesNotExist:
             pass
     return render(request, 'subdomains/whois.html', {

@@ -53,6 +53,7 @@ class Subdomain(models.Model):
     admin = models.ForeignKey(Contact, on_delete=models.RESTRICT, related_name='admin_contact')
     tech = models.ForeignKey(Contact, on_delete=models.RESTRICT, related_name='tech_contact', null=True)
     billing = models.ForeignKey(Contact, on_delete=models.RESTRICT, related_name='billing_contact', null=True)
+    is_private = models.BooleanField(default=True)
 
     class Meta:
         constraints = [
