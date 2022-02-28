@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'accounts.apps.AccountsConfig',
     'contacts.apps.ContactsConfig',
     'domains.apps.DomainsConfig',
+    'shorturls.apps.ShorturlsConfig',
     'subdomains.apps.SubdomainsConfig',
 ]
 
