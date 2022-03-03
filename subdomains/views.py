@@ -160,8 +160,21 @@ class RecordMixin:
     def get_provider_class(self):
         return self.provider_class
 
+    def get_provider(self, provider_class=None):
+        if provider_class is None:
+            provider_class = self.get_provider_class()
+        return provider_class()
+
     def get_subdomain_id_kwarg_name(self):
         return self.subdomain_id_kwarg_name
 
     def get_record_id_kwarg_name(self):
         return self.record_id_kwarg_name
+
+
+class BaseRecordListView(RecordMixin, ListView):
+    def get_queryset(self):
+        subdomain_id = self.kwargs[self.get_subdomain_id_kwarg_name()]
+        subdomain = get_object_or_404(Subdomain, id=subdomain_id, user=self.request.user)
+        records = self.get_provider().list_records(subdomain)
+        return records
