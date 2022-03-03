@@ -150,3 +150,10 @@ class SubdomainDeleteView(DeleteView):
 
     def get_object(self, queryset=None):
         return get_object_or_404(Subdomain, id=self.kwargs['id'], user=self.request.user)
+
+
+class RecordMixin:
+    provider_class = None
+
+    def get_provider_class(self):
+        return self.provider_class
