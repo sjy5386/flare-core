@@ -154,6 +154,14 @@ class SubdomainDeleteView(DeleteView):
 
 class RecordMixin:
     provider_class = None
+    subdomain_id_kwarg_name = 'subdomain_id'
+    record_id_kwarg_name = 'id'
 
     def get_provider_class(self):
         return self.provider_class
+
+    def get_subdomain_id_kwarg_name(self):
+        return self.subdomain_id_kwarg_name
+
+    def get_record_id_kwarg_name(self):
+        return self.record_id_kwarg_name
