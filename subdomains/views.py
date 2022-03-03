@@ -7,8 +7,9 @@ from django.views.decorators.http import require_GET
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView, FormView
 
 from domains.models import Domain
-from .forms import SubdomainForm, SubdomainSearchForm, SubdomainWhoisForm, SubdomainContactForm
+from .forms import SubdomainForm, SubdomainSearchForm, SubdomainWhoisForm, SubdomainContactForm, RecordForm
 from .models import Subdomain
+from .types import Record
 
 
 @method_decorator(login_required, name='dispatch')
@@ -178,3 +179,29 @@ class BaseRecordListView(RecordMixin, ListView):
         subdomain = get_object_or_404(Subdomain, id=subdomain_id, user=self.request.user)
         records = self.get_provider().list_records(subdomain)
         return records
+
+
+class BaseRecordCreateView(RecordMixin, CreateView):
+    form_class = RecordForm
+
+    def get_initial(self):
+        return {
+            'name': self.request.GET.get('name'),
+            'ttl': self.request.GET.get('ttl'),
+            'record_type': self.request.GET.get('record_type'),
+            'data': self.request.GET.get('data')
+        }
+
+    def form_valid(self, form):
+        subdomain_id = self.kwargs[self.get_subdomain_id_kwarg_name()]
+        subdomain = get_object_or_404(Subdomain, id=subdomain_id, user=self.request.user)
+
+        name = form.cleaned_data.get('name')
+        ttl = form.cleaned_data.get('ttl')
+        record_type = form.cleaned_data.get('record_type')
+        data = form.cleaned_data.get('data')
+
+        record = Record(name, ttl, record_type, data)
+        self.get_provider().create_record(subdomain, record)
+
+        return super(BaseRecordCreateView, self).form_valid(form)
