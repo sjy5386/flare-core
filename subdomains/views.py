@@ -205,3 +205,11 @@ class BaseRecordCreateView(RecordMixin, CreateView):
         self.get_provider().create_record(subdomain, record)
 
         return super(BaseRecordCreateView, self).form_valid(form)
+
+
+class BaseRecordDetailView(RecordMixin, DetailView):
+    def get_object(self, queryset=None):
+        record_id = self.kwargs[self.get_record_id_kwarg_name()]
+        subdomain_id = self.kwargs[self.get_subdomain_id_kwarg_name()]
+        subdomain = get_object_or_404(Subdomain, id=subdomain_id, user=self.request.user)
+        return self.get_provider().retrieve_record(subdomain, record_id)
