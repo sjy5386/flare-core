@@ -23,3 +23,14 @@ class Post(models.Model):
     content = models.TextField()
 
     views = models.PositiveIntegerField(default=0)
+
+
+class Comment(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    user = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.DO_NOTHING)
+
+    content = models.TextField()
+    is_private = models.BooleanField(default=False)
