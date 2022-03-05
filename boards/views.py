@@ -9,6 +9,10 @@ from .forms import PostForm
 from .models import Board, Post
 
 
+class BoardListView(ListView):
+    model = Board
+
+
 class PostListView(ListView):
     def get_queryset(self):
         return Post.objects.filter(board__name=self.kwargs['board_name'])
