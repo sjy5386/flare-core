@@ -1,8 +1,9 @@
 from django.contrib.auth.decorators import login_required
+from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
-from django.views.generic import ListView, CreateView
+from django.views.generic import ListView, CreateView, DetailView
 
 from .forms import PostForm
 from .models import Board, Post
@@ -24,3 +25,12 @@ class PostCreateView(CreateView):
         post.user = self.request.user
         post.save()
         return super(PostCreateView, self).form_valid(form)
+
+
+class PostDetailView(DetailView):
+    def get_object(self, queryset=None):
+        post = get_object_or_404(Post, id=self.kwargs['id'], board__name=self.kwargs['board_name'])
+        user = self.request.user
+        if post.is_private and (not user.is_authenticated or post.user != user or not user.is_staff):
+            raise Http404('This post is private.')
+        return post
