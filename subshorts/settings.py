@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django_bootstrap5',
 
     'accounts.apps.AccountsConfig',
+    'boards.apps.BoardsConfig',
     'contacts.apps.ContactsConfig',
     'domains.apps.DomainsConfig',
     'shorturls.apps.ShorturlsConfig',
