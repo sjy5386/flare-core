@@ -33,7 +33,7 @@ class Post(models.Model):
     views = models.PositiveIntegerField(default=0)
 
     def __str__(self):
-        return self.title + '🔒' if self.is_private else self.title
+        return f'{self.title} 🔒' if self.is_private else self.title
 
 
 class Comment(models.Model):

@@ -15,7 +15,7 @@
         {% for object in object_list %}
             <tr>
                 <td><a href="{% url 'post_detail' board.name object.id %}">{{ object.id }}</a></td>
-                <td><a href="{% url 'post_detail' board.name object.id %}">{{ object.title }}</a></td>
+                <td><a href="{% url 'post_detail' board.name object.id %}">{{ object }}</a></td>
                 <td>{{ object.user }}</td>
                 <td>{{ object.created_at }}</td>
                 <td>{{ object.views }}</td>
