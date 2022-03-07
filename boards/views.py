@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.http import Http404
 from django.shortcuts import get_object_or_404
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView
 
@@ -25,8 +25,8 @@ class PostListView(ListView):
 
 @method_decorator(login_required, name='dispatch')
 class PostCreateView(CreateView):
+    template_name = 'boards/post_create.html'
     form_class = PostForm
-    success_url = reverse_lazy('post_list')
 
     def form_valid(self, form):
         post = form.save(commit=False)
@@ -34,6 +34,9 @@ class PostCreateView(CreateView):
         post.user = self.request.user
         post.save()
         return super(PostCreateView, self).form_valid(form)
+
+    def get_success_url(self):
+        return reverse('post_list', kwargs=self.kwargs)
 
 
 class PostDetailView(DetailView):
