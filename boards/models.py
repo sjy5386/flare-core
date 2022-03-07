@@ -45,3 +45,6 @@ class Comment(models.Model):
 
     content = models.TextField()
     is_private = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f'{self.content} 🔒' if self.is_private else self.content
