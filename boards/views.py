@@ -45,7 +45,14 @@ class PostDetailView(DetailView):
         user = self.request.user
         if post.is_private and (not user.is_authenticated or post.user != user or not user.is_staff):
             raise Http404('This post is private.')
+        post.views += 1
+        post.save()
         return post
+
+    def get_context_data(self, **kwargs):
+        context = super(PostDetailView, self).get_context_data(**kwargs)
+        context['board'] = get_object_or_404(Board, name=self.kwargs['board_name'])
+        return context
 
 
 @method_decorator(login_required, name='dispatch')

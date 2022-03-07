@@ -1,0 +1,14 @@
+{% extends 'common/base.html' %}
+{% block content %}
+    <h3>{{ board.title }}</h3>
+    <div>
+        <h4>{{ object.title }}</h4>
+        <p>{{ object.user }}</p>
+        <p>{{ object.created_at }}</p>
+        <p>{{ object.views }} views</p>
+        <p>{{ object.content }}</p>
+    </div>
+    <a class="btn btn-primary" href="{% url 'post_list' board.name %}">List</a>
+    <a class="btn btn-secondary" href="{% url 'post_update' board.name object.id %}">Edit</a>
+    <a class="btn btn-danger" href="{% url 'post_delete' board.name object.id %}">Delete</a>
+{% endblock %}
