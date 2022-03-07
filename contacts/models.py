@@ -1,6 +1,6 @@
 from django.db import models
 
-from subshorts.settings import AUTH_USER_MODEL
+from base.settings import AUTH_USER_MODEL
 
 
 class Contact(models.Model):

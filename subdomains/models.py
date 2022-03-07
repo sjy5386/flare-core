@@ -4,7 +4,7 @@ from django.db import models
 
 from contacts.models import Contact
 from domains.models import Domain
-from subshorts.settings import AUTH_USER_MODEL
+from base.settings import AUTH_USER_MODEL
 
 
 class Subdomain(models.Model):
