@@ -1,4 +1,5 @@
 {% extends 'common/base.html' %}
+{% load django_bootstrap5 %}
 {% block content %}
     <h3>{{ board.title }}</h3>
     <div>
@@ -8,6 +9,20 @@
         <p>{{ object.views }} views</p>
         <p>{{ object.content }}</p>
     </div>
+    <div>
+        {% for comment in comments %}
+            <div>
+                <p>{{ comment.user }}</p>
+                <p>{{ comment.created_at }}</p>
+                <p>{{ comment.content }}</p>
+            </div>
+        {% endfor %}
+    </div>
+    <form method="post">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        {% bootstrap_button button_type="submit" content="Write" %}
+    </form>
     <a class="btn btn-primary" href="{% url 'post_list' board.name %}">List</a>
     <a class="btn btn-secondary" href="{% url 'post_update' board.name object.id %}">Edit</a>
     <a class="btn btn-danger" href="{% url 'post_delete' board.name object.id %}">Delete</a>
