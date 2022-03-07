@@ -17,6 +17,11 @@ class PostListView(ListView):
     def get_queryset(self):
         return Post.objects.filter(board__name=self.kwargs['board_name'])
 
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(PostListView, self).get_context_data(**kwargs)
+        context['board'] = get_object_or_404(Board, name=self.kwargs['board_name'])
+        return context
+
 
 @method_decorator(login_required, name='dispatch')
 class PostCreateView(CreateView):
