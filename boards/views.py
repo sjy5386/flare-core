@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.http import Http404
 from django.shortcuts import get_object_or_404
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView
 
@@ -70,8 +70,11 @@ class PostUpdateView(UpdateView):
 
 @method_decorator(login_required, name='dispatch')
 class PostDeleteView(DeleteView):
-    success_url = reverse_lazy('post_list')
+    template_name = 'boards/post_delete.html'
 
     def get_object(self, queryset=None):
         return get_object_or_404(Post, id=self.kwargs['id'], board__name=self.kwargs['board_name'],
                                  user=self.request.user)
+
+    def get_success_url(self):
+        return reverse('post_list', kwargs={'board_name': self.kwargs['board_name']})
