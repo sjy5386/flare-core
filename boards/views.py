@@ -57,12 +57,15 @@ class PostDetailView(DetailView):
 
 @method_decorator(login_required, name='dispatch')
 class PostUpdateView(UpdateView):
+    template_name = 'boards/post_update.html'
     form_class = PostForm
-    success_url = reverse_lazy('post_list')
 
     def get_object(self, queryset=None):
         return get_object_or_404(Post, id=self.kwargs['id'], board__name=self.kwargs['board_name'],
                                  user=self.request.user)
+
+    def get_success_url(self):
+        return reverse('post_list', kwargs={'board_name': self.kwargs['board_name']})
 
 
 @method_decorator(login_required, name='dispatch')
