@@ -9,11 +9,11 @@ class Record:
     r_type: str
     data: str
 
-    def __init__(self, name: str, ttl: int, record_type: str, data: str):
+    def __init__(self, name: str, ttl: int, r_type: str, data: str):
         self.name = name
         self.ttl = ttl
-        if record_type in self.get_available_types():
-            self.r_type = record_type
+        if r_type in self.get_available_types():
+            self.r_type = r_type
         self.data = data
 
     def __str__(self):

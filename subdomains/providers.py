@@ -35,7 +35,7 @@ class BaseProvider:
             if line[0] == ';':
                 continue
             r = line.split()
-            record = Record(name=r[0], ttl=int(r[1]), record_type=r[3], data=' '.join(r[4:]))
+            record = Record(name=r[0], ttl=int(r[1]), r_type=r[3], data=' '.join(r[4:]))
             self.create_record(subdomain, record)
 
 
@@ -45,7 +45,7 @@ class DigitalOceanProvider(BaseProvider):
     def list_records(self, subdomain: Subdomain) -> List[Record]:
         domain = digitalocean.Domain(token=self.token, name=subdomain.domain.name)
         records = domain.get_records()
-        return list(map(lambda e: Record(name=e.name, ttl=e.ttl, record_type=e.type, data=e.data),
+        return list(map(lambda e: Record(name=e.name, ttl=e.ttl, r_type=e.type, data=e.data),
                         filter(lambda e: e.name.endswith(subdomain.name), records)))
 
     def create_record(self, subdomain: Subdomain, record: Record) -> Record:
@@ -66,7 +66,7 @@ class DigitalOceanProvider(BaseProvider):
         records = domain.get_records()
         for r in records:
             if r.id == identifier:
-                return Record(name=r.name, ttl=r.ttl, record_type=r.type, data=r.data)
+                return Record(name=r.name, ttl=r.ttl, r_type=r.type, data=r.data)
 
     def update_record(self, subdomain: Subdomain, identifier, record: Record) -> Record:
         if not record.name.endswith(subdomain.name):
