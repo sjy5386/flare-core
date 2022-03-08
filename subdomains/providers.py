@@ -58,14 +58,14 @@ class DigitalOceanProvider(BaseProvider):
             type=record.r_type,
             data=record.data
         )
-        record.id = new_record.id
+        record.identifier = new_record.id
         return record
 
     def retrieve_record(self, subdomain: Subdomain, identifier) -> Record:
         domain = digitalocean.Domain(token=self.token, name=subdomain.domain.name)
         records = domain.get_records()
         for r in records:
-            if r.id == identifier:
+            if r.id == identifier and r.name.endswith(subdomain.name):
                 return Record(name=r.name, ttl=r.ttl, r_type=r.type, data=r.data)
 
     def update_record(self, subdomain: Subdomain, identifier, record: Record) -> Record:
@@ -85,5 +85,5 @@ class DigitalOceanProvider(BaseProvider):
         domain = digitalocean.Domain(token=self.token, name=subdomain.domain.name)
         records = domain.get_records()
         for r in records:
-            if r.id == identifier:
+            if r.id == identifier and r.name.endswith(subdomain.name):
                 r.destroy()
