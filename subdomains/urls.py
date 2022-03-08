@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 
 from . import views
 
@@ -12,9 +12,5 @@ urlpatterns = [
     path('<int:id>/update/', views.SubdomainUpdateView.as_view(), name='subdomain_update'),
     path('<int:id>/delete/', views.SubdomainDeleteView.as_view(), name='subdomain_delete'),
 
-    path('<int:subdomain_id>/records/', views.list_records, name='record_list'),
-    path('<int:subdomain_id>/records/create/', views.create_record, name='record_create'),
-    path('<int:subdomain_id>/records/<str:identifier>/', views.retrieve_record, name='record_detail'),
-    path('<int:subdomain_id>/records/<str:identifier>/update/', views.update_record, name='record_update'),
-    path('<int:subdomain_id>/records/<str:identifier>/delete/', views.delete_record, name='record_delete'),
+    path('<int:subdomain_id>/records/', include('records.urls')),
 ]

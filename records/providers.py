@@ -2,7 +2,7 @@ from typing import List
 
 import digitalocean
 
-from .models import Subdomain
+from subdomains.models import Subdomain
 from .types import Record
 
 
