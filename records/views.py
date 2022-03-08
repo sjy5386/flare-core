@@ -16,7 +16,7 @@ def list_records(request, subdomain_id):
     provider = PROVIDER_CLASS()
     subdomain = get_object_or_404(Subdomain, id=subdomain_id, user=request.user)
     records = provider.list_records(subdomain)
-    return render(request, 'subdomains/record_list.html', {
+    return render(request, 'records/record_list.html', {
         'subdomain': subdomain,
         'records': records
     })
@@ -26,7 +26,7 @@ def list_records(request, subdomain_id):
 def create_record(request, subdomain_id):
     subdomain = get_object_or_404(Subdomain, id=subdomain_id, user=request.user)
     if request.method == 'GET':
-        return render(request, 'subdomains/record_create.html', {
+        return render(request, 'records/record_create.html', {
             'subdomain': subdomain,
             'form': RecordForm(initial={
                 'name': request.GET.get('name'),
@@ -52,7 +52,7 @@ def retrieve_record(request, subdomain_id, identifier):
     provider = PROVIDER_CLASS()
     subdomain = get_object_or_404(Subdomain, id=subdomain_id, user=request.user)
     record = provider.retrieve_record(subdomain, identifier)
-    return render(request, 'subdomains/record_detail.html', {
+    return render(request, 'records/record_detail.html', {
         'subdomain': subdomain,
         'record': record
     })
@@ -64,7 +64,7 @@ def update_record(request, subdomain_id, identifier):
     subdomain = get_object_or_404(Subdomain, id=subdomain_id, user=request.user)
     if request.method == 'GET':
         record = provider.retrieve_record(subdomain, identifier)
-        return render(request, 'subdomains/record_update.html', {
+        return render(request, 'records/record_update.html', {
             'subdomain': subdomain,
             'record': record,
             'form': RecordForm(initial={
@@ -90,7 +90,7 @@ def delete_record(request, subdomain_id, identifier):
     subdomain = get_object_or_404(Subdomain, id=subdomain_id, user=request.user)
     if request.method == 'GET':
         record = provider.retrieve_record(subdomain, identifier)
-        return render(request, 'subdomains/record_delete.html', {
+        return render(request, 'records/record_delete.html', {
             'subdomain': subdomain,
             'record': record,
             'form': Form()
