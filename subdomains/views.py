@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.core.mail import EmailMessage
 from django.shortcuts import render, get_object_or_404
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_GET
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView, FormView
@@ -174,32 +174,6 @@ class RecordMixin:
         return self.record_id_kwarg_name
 
 
-class BaseRecordCreateView(RecordMixin, CreateView):
-    form_class = RecordForm
-
-    def get_initial(self):
-        return {
-            'name': self.request.GET.get('name'),
-            'ttl': self.request.GET.get('ttl'),
-            'record_type': self.request.GET.get('record_type'),
-            'data': self.request.GET.get('data')
-        }
-
-    def form_valid(self, form):
-        subdomain_id = self.kwargs[self.get_subdomain_id_kwarg_name()]
-        subdomain = get_object_or_404(Subdomain, id=subdomain_id, user=self.request.user)
-
-        name = form.cleaned_data.get('name')
-        ttl = form.cleaned_data.get('ttl')
-        record_type = form.cleaned_data.get('record_type')
-        data = form.cleaned_data.get('data')
-
-        record = Record(name, ttl, record_type, data)
-        self.get_provider().create_record(subdomain, record)
-
-        return super(BaseRecordCreateView, self).form_valid(form)
-
-
 class BaseRecordDetailView(RecordMixin, DetailView):
     def get_object(self, queryset=None):
         record_id = self.kwargs[self.get_record_id_kwarg_name()]
@@ -232,7 +206,31 @@ def list_records(request, subdomain_id):
     provider = BaseProvider()
     subdomain = get_object_or_404(Subdomain, id=subdomain_id, user=request.user)
     records = provider.list_records(subdomain)
-    return render(request, '', {
+    return render(request, 'subdomains/record_list.html', {
         'subdomain': subdomain,
         'records': records
     })
+
+
+@login_required
+def create_record(request, subdomain_id):
+    subdomain = get_object_or_404(Subdomain, id=subdomain_id, user=request.user)
+    if request.method == 'GET':
+        return render(request, 'subdomains/record_create.html', {
+            'subdomain': subdomain,
+            'form': RecordForm(initial={
+                'name': request.GET.get('name'),
+                'ttl': request.GET.get('ttl'),
+                'record_type': request.GET.get('record_type'),
+                'data': request.GET.get('data')
+            })
+        })
+    elif request.method == 'POST':
+        provider = BaseProvider()
+        name = request.POST['name']
+        ttl = request.POST['ttl']
+        r_type = request.POST['record_type']
+        data = request.POST['data']
+        record = Record(name, ttl, r_type, data)
+        provider.create_record(subdomain, record)
+        return reverse('record_list', subdomain_id)
