@@ -29,10 +29,7 @@ def create_record(request, subdomain_id):
         return render(request, 'records/record_create.html', {
             'subdomain': subdomain,
             'form': RecordForm(initial={
-                'name': request.GET.get('name'),
-                'ttl': request.GET.get('ttl'),
-                'r_type': request.GET.get('r_type'),
-                'data': request.GET.get('data')
+                'name': subdomain.name,
             })
         })
     elif request.method == 'POST':
