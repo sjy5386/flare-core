@@ -9,6 +9,7 @@ from django.views.generic import ListView, CreateView, DetailView, UpdateView, D
 from domains.models import Domain
 from .forms import SubdomainForm, SubdomainSearchForm, SubdomainWhoisForm, SubdomainContactForm, RecordForm
 from .models import Subdomain
+from .providers import BaseProvider
 from .types import Record
 
 
@@ -173,14 +174,6 @@ class RecordMixin:
         return self.record_id_kwarg_name
 
 
-class BaseRecordListView(RecordMixin, ListView):
-    def get_queryset(self):
-        subdomain_id = self.kwargs[self.get_subdomain_id_kwarg_name()]
-        subdomain = get_object_or_404(Subdomain, id=subdomain_id, user=self.request.user)
-        records = self.get_provider().list_records(subdomain)
-        return records
-
-
 class BaseRecordCreateView(RecordMixin, CreateView):
     form_class = RecordForm
 
@@ -231,3 +224,15 @@ class BaseRecordDeleteView(RecordMixin, DeleteView):
         subdomain_id = self.kwargs[self.get_subdomain_id_kwarg_name()]
         subdomain = get_object_or_404(Subdomain, id=subdomain_id, user=self.request.user)
         return self.get_provider().retrieve_record(subdomain, record_id)
+
+
+@login_required
+@require_GET
+def list_records(request, subdomain_id):
+    provider = BaseProvider()
+    subdomain = get_object_or_404(Subdomain, id=subdomain_id, user=request.user)
+    records = provider.list_records(subdomain)
+    return render(request, '', {
+        'subdomain': subdomain,
+        'records': records
+    })

@@ -1,0 +1,26 @@
+{% extends 'common/base.html' %}
+{% block content %}
+    <h3>Records {{ subdomain }}</h3>
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">Identifier</th>
+            <th scope="col">Name</th>
+            <th scope="col">TTL</th>
+            <th scope="col">Type</th>
+            <th scope="col">Data</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for record in records %}
+            <tr>
+                <td>{{ record.identifier }}</td>
+                <td>{{ record.name }}</td>
+                <td>{{ record.ttl }}</td>
+                <td>{{ record.type }}</td>
+                <td>{{ record.data }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

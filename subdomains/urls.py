@@ -11,4 +11,6 @@ urlpatterns = [
     path('<int:id>/', views.SubdomainDetailView.as_view(), name='subdomain_detail'),
     path('<int:id>/update/', views.SubdomainUpdateView.as_view(), name='subdomain_update'),
     path('<int:id>/delete/', views.SubdomainDeleteView.as_view(), name='subdomain_delete'),
+
+    path('<int:subdomain_id>/records/', views.list_records, name='record_list'),
 ]
