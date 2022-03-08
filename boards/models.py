@@ -32,6 +32,8 @@ class Post(models.Model):
 
     views = models.PositiveIntegerField(default=0)
 
+    ip_address = models.GenericIPAddressField(null=True)
+
     def __str__(self):
         return f'{self.title} 🔒' if self.is_private else self.title
 
@@ -45,6 +47,8 @@ class Comment(models.Model):
 
     content = models.TextField()
     is_private = models.BooleanField(default=False)
+
+    ip_address = models.GenericIPAddressField(null=True)
 
     def __str__(self):
         return f'{self.content} 🔒' if self.is_private else self.content
