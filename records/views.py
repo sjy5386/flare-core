@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.forms import Form
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.views.decorators.http import require_GET
 
@@ -40,7 +40,7 @@ def create_record(request, subdomain_id):
         data = request.POST['data']
         record = Record(name, ttl, r_type, data)
         provider.create_record(subdomain, record)
-        return reverse('record_list', subdomain_id)
+        return redirect(reverse('record_list', kwargs={'subdomain_id': subdomain_id}))
 
 
 @login_required
@@ -78,7 +78,7 @@ def update_record(request, subdomain_id, identifier):
         data = request.POST['data']
         record = Record(name, ttl, r_type, data)
         provider.update_record(subdomain, identifier, record)
-        return reverse('record_list', subdomain_id)
+        return redirect(reverse('record_list', kwargs={'subdomain_id': subdomain_id}))
 
 
 @login_required
@@ -94,4 +94,4 @@ def delete_record(request, subdomain_id, identifier):
         })
     elif request.method == 'POST':
         provider.delete_record(subdomain, identifier)
-        return reverse('record_list', subdomain_id)
+        return redirect(reverse('record_list', kwargs={'subdomain_id': subdomain_id}))
