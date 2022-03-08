@@ -221,7 +221,7 @@ def create_record(request, subdomain_id):
             'form': RecordForm(initial={
                 'name': request.GET.get('name'),
                 'ttl': request.GET.get('ttl'),
-                'record_type': request.GET.get('record_type'),
+                'r_type': request.GET.get('r_type'),
                 'data': request.GET.get('data')
             })
         })
@@ -229,7 +229,7 @@ def create_record(request, subdomain_id):
         provider = BaseProvider()
         name = request.POST['name']
         ttl = request.POST['ttl']
-        r_type = request.POST['record_type']
+        r_type = request.POST['r_type']
         data = request.POST['data']
         record = Record(name, ttl, r_type, data)
         provider.create_record(subdomain, record)
