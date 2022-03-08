@@ -39,6 +39,12 @@ class BaseProvider:
             record = Record(name=r[0], ttl=int(r[1]), r_type=r[3], data=' '.join(r[4:]))
             self.create_record(subdomain, record)
 
+    def provider_record_object_to_record_object(self, provider_record_object) -> Record:
+        pass
+
+    def record_object_to_provider_record_object(self, record_object: Record):
+        pass
+
 
 class DigitalOceanProvider(BaseProvider):
     token = os.environ.get('DIGITALOCEAN_TOKEN')
