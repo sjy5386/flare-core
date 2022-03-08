@@ -1,21 +1,27 @@
-from typing import Tuple
+from typing import Set, Tuple
 
 
 class Record:
+    identifier = None
     name: str
     ttl: int
-    record_class: str = 'IN'
-    record_type: str
+    r_class: str = 'IN'
+    r_type: str
     data: str
 
     def __init__(self, name: str, ttl: int, record_type: str, data: str):
         self.name = name
         self.ttl = ttl
-        self.record_type = record_type
+        if record_type in self.get_available_types():
+            self.r_type = record_type
         self.data = data
 
     def __str__(self):
-        return f'{self.name} {self.ttl} {self.record_class} {self.record_type} {self.data}'
+        return f'{self.name} {self.ttl} {self.r_class} {self.r_type} {self.data}'
+
+    @staticmethod
+    def get_available_types() -> Set[str]:
+        return {'A', 'NS', 'CNAME', 'MX', 'TXT', 'AAAA', 'SRV'}
 
 
 class ARecord(Record):  # a host address

@@ -55,7 +55,7 @@ class DigitalOceanProvider(BaseProvider):
         new_record = domain.create_new_domain_record(
             name=record.name,
             ttl=record.ttl,
-            type=record.record_type,
+            type=record.r_type,
             data=record.data
         )
         record.id = new_record.id
@@ -77,7 +77,7 @@ class DigitalOceanProvider(BaseProvider):
             if r.id == identifier:
                 r.name = record.name
                 r.ttl = record.ttl
-                r.type = record.record_type
+                r.type = record.r_type
                 r.data = record.data
         return record
 
