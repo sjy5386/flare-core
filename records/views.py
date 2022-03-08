@@ -6,14 +6,14 @@ from django.views.decorators.http import require_GET
 
 from subdomains.models import Subdomain
 from .forms import RecordForm
-from .providers import BaseProvider
+from .providers import PROVIDER_CLASS
 from .types import Record
 
 
 @login_required
 @require_GET
 def list_records(request, subdomain_id):
-    provider = BaseProvider()
+    provider = PROVIDER_CLASS()
     subdomain = get_object_or_404(Subdomain, id=subdomain_id, user=request.user)
     records = provider.list_records(subdomain)
     return render(request, 'subdomains/record_list.html', {
@@ -36,7 +36,7 @@ def create_record(request, subdomain_id):
             })
         })
     elif request.method == 'POST':
-        provider = BaseProvider()
+        provider = PROVIDER_CLASS()
         name = request.POST['name']
         ttl = request.POST['ttl']
         r_type = request.POST['r_type']
@@ -49,7 +49,7 @@ def create_record(request, subdomain_id):
 @login_required
 @require_GET
 def retrieve_record(request, subdomain_id, identifier):
-    provider = BaseProvider()
+    provider = PROVIDER_CLASS()
     subdomain = get_object_or_404(Subdomain, id=subdomain_id, user=request.user)
     record = provider.retrieve_record(subdomain, identifier)
     return render(request, 'subdomains/record_detail.html', {
@@ -60,7 +60,7 @@ def retrieve_record(request, subdomain_id, identifier):
 
 @login_required
 def update_record(request, subdomain_id, identifier):
-    provider = BaseProvider()
+    provider = PROVIDER_CLASS()
     subdomain = get_object_or_404(Subdomain, id=subdomain_id, user=request.user)
     if request.method == 'GET':
         record = provider.retrieve_record(subdomain, identifier)
@@ -86,7 +86,7 @@ def update_record(request, subdomain_id, identifier):
 
 @login_required
 def delete_record(request, subdomain_id, identifier):
-    provider = BaseProvider()
+    provider = PROVIDER_CLASS()
     subdomain = get_object_or_404(Subdomain, id=subdomain_id, user=request.user)
     if request.method == 'GET':
         record = provider.retrieve_record(subdomain, identifier)

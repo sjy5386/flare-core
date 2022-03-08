@@ -1,3 +1,4 @@
+import os
 from typing import List
 
 import digitalocean
@@ -40,7 +41,7 @@ class BaseProvider:
 
 
 class DigitalOceanProvider(BaseProvider):
-    token = ''
+    token = os.environ.get('DIGITALOCEAN_TOKEN')
 
     def list_records(self, subdomain: Subdomain) -> List[Record]:
         domain = digitalocean.Domain(token=self.token, name=subdomain.domain.name)
@@ -87,3 +88,6 @@ class DigitalOceanProvider(BaseProvider):
         for r in records:
             if r.id == identifier and r.name.endswith(subdomain.name):
                 r.destroy()
+
+
+PROVIDER_CLASS = DigitalOceanProvider
