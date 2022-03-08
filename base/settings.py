@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'boards.apps.BoardsConfig',
     'contacts.apps.ContactsConfig',
     'domains.apps.DomainsConfig',
+    'records.apps.RecordsConfig',
     'shorturls.apps.ShorturlsConfig',
     'subdomains.apps.SubdomainsConfig',
 ]
