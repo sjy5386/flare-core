@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.core.mail import EmailMessage
+from django.forms import Form
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
@@ -154,34 +155,6 @@ class SubdomainDeleteView(DeleteView):
         return get_object_or_404(Subdomain, id=self.kwargs['id'], user=self.request.user)
 
 
-class RecordMixin:
-    provider_class = None
-    subdomain_id_kwarg_name = 'subdomain_id'
-    record_id_kwarg_name = 'id'
-
-    def get_provider_class(self):
-        return self.provider_class
-
-    def get_provider(self, provider_class=None):
-        if provider_class is None:
-            provider_class = self.get_provider_class()
-        return provider_class()
-
-    def get_subdomain_id_kwarg_name(self):
-        return self.subdomain_id_kwarg_name
-
-    def get_record_id_kwarg_name(self):
-        return self.record_id_kwarg_name
-
-
-class BaseRecordDeleteView(RecordMixin, DeleteView):
-    def get_object(self, queryset=None):
-        record_id = self.kwargs[self.get_record_id_kwarg_name()]
-        subdomain_id = self.kwargs[self.get_subdomain_id_kwarg_name()]
-        subdomain = get_object_or_404(Subdomain, id=subdomain_id, user=self.request.user)
-        return self.get_provider().retrieve_record(subdomain, record_id)
-
-
 @login_required
 @require_GET
 def list_records(request, subdomain_id):
@@ -253,4 +226,20 @@ def update_record(request, subdomain_id, identifier):
         data = request.POST['data']
         record = Record(name, ttl, r_type, data)
         provider.update_record(subdomain, identifier, record)
+        return reverse('record_list', subdomain_id)
+
+
+@login_required
+def delete_record(request, subdomain_id, identifier):
+    provider = BaseProvider()
+    subdomain = get_object_or_404(Subdomain, id=subdomain_id, user=request.user)
+    if request.method == 'GET':
+        record = provider.retrieve_record(subdomain, identifier)
+        return render(request, 'subdomains/record_delete.html', {
+            'subdomain': subdomain,
+            'record': record,
+            'form': Form()
+        })
+    elif request.method == 'POST':
+        provider.delete_record(subdomain, identifier)
         return reverse('record_list', subdomain_id)

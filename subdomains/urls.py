@@ -16,4 +16,5 @@ urlpatterns = [
     path('<int:subdomain_id>/records/create/', views.create_record, name='record_create'),
     path('<int:subdomain_id>/records/<str:identifier>/', views.retrieve_record, name='record_detail'),
     path('<int:subdomain_id>/records/<str:identifier>/update/', views.update_record, name='record_update'),
+    path('<int:subdomain_id>/records/<str:identifier>/delete/', views.delete_record, name='record_delete'),
 ]
