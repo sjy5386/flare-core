@@ -65,7 +65,7 @@ class DigitalOceanProvider(BaseProvider):
             type=record.r_type,
             data=record.data
         )
-        record.identifier = new_record.id
+        record.identifier = new_record['domain_record']['id']
         return record
 
     def retrieve_record(self, subdomain: Subdomain, identifier) -> Record:
@@ -88,6 +88,7 @@ class DigitalOceanProvider(BaseProvider):
                 r.ttl = record.ttl
                 r.type = record.r_type
                 r.data = record.data
+                r.save()
         return record
 
     def delete_record(self, subdomain: Subdomain, identifier):
