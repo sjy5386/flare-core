@@ -174,14 +174,6 @@ class RecordMixin:
         return self.record_id_kwarg_name
 
 
-class BaseRecordDetailView(RecordMixin, DetailView):
-    def get_object(self, queryset=None):
-        record_id = self.kwargs[self.get_record_id_kwarg_name()]
-        subdomain_id = self.kwargs[self.get_subdomain_id_kwarg_name()]
-        subdomain = get_object_or_404(Subdomain, id=subdomain_id, user=self.request.user)
-        return self.get_provider().retrieve_record(subdomain, record_id)
-
-
 class BaseRecordUpdateView(RecordMixin, UpdateView):
     form_class = RecordForm
 
@@ -234,3 +226,15 @@ def create_record(request, subdomain_id):
         record = Record(name, ttl, r_type, data)
         provider.create_record(subdomain, record)
         return reverse('record_list', subdomain_id)
+
+
+@login_required
+@require_GET
+def retrieve_record(request, subdomain_id, identifier):
+    provider = BaseProvider()
+    subdomain = get_object_or_404(Subdomain, id=subdomain_id, user=request.user)
+    record = provider.retrieve_record(subdomain, identifier)
+    return render(request, 'subdomains/record_detail.html', {
+        'subdomain': subdomain,
+        'record': record
+    })
