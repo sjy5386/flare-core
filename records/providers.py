@@ -52,7 +52,7 @@ class DigitalOceanProvider(BaseProvider):
     def list_records(self, subdomain: Subdomain) -> List[Record]:
         domain = digitalocean.Domain(token=self.token, name=subdomain.domain.name)
         records = domain.get_records()
-        return list(map(lambda e: Record(name=e.name, ttl=e.ttl, r_type=e.type, data=e.data),
+        return list(map(self.provider_record_object_to_record_object,
                         filter(lambda e: e.name.endswith(subdomain.name), records)))
 
     def create_record(self, subdomain: Subdomain, record: Record) -> Record:
@@ -70,15 +70,17 @@ class DigitalOceanProvider(BaseProvider):
 
     def retrieve_record(self, subdomain: Subdomain, identifier) -> Record:
         domain = digitalocean.Domain(token=self.token, name=subdomain.domain.name)
+        identifier = int(identifier)
         records = domain.get_records()
         for r in records:
             if r.id == identifier and r.name.endswith(subdomain.name):
-                return Record(name=r.name, ttl=r.ttl, r_type=r.type, data=r.data)
+                return self.provider_record_object_to_record_object(r)
 
     def update_record(self, subdomain: Subdomain, identifier, record: Record) -> Record:
         if not record.name.endswith(subdomain.name):
             return record
         domain = digitalocean.Domain(token=self.token, name=subdomain.domain.name)
+        identifier = int(identifier)
         records = domain.get_records()
         for r in records:
             if r.id == identifier:
@@ -90,10 +92,17 @@ class DigitalOceanProvider(BaseProvider):
 
     def delete_record(self, subdomain: Subdomain, identifier):
         domain = digitalocean.Domain(token=self.token, name=subdomain.domain.name)
+        identifier = int(identifier)
         records = domain.get_records()
         for r in records:
             if r.id == identifier and r.name.endswith(subdomain.name):
                 r.destroy()
+
+    def provider_record_object_to_record_object(self, provider_record_object) -> Record:
+        record = Record(provider_record_object.name, provider_record_object.ttl, provider_record_object.type,
+                        provider_record_object.data)
+        record.identifier = provider_record_object.id
+        return record
 
 
 PROVIDER_CLASS = DigitalOceanProvider
