@@ -174,16 +174,6 @@ class RecordMixin:
         return self.record_id_kwarg_name
 
 
-class BaseRecordUpdateView(RecordMixin, UpdateView):
-    form_class = RecordForm
-
-    def get_object(self, queryset=None):
-        record_id = self.kwargs[self.get_record_id_kwarg_name()]
-        subdomain_id = self.kwargs[self.get_subdomain_id_kwarg_name()]
-        subdomain = get_object_or_404(Subdomain, id=subdomain_id, user=self.request.user)
-        return self.get_provider().retrieve_record(subdomain, record_id)
-
-
 class BaseRecordDeleteView(RecordMixin, DeleteView):
     def get_object(self, queryset=None):
         record_id = self.kwargs[self.get_record_id_kwarg_name()]
@@ -238,3 +228,29 @@ def retrieve_record(request, subdomain_id, identifier):
         'subdomain': subdomain,
         'record': record
     })
+
+
+@login_required
+def update_record(request, subdomain_id, identifier):
+    provider = BaseProvider()
+    subdomain = get_object_or_404(Subdomain, id=subdomain_id, user=request.user)
+    if request.method == 'GET':
+        record = provider.retrieve_record(subdomain, identifier)
+        return render(request, 'subdomains/record_update.html', {
+            'subdomain': subdomain,
+            'record': record,
+            'form': RecordForm(initial={
+                'name': record.name,
+                'ttl': record.ttl,
+                'r_type': record.r_type,
+                'data': record.data
+            })
+        })
+    elif request.method == 'POST':
+        name = request.POST['name']
+        ttl = request.POST['ttl']
+        r_type = request.POST['r_type']
+        data = request.POST['data']
+        record = Record(name, ttl, r_type, data)
+        provider.update_record(subdomain, identifier, record)
+        return reverse('record_list', subdomain_id)
