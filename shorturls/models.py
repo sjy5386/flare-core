@@ -27,3 +27,13 @@ class ShortUrl(models.Model):
 
     def get_short_url(self):
         return f'https://{self.domain.name}/{self.short}'
+
+
+class BlockedDomain(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    domain = models.CharField(max_length=255, unique=True)
+
+    def __str__(self):
+        return self.domain
