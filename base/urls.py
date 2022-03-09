@@ -21,5 +21,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('boards/', include('boards.urls')),
     path('contacts/', include('contacts.urls')),
+    path('shorturls/', include('shorturls.urls')),
     path('subdomains/', include('subdomains.urls')),
 ]
