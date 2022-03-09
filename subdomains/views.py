@@ -111,8 +111,13 @@ class SubdomainContactView(FormView):
 @method_decorator(login_required, name='dispatch')
 class SubdomainCreateView(CreateView):
     template_name = 'subdomains/create.html'
-    form_class = SubdomainForm
     success_url = reverse_lazy('subdomain_list')
+    form_class = SubdomainForm
+
+    def get_form_kwargs(self):
+        kwargs = super(SubdomainCreateView, self).get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
 
     def get_initial(self):
         return {
@@ -141,6 +146,11 @@ class SubdomainUpdateView(UpdateView):
     template_name = 'subdomains/update.html'
     form_class = SubdomainForm
     success_url = reverse_lazy('subdomain_list')
+
+    def get_form_kwargs(self):
+        kwargs = super(SubdomainUpdateView, self).get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
 
     def get_object(self, queryset=None):
         return get_object_or_404(Subdomain, id=self.kwargs['id'], user=self.request.user)

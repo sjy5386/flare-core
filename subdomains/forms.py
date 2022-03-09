@@ -1,5 +1,6 @@
 from django import forms
 
+from contacts.models import Contact
 from domains.models import Domain
 from .models import Subdomain
 
@@ -27,6 +28,14 @@ class SubdomainContactForm(forms.Form):
 
 
 class SubdomainForm(forms.ModelForm):
+    def __init__(self, user, *args, **kwargs):
+        super(SubdomainForm, self).__init__(*args, **kwargs)
+        contact_queryset = Contact.objects.filter(user=user)
+        self.fields['registrant'] = forms.ModelChoiceField(queryset=contact_queryset)
+        self.fields['admin'] = forms.ModelChoiceField(queryset=contact_queryset)
+        self.fields['tech'] = forms.ModelChoiceField(queryset=contact_queryset)
+        self.fields['billing'] = forms.ModelChoiceField(queryset=contact_queryset)
+
     class Meta:
         model = Subdomain
-        exclude = ['created_at', 'updated_at', 'user', 'expiry', 'status']
+        fields = ['name', 'domain', 'is_private']
