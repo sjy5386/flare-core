@@ -1,3 +1,5 @@
+import datetime
+
 from django.contrib.auth.decorators import login_required
 from django.core.mail import EmailMessage
 from django.shortcuts import render, get_object_or_404
@@ -121,6 +123,7 @@ class SubdomainCreateView(CreateView):
     def form_valid(self, form):
         subdomain = form.save(commit=False)
         subdomain.user = self.request.user
+        subdomain.expiry = datetime.datetime.now() + datetime.timedelta(days=90)
         subdomain.save()
         return super(SubdomainCreateView, self).form_valid(form)
 
@@ -141,6 +144,12 @@ class SubdomainUpdateView(UpdateView):
 
     def get_object(self, queryset=None):
         return get_object_or_404(Subdomain, id=self.kwargs['id'], user=self.request.user)
+
+    def form_valid(self, form):
+        subdomain = form.save(commit=False)
+        subdomain.expiry = datetime.datetime.now() + datetime.timedelta(days=90)
+        subdomain.save()
+        return super(SubdomainUpdateView, self).form_valid(form)
 
 
 @method_decorator(login_required, name='dispatch')

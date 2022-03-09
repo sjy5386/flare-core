@@ -1,5 +1,3 @@
-import datetime
-
 from django.db import models
 
 from contacts.models import Contact
@@ -15,7 +13,7 @@ class Subdomain(models.Model):
     name = models.CharField(max_length=63)
     domain = models.ForeignKey(Domain, on_delete=models.RESTRICT)
 
-    expiry = models.DateTimeField(default=datetime.datetime.now() + datetime.timedelta(days=90))
+    expiry = models.DateTimeField()
 
     class StatusChoices(models.TextChoices):
         ADD_PERIOD = 'addPeriod', 'add period'
