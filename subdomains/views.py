@@ -10,7 +10,7 @@ from django.views.generic import ListView, CreateView, DetailView, UpdateView, D
 
 from domains.models import Domain
 from .forms import SubdomainForm, SubdomainSearchForm, SubdomainWhoisForm, SubdomainContactForm
-from .models import Subdomain
+from .models import Subdomain, ReservedName
 
 
 @method_decorator(login_required, name='dispatch')
@@ -29,7 +29,8 @@ def search(request):
     results = {}
     for domain_id in domain:
         subdomain = q + '.' + Domain.objects.get(id=domain_id).name
-        availability = len(Subdomain.objects.filter(name=q, domain_id=domain_id)) == 0
+        availability = len(Subdomain.objects.filter(name=q, domain_id=domain_id)) == 0 and len(
+            ReservedName.objects.filter(name=q)) == 0
         if availability or not hide_unavailable:
             results[subdomain] = availability
     return render(request, 'subdomains/search.html', {
@@ -127,9 +128,10 @@ class SubdomainCreateView(CreateView):
 
     def form_valid(self, form):
         subdomain = form.save(commit=False)
-        subdomain.user = self.request.user
-        subdomain.expiry = datetime.datetime.now() + datetime.timedelta(days=90)
-        subdomain.save()
+        if len(ReservedName.objects.filter(name=subdomain.name)) == 0:
+            subdomain.user = self.request.user
+            subdomain.expiry = datetime.datetime.now() + datetime.timedelta(days=90)
+            subdomain.save()
         return super(SubdomainCreateView, self).form_valid(form)
 
 
