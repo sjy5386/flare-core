@@ -5,7 +5,7 @@ from django.urls import reverse
 from django.views.decorators.http import require_GET
 
 from subdomains.models import Subdomain
-from .forms import RecordForm
+from .forms import RecordForm, ZoneImportForm
 from .providers import PROVIDER_CLASS
 from .types import Record
 
@@ -107,3 +107,18 @@ def export_zone(request, subdomain_id):
         'subdomain': subdomain,
         'zone': zone
     })
+
+
+@login_required
+def import_zone(request, subdomain_id):
+    subdomain = get_object_or_404(Subdomain, id=subdomain_id, user=request.user)
+    if request.method == 'GET':
+        return render(request, 'records/zonm_import.html', {
+            'subdomain': subdomain,
+            'form': ZoneImportForm()
+        })
+    elif request.method == 'POST':
+        provider = PROVIDER_CLASS()
+        zone = request.POST['zone']
+        provider.import_zone(subdomain, zone)
+        return redirect(reverse('record_list', kwargs={'subdomain_id': subdomain_id}))
