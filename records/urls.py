@@ -8,4 +8,5 @@ urlpatterns = [
     path('<str:identifier>/', views.retrieve_record, name='record_detail'),
     path('<str:identifier>/update/', views.update_record, name='record_update'),
     path('<str:identifier>/delete/', views.delete_record, name='record_delete'),
+    path('export/', views.export_zone, name='zone_export'),
 ]

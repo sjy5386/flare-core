@@ -95,3 +95,15 @@ def delete_record(request, subdomain_id, identifier):
     elif request.method == 'POST':
         provider.delete_record(subdomain, identifier)
         return redirect(reverse('record_list', kwargs={'subdomain_id': subdomain_id}))
+
+
+@login_required
+@require_GET
+def export_zone(request, subdomain_id):
+    provider = PROVIDER_CLASS()
+    subdomain = get_object_or_404(Subdomain, id=subdomain_id, user=request.user)
+    zone = provider.export_zone(subdomain)
+    return render(request, 'records/zone_export.html', {
+        'subdomain': subdomain,
+        'zone': zone
+    })
