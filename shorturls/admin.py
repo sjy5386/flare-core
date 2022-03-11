@@ -1,5 +1,6 @@
 from django.contrib import admin
 
-from shorturls.models import ShortUrl
+from .models import ShortUrl, BlockedDomain
 
 admin.site.register(ShortUrl)
+admin.site.register(BlockedDomain)
