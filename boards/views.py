@@ -32,6 +32,7 @@ class PostCreateView(CreateView):
         post = form.save(commit=False)
         post.board = get_object_or_404(Board, name=self.kwargs['board_name'])
         post.user = self.request.user
+        post.ip_address = self.request.META['REMOTE_ADDR']
         post.save()
         return super(PostCreateView, self).form_valid(form)
 
@@ -61,6 +62,7 @@ class PostDetailView(DetailView, FormView):
         comment = form.save(commit=False)
         comment.post = get_object_or_404(Post, id=self.kwargs['id'])
         comment.user = self.request.user
+        comment.ip_address = self.request.META['REMOTE_ADDR']
         comment.save()
         return super(PostDetailView, self).form_valid(form)
 
