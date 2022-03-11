@@ -1,6 +1,6 @@
 from django.db import models
 
-from base.settings import AUTH_USER_MODEL
+from base.settings.common import AUTH_USER_MODEL
 
 
 class Board(models.Model):
