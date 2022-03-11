@@ -7,13 +7,8 @@ class Board(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    name = models.CharField(max_length=63)
+    name = models.CharField(max_length=63, unique=True)
     title = models.CharField(max_length=255)
-
-    class Meta:
-        indexes = [
-            models.Index(fields=['name']),
-        ]
 
     def __str__(self):
         return self.title
