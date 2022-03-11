@@ -2,7 +2,7 @@
 {% block content %}
     <div class="d-flex justify-content-between mb-3">
         <h3>{{ board.title }}</h3>
-        <a class="btn btn-primary" href="{% url 'post_create' %}">Create</a>
+        <a class="btn btn-primary" href="{% url 'post_create' board.name %}">Create</a>
     </div>
     <table class="table">
         <thead>
