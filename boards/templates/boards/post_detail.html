@@ -2,19 +2,42 @@
 {% load django_bootstrap5 %}
 {% block content %}
     <h3>{{ board.title }}</h3>
-    <div>
-        <h4>{{ object }}</h4>
-        <p>{{ object.user }}</p>
-        <p>{{ object.created_at }}</p>
-        <p>{{ object.views }} views</p>
-        <p>{{ object.content }}</p>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">{{ object }}</h5>
+            <h6 class="card-subtitle mb-2 text-muted">{{ object.user }}</h6>
+            <hr>
+            <p>{{ object.content }}</p>
+        </div>
+        <div class="card-footer text-muted d-flex justify-content-between">
+            <div>{{ object.created_at }}</div>
+            <div><b>{{ object.views }}</b> views</div>
+        </div>
     </div>
+    <div class="mt-1 d-flex justify-content-between">
+        <div class="mt-2"><b>{{ comments | length }}</b> comments</div>
+        <div>
+            <a class="btn btn-primary" href="{% url 'post_list' board.name %}">List</a>
+            {% if object.user == user %}
+                <a class="btn btn-secondary" href="{% url 'post_update' board.name object.id %}">Edit</a>
+                <a class="btn btn-danger" href="{% url 'post_delete' board.name object.id %}">Delete</a>
+            {% endif %}
+        </div>
+    </div>
+    <hr>
     <div>
         {% for comment in comments %}
-            <div>
-                <p>{{ comment.user }}</p>
-                <p>{{ comment.created_at }}</p>
-                <p>{{ comment.content }}</p>
+            <div class="card my-2">
+                <div class="card-body">
+                    <h6 class="card-subtitle">{{ comment.user }}{% if comment.is_private %} 🔒{% endif %}</h6>
+                    <hr>
+                    {% if not comment.is_private or comment.user == user %}
+                        <p>{{ comment.content }}</p>
+                    {% endif %}
+                </div>
+                <div class="card-footer text-muted">
+                    {{ comment.created_at }}
+                </div>
             </div>
         {% endfor %}
     </div>
@@ -23,7 +46,4 @@
         {% bootstrap_form form %}
         {% bootstrap_button button_type="submit" content="Write" %}
     </form>
-    <a class="btn btn-primary" href="{% url 'post_list' board.name %}">List</a>
-    <a class="btn btn-secondary" href="{% url 'post_update' board.name object.id %}">Edit</a>
-    <a class="btn btn-danger" href="{% url 'post_delete' board.name object.id %}">Delete</a>
 {% endblock %}
