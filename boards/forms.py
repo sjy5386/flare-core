@@ -12,4 +12,4 @@ class PostForm(forms.ModelForm):
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
-        exclude = ['created_at', 'updated_at', 'post', 'user']
+        fields = ['content', 'is_private']
