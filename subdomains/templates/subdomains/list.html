@@ -7,13 +7,17 @@
     <table class="table">
         <thead>
         <tr>
+            <th scope="col">ID</th>
             <th scope="col">Name</th>
+            <th scope="col">Records</th>
         </tr>
         </thead>
         <tbody>
         {% for object in object_list %}
             <tr>
-                <td>{{ object }}</td>
+                <td><a href="{% url 'subdomain_detail' object.id %}">{{ object.id }}</a></td>
+                <td><a href="http://{{ object }}">{{ object }}</a></td>
+                <td><a href="{% url 'record_list' object.id %}">0</a></td>
             </tr>
         {% endfor %}
         </tbody>
