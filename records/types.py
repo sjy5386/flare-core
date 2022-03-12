@@ -1,4 +1,4 @@
-from typing import Set, Tuple
+from typing import Dict, Tuple
 
 
 class Record:
@@ -12,7 +12,7 @@ class Record:
     def __init__(self, name: str, ttl: int, r_type: str, data: str):
         self.name = name
         self.ttl = ttl
-        if r_type in self.get_available_types():
+        if r_type in self.get_available_types().keys():
             self.r_type = r_type
         self.data = data
 
@@ -20,8 +20,16 @@ class Record:
         return f'{self.name} {self.ttl} {self.r_class} {self.r_type} {self.data}'
 
     @staticmethod
-    def get_available_types() -> Set[str]:
-        return {'A', 'NS', 'CNAME', 'MX', 'TXT', 'AAAA', 'SRV'}
+    def get_available_types() -> Dict[str, str]:
+        return {
+            'A': 'a host address',
+            'NS': 'an authoritative name server',
+            'CNAME': 'the canonical name for an alias',
+            'MX': 'mail exchange',
+            'TXT': 'text strings',
+            'AAAA': 'IP6 Address',
+            'SRV': 'Server Selection'
+        }
 
 
 class ARecord(Record):  # a host address
