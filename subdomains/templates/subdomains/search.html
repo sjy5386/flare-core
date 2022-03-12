@@ -10,14 +10,23 @@
         <thead>
         <tr>
             <th scope="col">Subdomain</th>
-            <th scope="col">Availability</th>
+            <th scope="col">Is Available</th>
+            <th scope="col">Actions</th>
         </tr>
         </thead>
         <tbody>
-        {% for subdomain, availability in results %}
+        {% for subdomain, is_available in results %}
             <tr>
-                <td>{{ subdomain }}</td>
-                <td>{{ availability }}</td>
+                <td><a href="//{{ subdomain }}">{{ subdomain }}</a></td>
+                <td class="{% if is_available %}text-success{% else %}text-danger{% endif %}">{{ is_available }}</td>
+                <td>
+                    {% if is_available %}
+                        <a class="btn btn-primary"
+                           href="{% url 'subdomain_create' %}?name={{ form.q.value }}">Create</a>
+                    {% else %}
+                        <a class="btn btn-info" href="{% url 'subdomain_whois' %}?q={{ subdomain }}">WHOIS</a>
+                    {% endif %}
+                </td>
             </tr>
         {% endfor %}
         </tbody>
