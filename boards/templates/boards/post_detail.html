@@ -1,17 +1,14 @@
 {% extends 'common/base.html' %}
 {% load django_bootstrap5 %}
 {% block content %}
-    <h3>{{ board.title }}</h3>
+    <h3>{{ object }}</h3>
     <div class="card">
-        <div class="card-body">
-            <h5 class="card-title">{{ object }}</h5>
-            <h6 class="card-subtitle mb-2 text-muted">{{ object.user }}</h6>
-            <hr>
-            <p>{{ object.content }}</p>
+        <div class="card-header d-flex justify-content-between">
+            <div>{{ object.user }} <span class="text-muted">posted on {{ object.created_at }}</span></div>
+            <div class="text-muted"><b>{{ object.views }}</b> views</div>
         </div>
-        <div class="card-footer text-muted d-flex justify-content-between">
-            <div>{{ object.created_at }}</div>
-            <div><b>{{ object.views }}</b> views</div>
+        <div class="card-body">
+            <p>{{ object.content }}</p>
         </div>
     </div>
     <div class="mt-1 d-flex justify-content-between">
@@ -27,16 +24,15 @@
     <hr>
     <div>
         {% for comment in comments %}
-            <div class="card my-2">
+            <div class="card my-3">
+                <div class="card-header d-flex justify-content-between">
+                    <div>{{ comment.user }} <span class="text-muted">commented on {{ comment.created_at }}</span></div>
+                    <div>{% if comment.is_private %} 🔒{% endif %}</div>
+                </div>
                 <div class="card-body">
-                    <h6 class="card-subtitle">{{ comment.user }}{% if comment.is_private %} 🔒{% endif %}</h6>
-                    <hr>
                     {% if not comment.is_private or comment.user == user %}
                         <p>{{ comment.content }}</p>
                     {% endif %}
-                </div>
-                <div class="card-footer text-muted">
-                    {{ comment.created_at }}
                 </div>
             </div>
         {% endfor %}
