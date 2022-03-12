@@ -1,4 +1,6 @@
+import base64
 import os
+import random
 
 import requests
 
@@ -8,6 +10,11 @@ from domains.models import Domain
 class BaseProvider:
     def create_short_url(self, domain: Domain, long_url: str) -> str:
         pass
+
+
+class MockProvider(BaseProvider):
+    def create_short_url(self, domain: Domain, long_url: str) -> str:
+        return base64.urlsafe_b64encode(long_url.encode()).decode()[:random.randint(4, 8)]
 
 
 class FirebaseDynamicLinksProvider(BaseProvider):
