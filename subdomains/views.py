@@ -26,20 +26,19 @@ def search(request):
     q = request.GET.get('q', '')
     domain = request.GET.getlist('domain', list(map(lambda e: e.id, Domain.objects.filter(is_active=True))))
     hide_unavailable = (lambda x: x == 'on')(request.GET.get('hide_unavailable', 'off'))
-    results = {}
+    results = []
     for domain_id in domain:
         d = Domain.objects.get(id=domain_id)
-        subdomain = q.lower() + '.' + d.name
         is_available = Subdomain.is_available(name=q, domain=d)
         if is_available or not hide_unavailable:
-            results[subdomain] = is_available
+            results.append((q.lower, d, is_available))
     return render(request, 'subdomains/search.html', {
         'form': SubdomainSearchForm(initial={
             'q': q,
             'domain': domain,
             'hide_unavailable': hide_unavailable
         }),
-        'results': results.items()
+        'results': results
     })
 
 

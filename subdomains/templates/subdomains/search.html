@@ -15,16 +15,16 @@
         </tr>
         </thead>
         <tbody>
-        {% for subdomain, is_available in results %}
+        {% for name, domain, is_available in results %}
             <tr>
-                <td><a href="//{{ subdomain }}">{{ subdomain }}</a></td>
+                <td><a href="//{{ name }}.{{ domain }}"><strong>{{ name }}</strong>.{{ domain }}</a></td>
                 <td class="{% if is_available %}text-success{% else %}text-danger{% endif %}">{{ is_available }}</td>
                 <td>
                     {% if is_available %}
                         <a class="btn btn-primary"
-                           href="{% url 'subdomain_create' %}?name={{ form.q.value }}">Create</a>
+                           href="{% url 'subdomain_create' %}?name={{ name }}&domain={{ domain.id }}">Create</a>
                     {% else %}
-                        <a class="btn btn-info" href="{% url 'subdomain_whois' %}?q={{ subdomain }}">WHOIS</a>
+                        <a class="btn btn-info" href="{% url 'subdomain_whois' %}?q={{ name }}.{{ domain }}">WHOIS</a>
                     {% endif %}
                 </td>
             </tr>
