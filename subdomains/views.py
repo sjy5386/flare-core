@@ -28,9 +28,9 @@ def search(request):
     hide_unavailable = (lambda x: x == 'on')(request.GET.get('hide_unavailable', 'off'))
     results = {}
     for domain_id in domain:
-        subdomain = q + '.' + Domain.objects.get(id=domain_id).name
-        is_available = len(Subdomain.objects.filter(name=q, domain_id=domain_id)) == 0 and len(
-            ReservedName.objects.filter(name=q)) == 0
+        d = Domain.objects.get(id=domain_id)
+        subdomain = q.lower() + '.' + d.name
+        is_available = Subdomain.is_available(name=q, domain=d)
         if is_available or not hide_unavailable:
             results[subdomain] = is_available
     return render(request, 'subdomains/search.html', {
