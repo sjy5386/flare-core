@@ -115,7 +115,7 @@ def export_zone(request, subdomain_id):
 def import_zone(request, subdomain_id):
     subdomain = get_object_or_404(Subdomain, id=subdomain_id, user=request.user)
     if request.method == 'GET':
-        return render(request, 'records/zonm_import.html', {
+        return render(request, 'records/zone_import.html', {
             'subdomain': subdomain,
             'form': ZoneImportForm()
         })

@@ -2,7 +2,11 @@
 {% block content %}
     <div class="d-flex justify-content-between mb-3">
         <h3>Records {{ subdomain }}</h3>
-        <a class="btn btn-primary" href="{% url 'record_create' subdomain.id %}">Create</a>
+        <div>
+            <a class="btn btn-secondary" href="{% url 'zone_export' subdomain.id %}">Export Zone</a>
+            <a class="btn btn-secondary" href="{% url 'zone_import' subdomain.id %}">Import Zone</a>
+            <a class="btn btn-primary" href="{% url 'record_create' subdomain.id %}">Create</a>
+        </div>
     </div>
     <table class="table">
         <thead>
@@ -12,16 +16,22 @@
             <th scope="col">TTL</th>
             <th scope="col">Type</th>
             <th scope="col">Data</th>
+            <th scope="col">Actions</th>
         </tr>
         </thead>
         <tbody>
         {% for record in records %}
             <tr>
-                <td>{{ record.identifier }}</td>
+                <td><a href="{% url 'record_detail' subdomain.id record.identifier %}">{{ record.identifier }}</a></td>
                 <td>{{ record.name }}</td>
                 <td>{{ record.ttl }}</td>
                 <td>{{ record.r_type }}</td>
                 <td>{{ record.data }}</td>
+                <td>
+                    <a class="btn btn-secondary"
+                       href="{% url 'record_update' subdomain.id record.identifier %}">Edit</a>
+                    <a class="btn btn-danger" href="{% url 'record_delete' subdomain.id record.identifier %}">Delete</a>
+                </td>
             </tr>
         {% endfor %}
         </tbody>
