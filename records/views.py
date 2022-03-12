@@ -16,6 +16,8 @@ def list_records(request, subdomain_id):
     provider = PROVIDER_CLASS()
     subdomain = get_object_or_404(Subdomain, id=subdomain_id, user=request.user)
     records = provider.list_records(subdomain)
+    subdomain.records = len(records)
+    subdomain.save()
     return render(request, 'records/record_list.html', {
         'subdomain': subdomain,
         'records': records
