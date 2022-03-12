@@ -14,8 +14,11 @@ class BoardListView(ListView):
 
 
 class PostListView(ListView):
+    ordering = '-id'
+    paginate_by = 15
+
     def get_queryset(self):
-        return Post.objects.filter(board__name=self.kwargs['board_name'])
+        return Post.objects.filter(board__name=self.kwargs['board_name']).order_by(self.get_ordering())
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super(PostListView, self).get_context_data(**kwargs)
