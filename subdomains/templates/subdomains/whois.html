@@ -10,7 +10,15 @@
         <table class="table">
             <tr>
                 <th scope="row">Subdomain Name</th>
-                <td>{{ object }}</td>
+                <td><a href="//{{ object }}">{{ object }}</a></td>
+            </tr>
+            <tr>
+                <th scope="row">Registrar WHOIS Server</th>
+                <td>whois.subshorts.com</td>
+            </tr>
+            <tr>
+                <th scope="row">Registrar URL</th>
+                <td><a href="https://subshorts.com">https://subshorts.com</a></td>
             </tr>
             <tr>
                 <th scope="row">Updated Date</th>
@@ -25,8 +33,12 @@
                 <td>{{ object.expiry }}</td>
             </tr>
             <tr>
+                <th scope="row">Registrar Abuse Contact Email</th>
+                <td><a href="mailto:abuse@subshorts.com">abuse@subshorts.com</a></td>
+            </tr>
+            <tr>
                 <th scope="row">Status</th>
-                <td>{{ object.status }}</td>
+                <td>ok</td>
             </tr>
             <tr>
                 <th scope="row">Registrant Name</th>
@@ -66,7 +78,9 @@
             </tr>
             <tr>
                 <th scope="row">Registrant Email</th>
-                <td>{{ object.registrant.email }}</td>
+                <td>
+                    <a href="{% url 'subdomain_contact' %}?subdomain={{ object }}&contact=registrant">{{ object.registrant.email }}</a>
+                </td>
             </tr>
             <tr>
                 <th scope="row">Admin Name</th>
@@ -106,7 +120,9 @@
             </tr>
             <tr>
                 <th scope="row">Admin Email</th>
-                <td>{{ object.admin.email }}</td>
+                <td>
+                    <a href="{% url 'subdomain_contact' %}?subdomain={{ object }}&contact=admin">{{ object.admin.email }}</a>
+                </td>
             </tr>
             <tr>
                 <th scope="row">Tech Name</th>
@@ -146,7 +162,9 @@
             </tr>
             <tr>
                 <th scope="row">Tech Email</th>
-                <td>{{ object.tech.email }}</td>
+                <td>
+                    <a href="{% url 'subdomain_contact' %}?subdomain={{ object }}&contact=tech">{{ object.tech.email }}</a>
+                </td>
             </tr>
         </table>
     {% endif %}
