@@ -17,38 +17,6 @@ class Subdomain(models.Model):
 
     expiry = models.DateTimeField()
 
-    class StatusChoices(models.TextChoices):
-        ADD_PERIOD = 'addPeriod', 'add period'
-        AUTO_RENEW_PERIOD = 'autoRenewPeriod', 'auto renew period'
-
-        INACTIVE = 'inactive', 'inactive'
-        OK = 'ok', 'active'
-
-        PENDING_CREATE = 'pendingCreate', 'pending create'
-        PENDING_DELETE = 'pendingDelete', 'pending delete'
-        PENDING_RENEW = 'pendingRenew', 'pending renew'
-        PENDING_RESTORE = 'pendingRestore', 'pending restore'
-        PENDING_TRANSFER = 'pendingTransfer', 'pending transfer'
-        PENDING_UPDATE = 'pendingUpdate', 'pending update'
-
-        REDEMPTION_PERIOD = 'redemptionPeriod', 'redemption period'
-        RENEW_PERIOD = 'renewPeriod', 'renew period'
-        TRANSFER_PERIOD = 'transferPeriod', 'transfer period'
-
-        SERVER_DELETE_PROHIBITED = 'serverDeleteProhibited', 'server delete prohibited'
-        SERVER_HOLD = 'serverHold', 'server hold'
-        SERVER_RENEW_PROHIBITED = 'serverRenewProhibited', 'server renew prohibited'
-        SERVER_TRANSFER_PROHIBITED = 'serverTransferProhibited', 'server transfer prohibited'
-        SERVER_UPDATE_PROHIBITED = 'serverUpdateProhibited', 'server update prohibited'
-
-        CLIENT_DELETE_PROHIBITED = 'clientDeleteProhibited', 'client delete prohibited'
-        CLIENT_HOLD = 'clientHold', 'client hold'
-        CLIENT_RENEW_PROHIBITED = 'clientRenewProhibited', 'client renew prohibited'
-        CLIENT_TRANSFER_PROHIBITED = 'clientTransferProhibited', 'client transfer prohibited'
-        CLIENT_UPDATE_PROHIBITED = 'clientUpdateProhibited', 'client update prohibited'
-
-    status = models.CharField(max_length=31, choices=StatusChoices.choices, default=StatusChoices.OK)
-
     registrant = models.ForeignKey(Contact, on_delete=models.RESTRICT, related_name='registrant_contact')
     admin = models.ForeignKey(Contact, on_delete=models.RESTRICT, related_name='admin_contact')
     tech = models.ForeignKey(Contact, on_delete=models.RESTRICT, related_name='tech_contact')
@@ -81,3 +49,50 @@ class ReservedName(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class SubdomainStatus(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    subdomain = models.ForeignKey(Subdomain, on_delete=models.CASCADE)
+
+    class StatusChoices(models.TextChoices):
+        ADD_PERIOD = 'addPeriod', 'addPeriod'
+        AUTO_RENEW_PERIOD = 'autoRenewPeriod', 'autoRenewPeriod'
+
+        INACTIVE = 'inactive', 'inactive'
+        OK = 'ok', 'ok'
+
+        PENDING_CREATE = 'pendingCreate', 'pendingCreate'
+        PENDING_DELETE = 'pendingDelete', 'pendingDelete'
+        PENDING_RENEW = 'pendingRenew', 'pendingRenew'
+        PENDING_RESTORE = 'pendingRestore', 'pendingRestore'
+        PENDING_TRANSFER = 'pendingTransfer', 'pendingTransfer'
+        PENDING_UPDATE = 'pendingUpdate', 'pendingUpdate'
+
+        REDEMPTION_PERIOD = 'redemptionPeriod', 'redemptionPeriod'
+        RENEW_PERIOD = 'renewPeriod', 'renewPeriod'
+        TRANSFER_PERIOD = 'transferPeriod', 'transferPeriod'
+
+        SERVER_DELETE_PROHIBITED = 'serverDeleteProhibited', 'serverDeleteProhibited'
+        SERVER_HOLD = 'serverHold', 'serverHold'
+        SERVER_RENEW_PROHIBITED = 'serverRenewProhibited', 'serverRenewProhibited'
+        SERVER_TRANSFER_PROHIBITED = 'serverTransferProhibited', 'serverTransferProhibited'
+        SERVER_UPDATE_PROHIBITED = 'serverUpdateProhibited', 'serverUpdateProhibited'
+
+        CLIENT_DELETE_PROHIBITED = 'clientDeleteProhibited', 'clientDeleteProhibited'
+        CLIENT_HOLD = 'clientHold', 'clientHold'
+        CLIENT_RENEW_PROHIBITED = 'clientRenewProhibited', 'clientRenewProhibited'
+        CLIENT_TRANSFER_PROHIBITED = 'clientTransferProhibited', 'clientTransferProhibited'
+        CLIENT_UPDATE_PROHIBITED = 'clientUpdateProhibited', 'clientUpdateProhibited'
+
+    status = models.CharField(max_length=31, choices=StatusChoices.choices, default=StatusChoices.OK)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['subdomain', 'status'], name='unique_subdomain_status')
+        ]
+
+    def __str__(self):
+        return f'{self.subdomain} {self.status}'
