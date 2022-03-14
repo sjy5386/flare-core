@@ -1,6 +1,7 @@
 from django.db import models
 
 from base.settings.common import AUTH_USER_MODEL
+from .validators import validate_phone
 
 
 class Contact(models.Model):
@@ -15,8 +16,8 @@ class Contact(models.Model):
     state_province = models.CharField(max_length=31)
     postal_code = models.CharField(max_length=7)
     country = models.CharField(max_length=2)
-    phone = models.CharField(max_length=15)
-    fax = models.CharField(max_length=15, blank=True)
+    phone = models.CharField(max_length=15, validators=[validate_phone])
+    fax = models.CharField(max_length=15, blank=True, validators=[validate_phone])
     email = models.EmailField()
 
     def redact_data(self, message: str = 'DATA REDACTED', is_registrant: bool = False, email: str = None):
