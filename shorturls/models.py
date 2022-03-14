@@ -19,7 +19,6 @@ class ShortUrl(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=['domain', 'short'], name='unique_domain_short'),
-            models.UniqueConstraint(fields=['user', 'long_url'], name='unique_user_long_url')
         ]
 
     def __str__(self):
