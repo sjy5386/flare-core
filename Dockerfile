@@ -13,4 +13,4 @@ RUN python manage.py migrate
 
 EXPOSE 8000
 
-ENTRYPOINT ["python", "manage.py", "runserver", "0:8000"]
+ENTRYPOINT ["gunicorn", "--bind=0.0.0.0:8000", "base.wsgi"]
