@@ -1,7 +1,7 @@
 from django.db import models
 
 from base.settings.common import AUTH_USER_MODEL
-from .validators import validate_phone
+from .validators import validate_country, validate_phone
 
 
 class Contact(models.Model):
@@ -15,7 +15,7 @@ class Contact(models.Model):
     city = models.CharField(max_length=31)
     state_province = models.CharField(max_length=31)
     postal_code = models.CharField(max_length=7)
-    country = models.CharField(max_length=2)
+    country = models.CharField(max_length=2, validators=[validate_country])
     phone = models.CharField(max_length=15, validators=[validate_phone])
     fax = models.CharField(max_length=15, blank=True, validators=[validate_phone])
     email = models.EmailField()
