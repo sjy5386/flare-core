@@ -5,6 +5,7 @@ from django.db import models
 from contacts.models import Contact
 from domains.models import Domain
 from base.settings.common import AUTH_USER_MODEL
+from .validators import validate_domain_name
 
 
 class Subdomain(models.Model):
@@ -12,7 +13,7 @@ class Subdomain(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     user = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.RESTRICT)
-    name = models.CharField(max_length=63)
+    name = models.CharField(max_length=63, validators=[validate_domain_name])
     domain = models.ForeignKey(Domain, on_delete=models.RESTRICT)
 
     expiry = models.DateTimeField()
