@@ -85,9 +85,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'subshorts',
-        'USER': os.environ.get('DATABASE_USER'),
-        'PASSWORD': os.environ.get("DATABASE_PASSWORD"),
-        'HOST': 'localhost',
+        'USER': 'subshorts',
+        'PASSWORD': 'dq9a6i6q4i8qAZNyu',
+        'HOST': 'host.docker.internal',
         'PORT': '3306',
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",

@@ -1,6 +1,18 @@
 services:
+  db:
+    image: mariadb:10.6
+    environment:
+      MARIADB_DATABASE: subshorts
+      MARIADB_USER: subshorts
+      MARIADB_PASSWORD: dq9a6i6q4i8qAZNyu
+      MARIADB_ROOT_PASSWORD: yWV8m8tJkdWc9KutS
+    ports:
+      - 3306:3306
+
   app:
     build:
       context: .
     ports:
       - 8000:8000
+    depends_on:
+      - db
