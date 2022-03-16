@@ -1,6 +1,9 @@
 services:
   db:
     image: mariadb:10.6
+    volumes:
+      - ~/docker/db/conf.d:/etc/mysql/conf.d
+      - ~/docker/db/mysql:/var/lib/mysql
     environment:
       MARIADB_DATABASE: subshorts
       MARIADB_USER: subshorts
@@ -12,6 +15,8 @@ services:
   app:
     build:
       context: .
+    volumes:
+      - .:/app
     ports:
       - 8000:8000
     depends_on:
