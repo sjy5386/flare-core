@@ -1,8 +1,7 @@
-from typing import Dict, Tuple
+from typing import Dict
 
 
 class BaseRecord:
-    identifier = None
     name: str
     ttl: int
     r_class: str = 'IN'
@@ -32,57 +31,71 @@ class BaseRecord:
         }
 
 
-class ARecord(BaseRecord):  # a host address
-    def __init__(self, name: str, ttl: int, ip_address: str):
-        super().__init__(name, ttl, 'A', ip_address)
+class Record(BaseRecord):
+    identifier = None
 
+    service: str
+    protocol: str
 
-class NsRecord(BaseRecord):  # an authoritative name server
-    def __init__(self, name: str, ttl: int, name_server: str):
-        super().__init__(name, ttl, 'NS', name_server)
+    priority: int
+    weight: int
+    port: int
 
+    target: str
 
-class CnameRecord(BaseRecord):  # the canonical name for an alias
-    def __init__(self, name: str, ttl: int, alias: str):
-        super().__init__(name, ttl, 'CNAME', alias)
+    def __init__(self, *args, **kwargs):
+        super(Record, self).__init__(*args)
+        self.target = kwargs['target'] if 'target' in kwargs.keys() else self.data.split()[-1]
+        if self.r_type in {'NS', 'CNAME', 'MX', 'SRV'} and self.target[-1] != '.':
+            self.target += '.'
+        if self.r_type == 'MX':
+            priority = kwargs['priority'] if 'priority' in kwargs.keys() else 10
+            self.set_data_mx(priority, self.target)
+        elif self.r_type == 'SRV':
+            service = '_http'
+            protocol = '_tcp'
+            if self.name[0] == '_':
+                names = self.name.split('.')
+                service = names[0]
+                protocol = names[1]
+                self.name = ''.join(names[2:])
+            if 'service' in kwargs.keys():
+                service = kwargs['service']
+            if 'protocol' in kwargs.keys():
+                protocol = kwargs['protocol']
+            priority = kwargs['priority'] if 'priority' in kwargs.keys() else 10
+            weight = kwargs['weight'] if 'weight' in kwargs.keys() else 100
+            port = kwargs['port'] if 'port' in kwargs.keys() else 0
+            self.set_name_srv(service, protocol, self.name)
+            self.set_data_srv(priority, weight, port, self.target)
+        if 'identifier' in kwargs.keys():
+            self.identifier = kwargs['identifier']
 
+    def get_name(self, suffix: str = None) -> str:
+        name = self.name
+        if self.r_type == 'SRV':
+            name = ''.join(self.name.split('.')[2:])
+        if suffix is not None:
+            name += '.' + suffix
+        return name
 
-class MxRecord(BaseRecord):  # mail exchange
-    def __init__(self, name: str, ttl: int, mail_server: str, priority: int):
-        super().__init__(name, ttl, 'MX', f'{priority} {mail_server}')
-        self.mail_server = mail_server
+    def set_name_srv(self, service: str, protocol: str, name: str):
+        self.service = service
+        self.protocol = protocol
+        self.name = f'{service}.{protocol}.{name}'
+
+    def set_data_mx(self, priority: int, mail_server: str):
+        if mail_server[-1] != '.':
+            mail_server += '.'
         self.priority = priority
-
-    def get_data(self) -> Tuple[str, str]:
-        priority, mail_server = self.data.split(' ')
-        return mail_server, priority
-
-    def set_data(self, mail_server: str, priority: int):
+        self.target = mail_server
         self.data = f'{priority} {mail_server}'
 
-
-class TxtRecord(BaseRecord):  # text strings
-    def __init__(self, name: str, ttl: int, value: str):
-        super().__init__(name, ttl, 'TXT', value)
-
-
-class AaaaRecord(ARecord):  # IP6 Address
-    def __init__(self, name: str, ttl: int, ip_address: str):
-        super().__init__(name, ttl, ip_address)
-        self.record_type = 'AAAA'
-
-
-class SrvRecord(BaseRecord):  # Server Selection
-    def __init__(self, name: str, ttl: int, service: str, protocol: str,
-                 priority: int, weight: int, port: int, server_host_name: str):
-        super().__init__(f'{service}.{protocol}.{name}', ttl, 'SRV', f'{priority} {weight} {port} {server_host_name}')
-
-    def get_name(self) -> Tuple[str, str, str]:
-        names = self.name.split('.')
-        service = names[0]
-        protocol = names[1]
-        name = ''.join(names[2:])
-        return name, service, protocol
-
-    def set_name(self, name: str, service: str, protocol: str):
-        self.name = f'{service}.{protocol}.{name}'
+    def set_data_srv(self, priority: int, weight: int, port: int, server_host_name: str):
+        if server_host_name[-1] != '.':
+            server_host_name += '.'
+        self.priority = priority
+        self.weight = weight
+        self.port = port
+        self.target = server_host_name
+        self.data = f'{priority} {weight} {port} {server_host_name}'
