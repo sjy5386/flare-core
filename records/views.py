@@ -5,7 +5,7 @@ from django.urls import reverse
 from django.views.decorators.http import require_GET
 
 from subdomains.models import Subdomain
-from .forms import RecordForm, ZoneImportForm
+from .forms import BaseRecordForm, ZoneImportForm
 from .providers import PROVIDER_CLASS
 from .types import Record
 
@@ -30,7 +30,7 @@ def create_record(request, subdomain_id):
     if request.method == 'GET':
         return render(request, 'records/record_create.html', {
             'subdomain': subdomain,
-            'form': RecordForm(initial={
+            'form': BaseRecordForm(initial={
                 'name': subdomain.name,
             })
         })
@@ -66,7 +66,7 @@ def update_record(request, subdomain_id, identifier):
         return render(request, 'records/record_update.html', {
             'subdomain': subdomain,
             'record': record,
-            'form': RecordForm(initial={
+            'form': BaseRecordForm(initial={
                 'name': record.name,
                 'ttl': record.ttl,
                 'r_type': record.r_type,

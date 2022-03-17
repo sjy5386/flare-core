@@ -3,7 +3,7 @@ from django import forms
 from .types import Record
 
 
-class RecordForm(forms.Form):
+class BaseRecordForm(forms.Form):
     name = forms.CharField()
     ttl = forms.IntegerField(label='TTL', min_value=0, initial=3600)
     r_type = forms.ChoiceField(label='Type',
