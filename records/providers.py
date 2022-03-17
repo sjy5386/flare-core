@@ -97,7 +97,10 @@ class DigitalOceanProvider(BaseProvider):
             name=record.name,
             ttl=record.ttl,
             type=record.r_type,
-            data=record.data
+            data=record.target,
+            priority=record.priority,
+            weight=record.priority,
+            port=record.port,
         )
         record.identifier = new_record['domain_record']['id']
         return record
@@ -121,7 +124,12 @@ class DigitalOceanProvider(BaseProvider):
                 r.name = record.name
                 r.ttl = record.ttl
                 r.type = record.r_type
-                r.data = record.data
+                r.data = record.target
+                if record.r_type == 'MX' or record.r_type == 'SRV':
+                    r.priority = record.priority
+                if record.r_type == 'SRV':
+                    r.weight = record.weight
+                    r.port = record.port
                 r.save()
         return record
 
@@ -134,9 +142,16 @@ class DigitalOceanProvider(BaseProvider):
                 r.destroy()
 
     def provider_record_object_to_record_object(self, provider_record_object) -> Record:
+        kwargs = {
+            'identifier': provider_record_object.id
+        }
+        if provider_record_object.type == 'MX' or provider_record_object == 'SRV':
+            kwargs['priority'] = provider_record_object.priority
+        if provider_record_object.type == 'SRV':
+            kwargs['weight'] = provider_record_object.weight
+            kwargs['port'] = provider_record_object.port
         record = Record(provider_record_object.name, provider_record_object.ttl, provider_record_object.type,
-                            provider_record_object.data)
-        record.identifier = provider_record_object.id
+                        provider_record_object.data, **kwargs)
         return record
 
 

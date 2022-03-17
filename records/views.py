@@ -5,7 +5,7 @@ from django.urls import reverse
 from django.views.decorators.http import require_GET
 
 from subdomains.models import Subdomain
-from .forms import BaseRecordForm, ZoneImportForm
+from .forms import RecordForm, ZoneImportForm
 from .providers import PROVIDER_CLASS
 from .types import Record
 
@@ -30,7 +30,7 @@ def create_record(request, subdomain_id):
     if request.method == 'GET':
         return render(request, 'records/record_create.html', {
             'subdomain': subdomain,
-            'form': BaseRecordForm(initial={
+            'form': RecordForm(initial={
                 'name': subdomain.name,
             })
         })
@@ -39,8 +39,16 @@ def create_record(request, subdomain_id):
         name = request.POST['name']
         ttl = request.POST['ttl']
         r_type = request.POST['r_type']
-        data = request.POST['data']
-        record = Record(name, ttl, r_type, data)
+        target = request.POST['target']
+        kwargs = {}
+        if r_type == 'MX' or r_type == 'SRV':
+            kwargs['priority'] = request.POST['priority']
+        if r_type == 'SRV':
+            kwargs['service'] = request.POST['service']
+            kwargs['protocol'] = request.POST['protocol']
+            kwargs['weight'] = request.POST['weight']
+            kwargs['port'] = request.POST['port']
+        record = Record(name, ttl, r_type, target, **kwargs)
         provider.create_record(subdomain, record)
         return redirect(reverse('record_list', kwargs={'subdomain_id': subdomain_id}))
 
@@ -66,19 +74,32 @@ def update_record(request, subdomain_id, identifier):
         return render(request, 'records/record_update.html', {
             'subdomain': subdomain,
             'record': record,
-            'form': BaseRecordForm(initial={
+            'form': RecordForm(initial={
                 'name': record.name,
                 'ttl': record.ttl,
                 'r_type': record.r_type,
-                'data': record.data
+                'service': record.service,
+                'protocol': record.protocol,
+                'priority': record.priority,
+                'weight': record.weight,
+                'port': record.port,
+                'target': record.target,
             })
         })
     elif request.method == 'POST':
         name = request.POST['name']
         ttl = request.POST['ttl']
         r_type = request.POST['r_type']
-        data = request.POST['data']
-        record = Record(name, ttl, r_type, data)
+        target = request.POST['target']
+        kwargs = {}
+        if r_type == 'MX' or r_type == 'SRV':
+            kwargs['priority'] = request.POST['priority']
+        if r_type == 'SRV':
+            kwargs['service'] = request.POST['service']
+            kwargs['protocol'] = request.POST['protocol']
+            kwargs['weight'] = request.POST['weight']
+            kwargs['port'] = request.POST['port']
+        record = Record(name, ttl, r_type, target, **kwargs)
         provider.update_record(subdomain, identifier, record)
         return redirect(reverse('record_list', kwargs={'subdomain_id': subdomain_id}))
 

@@ -34,12 +34,12 @@ class BaseRecord:
 class Record(BaseRecord):
     identifier = None
 
-    service: str
-    protocol: str
+    service: str = None
+    protocol: str = None
 
-    priority: int
-    weight: int
-    port: int
+    priority: int = None
+    weight: int = None
+    port: int = None
 
     target: str
 
