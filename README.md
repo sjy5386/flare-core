@@ -26,7 +26,8 @@ You must have your domain to run this project.
 2. Log in to your account.
 3. Create new project. (Optional)
 4. [Add your domain](https://docs.digitalocean.com/products/networking/dns/how-to/add-domains/).
-5. [Generate new **writable** token](https://docs.digitalocean.com/reference/api/create-personal-access-token/).
+5. Change name servers.
+6. [Generate new **writable** token](https://docs.digitalocean.com/reference/api/create-personal-access-token/).
 
 #### Firebase Dynamic Links
 
@@ -37,10 +38,35 @@ You must have your domain to run this project.
 5. Go to *Dynamic Links* page. [Add URL prefix](https://firebase.google.com/docs/dynamic-links/custom-domains).
 6. Go to project settings page. Check your Web API Key.
 
+### Install Docker
+
+1. [Install Docker](https://docs.docker.com/engine/install/)
+2. [Install Docker Compose](https://docs.docker.com/compose/install/)
+
 ### Clone this project
 
 ```shell
 git clone https://github.com/sjy5386/subshorts
+```
+
+### Set environment
+
+1. Copy `.env.sample`.
+
+```shell
+cp .env.sample .env
+```
+
+2. Edit `.env`.
+
+```shell
+nano .env
+```
+
+### Run
+
+```shell
+docker-compose up
 ```
 
 ## Usage
