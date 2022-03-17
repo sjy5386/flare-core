@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'django_bootstrap5',
+    'captcha',
 
     'accounts.apps.AccountsConfig',
     'boards.apps.BoardsConfig',
@@ -145,3 +146,6 @@ EMAIL_HOST = 'email-smtp.us-east-1.amazonaws.com'
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
 EMAIL_USE_TLS = True
+
+RECAPTCHA_PUBLIC_KEY = os.environ.get('RECAPTCHA_PUBLIC_KEY')
+RECAPTCHA_PRIVATE_KEY = os.environ.get('RECAPTCHA_PRIVATE_KEY')

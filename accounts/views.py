@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.views.decorators.http import require_GET
 
 from .decorators import logout_required
-from .forms import UserRegisterForm
+from .forms import UserRegisterForm, CaptchaForm
 
 
 @login_required
@@ -19,9 +19,13 @@ def profile(request: HttpRequest):
 def register(request: HttpRequest):
     if request.method == 'GET':
         return render(request, 'accounts/register.html', {
-            'form': UserRegisterForm()
+            'form': UserRegisterForm(),
+            'captcha_form': CaptchaForm()
         })
     elif request.method == 'POST':
+        captcha = CaptchaForm(request.POST).is_valid()
+        if not captcha:
+            return HttpResponse(captcha)
         username = request.POST['username']
         password1 = request.POST['password1']
         password2 = request.POST['password2']
