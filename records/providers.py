@@ -36,7 +36,7 @@ class BaseProvider:
             if line[0] == ';':
                 continue
             r = line.split()
-            record = Record(name=r[0], ttl=int(r[1]), r_type=r[3], data=' '.join(r[4:]))
+            record = Record(r[0], int(r[1]), r[3], ' '.join(r[4:]))
             self.create_record(subdomain, record)
 
     def provider_record_object_to_record_object(self, provider_record_object) -> Record:

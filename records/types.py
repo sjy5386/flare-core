@@ -58,14 +58,23 @@ class Record(BaseRecord):
                 names = self.name.split('.')
                 service = names[0]
                 protocol = names[1]
-                self.name = ''.join(names[2:])
+                self.name = '.'.join(names[2:])
             if 'service' in kwargs.keys():
                 service = kwargs['service']
             if 'protocol' in kwargs.keys():
                 protocol = kwargs['protocol']
-            priority = kwargs['priority'] if 'priority' in kwargs.keys() else 10
-            weight = kwargs['weight'] if 'weight' in kwargs.keys() else 100
-            port = kwargs['port'] if 'port' in kwargs.keys() else 0
+            priority = 10
+            weight = 100
+            port = 0
+            data = self.data.split(' ')
+            if len(data) == 4:
+                priority, weight, port = map(int, data[:3])
+            if 'priority' in kwargs.keys():
+                priority = kwargs['priority']
+            if 'weight' in kwargs.keys():
+                weight = kwargs['weight']
+            if 'port' in kwargs.keys():
+                port = kwargs['port']
             self.set_name_srv(service, protocol, self.name)
             self.set_data_srv(priority, weight, port, self.target)
         if 'identifier' in kwargs.keys():
@@ -74,7 +83,7 @@ class Record(BaseRecord):
     def get_name(self, suffix: str = None) -> str:
         name = self.name
         if self.r_type == 'SRV':
-            name = ''.join(self.name.split('.')[2:])
+            name = '.'.join(self.name.split('.')[2:])
         if suffix is not None:
             name += '.' + suffix
         return name
