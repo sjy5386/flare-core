@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Tuple
 
 
 class BaseRecord:
@@ -48,8 +48,12 @@ class Record(BaseRecord):
         self.target = kwargs['target'] if 'target' in kwargs.keys() else self.data.split()[-1]
         if self.r_type in {'NS', 'CNAME', 'MX', 'SRV'} and self.target[-1] != '.':
             self.target += '.'
+        priority = 10
         if self.r_type == 'MX':
-            priority = kwargs['priority'] if 'priority' in kwargs.keys() else 10
+            if len(self.data) == 2:
+                priority = self.parse_data_mx(self.data)[0]
+            if 'priority' in kwargs.keys():
+                priority = kwargs['priority']
             self.set_data_mx(priority, self.target)
         elif self.r_type == 'SRV':
             service = '_http'
@@ -63,12 +67,10 @@ class Record(BaseRecord):
                 service = kwargs['service']
             if 'protocol' in kwargs.keys():
                 protocol = kwargs['protocol']
-            priority = 10
             weight = 100
             port = 0
-            data = self.data.split(' ')
-            if len(data) == 4:
-                priority, weight, port = map(int, data[:3])
+            if len(self.data.split()) == 4:
+                priority, weight, port = self.parse_data_srv(self.data)[:3]
             if 'priority' in kwargs.keys():
                 priority = kwargs['priority']
             if 'weight' in kwargs.keys():
@@ -83,7 +85,7 @@ class Record(BaseRecord):
     def get_name(self, suffix: str = None) -> str:
         name = self.name
         if self.r_type == 'SRV':
-            name = '.'.join(self.name.split('.')[2:])
+            name = self.parse_name_srv(name)[2]
         if suffix is not None:
             name += '.' + suffix
         return name
@@ -108,3 +110,21 @@ class Record(BaseRecord):
         self.port = port
         self.target = server_host_name
         self.data = f'{priority} {weight} {port} {server_host_name}'
+
+    @staticmethod
+    def parse_name_srv(name: str) -> Tuple[str, str, str]:
+        names = name.split('.')
+        service = names[0]
+        protocol = names[1]
+        n = '.'.join(names[2:])
+        return service, protocol, n
+
+    @staticmethod
+    def parse_data_mx(data: str) -> Tuple[int, str]:
+        priority, mail_server = data.split()
+        return int(priority), mail_server
+
+    @staticmethod
+    def parse_data_srv(data: str) -> Tuple[int, int, int, str]:
+        priority, weight, port, server_host_name = data.split()
+        return int(priority), int(weight), int(port), server_host_name
