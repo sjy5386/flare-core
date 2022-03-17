@@ -5,6 +5,7 @@ charset-normalizer==2.0.12
 Django==4.0.3
 django-bootstrap5==21.3
 django-dotenv==1.4.2
+django-recaptcha==3.0.0
 gunicorn==20.1.0
 idna==3.3
 jsonpickle==2.1.0
@@ -14,4 +15,4 @@ requests==2.27.1
 soupsieve==2.3.1
 sqlparse==0.4.2
 tzdata==2021.5
-urllib3==1.26.8
+urllib3==1.26.9
