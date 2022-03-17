@@ -28,4 +28,5 @@ class RecordForm(BaseRecordForm):
 
 
 class ZoneImportForm(forms.Form):
-    zone = forms.CharField(widget=forms.Textarea)
+    zone = forms.CharField(widget=forms.Textarea,
+                           help_text='Name TTL Class Type Data e.g. example 3600 IN A 127.0.0.1')
