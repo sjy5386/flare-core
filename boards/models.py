@@ -7,8 +7,9 @@ class Board(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    name = models.CharField(max_length=63, unique=True)
-    title = models.CharField(max_length=255)
+    name = models.CharField(max_length=31, unique=True)
+    title = models.CharField(max_length=63)
+    description = models.CharField(max_length=255, blank=True)
 
     def __str__(self):
         return self.title
@@ -21,7 +22,7 @@ class Post(models.Model):
     board = models.ForeignKey(Board, on_delete=models.CASCADE)
     user = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.DO_NOTHING)
 
-    title = models.CharField(max_length=255)
+    title = models.CharField(max_length=63)
     is_private = models.BooleanField(default=False)
     content = models.TextField()
 

@@ -9,8 +9,8 @@ class Contact(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     user = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.CASCADE)
-    name = models.CharField(max_length=255)
-    organization = models.CharField(max_length=255, blank=True)
+    name = models.CharField(max_length=63)
+    organization = models.CharField(max_length=63, blank=True)
     street = models.CharField(max_length=255)
     city = models.CharField(max_length=31)
     state_province = models.CharField(max_length=31)

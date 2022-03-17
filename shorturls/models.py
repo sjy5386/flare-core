@@ -11,7 +11,7 @@ class ShortUrl(models.Model):
     user = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.DO_NOTHING)
     domain = models.ForeignKey(Domain, on_delete=models.RESTRICT)
 
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=63)
 
     short = models.CharField(max_length=31)
     long_url = models.URLField(max_length=2047)
