@@ -1,6 +1,6 @@
 from django import forms
 
-from .types import Record
+from .types import BaseRecord
 
 
 class RecordForm(forms.Form):
@@ -8,7 +8,7 @@ class RecordForm(forms.Form):
     ttl = forms.IntegerField(label='TTL', min_value=0, initial=3600)
     r_type = forms.ChoiceField(label='Type',
                                choices=sorted(
-                                   map(lambda e: (e[0], f'{e[0]} - {e[1]}'), Record.get_available_types().items())),
+                                   map(lambda e: (e[0], f'{e[0]} - {e[1]}'), BaseRecord.get_available_types().items())),
                                initial='A')
     data = forms.CharField()
 

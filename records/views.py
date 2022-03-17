@@ -7,7 +7,7 @@ from django.views.decorators.http import require_GET
 from subdomains.models import Subdomain
 from .forms import RecordForm, ZoneImportForm
 from .providers import PROVIDER_CLASS
-from .types import Record
+from .types import BaseRecord
 
 
 @login_required
@@ -40,7 +40,7 @@ def create_record(request, subdomain_id):
         ttl = request.POST['ttl']
         r_type = request.POST['r_type']
         data = request.POST['data']
-        record = Record(name, ttl, r_type, data)
+        record = BaseRecord(name, ttl, r_type, data)
         provider.create_record(subdomain, record)
         return redirect(reverse('record_list', kwargs={'subdomain_id': subdomain_id}))
 
@@ -78,7 +78,7 @@ def update_record(request, subdomain_id, identifier):
         ttl = request.POST['ttl']
         r_type = request.POST['r_type']
         data = request.POST['data']
-        record = Record(name, ttl, r_type, data)
+        record = BaseRecord(name, ttl, r_type, data)
         provider.update_record(subdomain, identifier, record)
         return redirect(reverse('record_list', kwargs={'subdomain_id': subdomain_id}))
 

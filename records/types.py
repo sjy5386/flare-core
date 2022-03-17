@@ -1,7 +1,7 @@
 from typing import Dict, Tuple
 
 
-class Record:
+class BaseRecord:
     identifier = None
     name: str
     ttl: int
@@ -32,22 +32,22 @@ class Record:
         }
 
 
-class ARecord(Record):  # a host address
+class ARecord(BaseRecord):  # a host address
     def __init__(self, name: str, ttl: int, ip_address: str):
         super().__init__(name, ttl, 'A', ip_address)
 
 
-class NsRecord(Record):  # an authoritative name server
+class NsRecord(BaseRecord):  # an authoritative name server
     def __init__(self, name: str, ttl: int, name_server: str):
         super().__init__(name, ttl, 'NS', name_server)
 
 
-class CnameRecord(Record):  # the canonical name for an alias
+class CnameRecord(BaseRecord):  # the canonical name for an alias
     def __init__(self, name: str, ttl: int, alias: str):
         super().__init__(name, ttl, 'CNAME', alias)
 
 
-class MxRecord(Record):  # mail exchange
+class MxRecord(BaseRecord):  # mail exchange
     def __init__(self, name: str, ttl: int, mail_server: str, priority: int):
         super().__init__(name, ttl, 'MX', f'{priority} {mail_server}')
         self.mail_server = mail_server
@@ -61,7 +61,7 @@ class MxRecord(Record):  # mail exchange
         self.data = f'{priority} {mail_server}'
 
 
-class TxtRecord(Record):  # text strings
+class TxtRecord(BaseRecord):  # text strings
     def __init__(self, name: str, ttl: int, value: str):
         super().__init__(name, ttl, 'TXT', value)
 
@@ -72,7 +72,7 @@ class AaaaRecord(ARecord):  # IP6 Address
         self.record_type = 'AAAA'
 
 
-class SrvRecord(Record):  # Server Selection
+class SrvRecord(BaseRecord):  # Server Selection
     def __init__(self, name: str, ttl: int, service: str, protocol: str,
                  priority: int, weight: int, port: int, server_host_name: str):
         super().__init__(f'{service}.{protocol}.{name}', ttl, 'SRV', f'{priority} {weight} {port} {server_host_name}')
