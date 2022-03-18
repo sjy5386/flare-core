@@ -1,10 +1,10 @@
 from django.contrib.auth.decorators import login_required
-from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView, FormView
 
+from base.views import get_remote_ip_address
 from .forms import PostForm, CommentForm
 from .models import Board, Post, Comment
 
@@ -35,7 +35,7 @@ class PostCreateView(CreateView):
         post = form.save(commit=False)
         post.board = get_object_or_404(Board, name=self.kwargs['board_name'])
         post.user = self.request.user
-        post.ip_address = self.request.META['REMOTE_ADDR']
+        post.ip_address = get_remote_ip_address(self.request)
         post.save()
         return super(PostCreateView, self).form_valid(form)
 
@@ -62,7 +62,7 @@ class PostDetailView(DetailView, FormView):
         comment = form.save(commit=False)
         comment.post = get_object_or_404(Post, id=self.kwargs['id'])
         comment.user = self.request.user
-        comment.ip_address = self.request.META['REMOTE_ADDR']
+        comment.ip_address = get_remote_ip_address(self.request)
         comment.save()
         return super(PostDetailView, self).form_valid(form)
 
