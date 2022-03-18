@@ -48,9 +48,6 @@ class PostDetailView(DetailView, FormView):
 
     def get_object(self, queryset=None):
         post = get_object_or_404(Post, id=self.kwargs['id'], board__name=self.kwargs['board_name'])
-        user = self.request.user
-        if post.is_private and (not user.is_authenticated or post.user != user or not user.is_staff):
-            raise Http404('This post is private.')
         post.views += 1
         post.save()
         return post

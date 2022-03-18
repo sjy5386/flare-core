@@ -2,48 +2,53 @@
 {% load django_bootstrap5 %}
 {% block content %}
     <h3>{{ object }}</h3>
-    <div class="card">
-        <div class="card-header d-flex justify-content-between">
-            <div>{{ object.user }} <span class="text-muted">posted on {{ object.created_at }}</span></div>
-            <div class="text-muted"><b>{{ object.views }}</b> views</div>
-        </div>
-        <div class="card-body">
-            <p>{{ object.content }}</p>
-        </div>
-    </div>
-    <div class="mt-1 d-flex justify-content-between">
-        <div class="mt-2"><b>{{ comments | length }}</b> comments</div>
-        <div>
-            <a class="btn btn-primary" href="{% url 'post_list' board.name %}">List</a>
-            {% if object.user == user %}
-                <a class="btn btn-secondary" href="{% url 'post_update' board.name object.id %}">Edit</a>
-                <a class="btn btn-danger" href="{% url 'post_delete' board.name object.id %}">Delete</a>
-            {% endif %}
-        </div>
-    </div>
-    <hr>
-    <div>
-        {% for comment in comments %}
-            <div class="card my-3">
-                <div class="card-header d-flex justify-content-between">
-                    <div>{{ comment.user }} <span class="text-muted">commented on {{ comment.created_at }}</span></div>
-                    <div>{% if comment.is_private %} 🔒{% endif %}</div>
-                </div>
-                <div class="card-body">
-                    {% if not comment.is_private or comment.user == user %}
-                        <p>{{ comment.content }}</p>
-                    {% endif %}
-                </div>
+    {% if not object.is_private or object.user == user or user.is_staff %}
+        <div class="card">
+            <div class="card-header d-flex justify-content-between">
+                <div>{{ object.user }} <span class="text-muted">posted on {{ object.created_at }}</span></div>
+                <div class="text-muted"><b>{{ object.views }}</b> views</div>
             </div>
-        {% endfor %}
-    </div>
-    {% if user.is_authenticated %}
-        <form method="post">
-            {% csrf_token %}
-            {% bootstrap_form form %}
-            {% bootstrap_button button_type="submit" content="Write" %}
-        </form>
+            <div class="card-body">
+                <p>{{ object.content }}</p>
+            </div>
+        </div>
+        <div class="mt-1 d-flex justify-content-between">
+            <div class="mt-2"><b>{{ comments | length }}</b> comments</div>
+            <div>
+                <a class="btn btn-primary" href="{% url 'post_list' board.name %}">List</a>
+                {% if object.user == user %}
+                    <a class="btn btn-secondary" href="{% url 'post_update' board.name object.id %}">Edit</a>
+                    <a class="btn btn-danger" href="{% url 'post_delete' board.name object.id %}">Delete</a>
+                {% endif %}
+            </div>
+        </div>
+        <hr>
+        <div>
+            {% for comment in comments %}
+                <div class="card my-3">
+                    <div class="card-header d-flex justify-content-between">
+                        <div>{{ comment.user }} <span class="text-muted">commented on {{ comment.created_at }}</span>
+                        </div>
+                        <div>{% if comment.is_private %} 🔒{% endif %}</div>
+                    </div>
+                    <div class="card-body">
+                        {% if not comment.is_private or comment.user == user or object.user == user or user.is_staff %}
+                            <p>{{ comment.content }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        {% if user.is_authenticated %}
+            <form method="post">
+                {% csrf_token %}
+                {% bootstrap_form form %}
+                {% bootstrap_button button_type="submit" content="Write" %}
+            </form>
+        {% else %}
+            <p>Log in to leave a comment.</p>
+        {% endif %}
     {% else %}
-        <p>Log in to leave a comment.</p>
+        <p>This post is private.</p>
     {% endif %}
 {% endblock %}
