@@ -1,13 +1,15 @@
 import datetime
 
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.mail import EmailMessage
-from django.shortcuts import render, get_object_or_404
-from django.urls import reverse_lazy
+from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse_lazy, reverse
 from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_GET
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView, FormView
 
+from contacts.models import Contact
 from domains.models import Domain
 from .forms import SubdomainForm, SubdomainSearchForm, SubdomainWhoisForm, SubdomainContactForm
 from .models import Subdomain, ReservedName
@@ -113,6 +115,12 @@ class SubdomainCreateView(CreateView):
     template_name = 'subdomains/create.html'
     success_url = reverse_lazy('subdomain_list')
     form_class = SubdomainForm
+
+    def get(self, request, *args, **kwargs):
+        if len(Contact.objects.filter(user=request.user)) == 0:
+            messages.add_message(request, messages.INFO, 'Before creating a subdomain, you must create a contact.')
+            return redirect(reverse('contact_create'))
+        return super(SubdomainCreateView, self).get(request, *args, **kwargs)
 
     def get_form_kwargs(self):
         kwargs = super(SubdomainCreateView, self).get_form_kwargs()
