@@ -9,7 +9,11 @@
                 <div class="text-muted"><b>{{ object.views }}</b> views</div>
             </div>
             <div class="card-body">
-                <p>{{ object.content }}</p>
+                <article>
+                    {% for line in object.content.splitlines %}
+                        <p>{{ line }}</p>
+                    {% endfor %}
+                </article>
             </div>
         </div>
         <div class="mt-1 d-flex justify-content-between">
@@ -33,7 +37,13 @@
                     </div>
                     <div class="card-body">
                         {% if not comment.is_private or comment.user == user or object.user == user or user.is_staff %}
-                            <p>{{ comment.content }}</p>
+                            <article>
+                                {% for line in comment.content.splitlines %}
+                                    <p>{{ line }}</p>
+                                {% endfor %}
+                            </article>
+                        {% else %}
+                            <p class="text-muted">This comment is private.</p>
                         {% endif %}
                     </div>
                 </div>
@@ -46,7 +56,7 @@
                 {% bootstrap_button button_type="submit" content="Write" %}
             </form>
         {% else %}
-            <p>Log in to leave a comment.</p>
+            <p><a href="{% url 'login' %}">Log in</a> to leave a comment.</p>
         {% endif %}
     {% else %}
         <p>This post is private.</p>

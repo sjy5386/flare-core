@@ -6,19 +6,21 @@
         <thead>
         <tr>
             <th scope="col">No.</th>
-            <th scope="col">Title</th>
+            <th scope="col" style="width: 60%;">Title</th>
             <th scope="col">User</th>
-            <th scope="col">Created At</th>
+            <th scope="col">Date</th>
             <th scope="col">Views</th>
         </tr>
         </thead>
         <tbody>
         {% for object in object_list %}
             <tr>
-                <td><a href="{% url 'post_detail' board.name object.id %}">{{ object.id }}</a></td>
-                <td><a href="{% url 'post_detail' board.name object.id %}">{{ object }}</a></td>
+                <td><a href="{% url 'post_detail' board.name object.id %}"
+                       class="text-decoration-none text-black">{{ object.id }}</a></td>
+                <td><a href="{% url 'post_detail' board.name object.id %}"
+                       class="text-decoration-none text-black">{{ object }}</a></td>
                 <td>{{ object.user }}</td>
-                <td>{{ object.created_at }}</td>
+                <td>{{ object.created_at.date }}</td>
                 <td>{{ object.views }}</td>
             </tr>
         {% endfor %}
