@@ -17,7 +17,7 @@
         <tbody>
         {% for object in object_list %}
             <tr>
-                <td>{{ object.id }}</td>
+                <td><a href="{% url 'shorturl_detail' object.id %}">{{ object.id }}</a></td>
                 <td>{{ object.name }}</td>
                 <td><a href="{{ object.get_short_url }}">{{ object.get_short_url }}</a></td>
                 <td><a href="{{ object.long_url }}">{{ object.long_url }}</a></td>

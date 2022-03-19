@@ -34,3 +34,11 @@ def create_short_url(request):
             short = provider.create_short_url(domain, long_url)
             ShortUrl(user=request.user, domain=domain, name=name, short=short, long_url=long_url).save()
         return redirect(reverse('shorturl_list'))
+
+
+@login_required
+@require_GET
+def detail_short_url(request, id: int):
+    return render(request, 'shorturls/detail.html', {
+        'object': get_object_or_404(ShortUrl, id=id, user=request.user)
+    })
