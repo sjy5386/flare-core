@@ -49,14 +49,14 @@
                 </div>
             {% endfor %}
         </div>
-        {% if user.is_authenticated %}
+        {% if user.is_authenticated and comment_permission %}
             <form method="post">
                 {% csrf_token %}
                 {% bootstrap_form form %}
                 {% bootstrap_button button_type="submit" content="Write" %}
             </form>
         {% else %}
-            <p><a href="{% url 'login' %}">Log in</a> to leave a comment.</p>
+            <p>You do not have permission. <a href="{% url 'login' %}">Log in</a> to leave a comment.</p>
         {% endif %}
     {% else %}
         <p>This post is private.</p>

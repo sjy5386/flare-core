@@ -11,6 +11,11 @@ class Board(models.Model):
     title = models.CharField(max_length=63)
     description = models.CharField(max_length=255, blank=True)
 
+    list_permission = models.IntegerField(default=0)
+    read_permission = models.IntegerField(default=0)
+    write_permission = models.IntegerField(default=1)
+    comment_permission = models.IntegerField(default=1)
+
     def __str__(self):
         return self.title
 
