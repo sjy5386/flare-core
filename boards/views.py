@@ -70,8 +70,10 @@ class PostDetailView(DetailView, FormView):
 
     def get_object(self, queryset=None):
         post = get_object_or_404(Post, id=self.kwargs['id'], board__name=self.kwargs['board_name'])
-        post.views += 1
-        post.save()
+        if self.request.user.is_authenticated:
+            post.views += 1
+            post.comments = len(Comment.objects.filter(post=post))
+            post.save()
         return post
 
     def get_context_data(self, **kwargs):

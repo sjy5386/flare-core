@@ -17,8 +17,20 @@
             <tr>
                 <td><a href="{% url 'post_detail' board.name object.id %}"
                        class="text-decoration-none text-black">{{ object.id }}</a></td>
-                <td><a href="{% url 'post_detail' board.name object.id %}"
-                       class="text-decoration-none text-black">{{ object }}</a></td>
+                <td>
+                    <a href="{% url 'post_detail' board.name object.id %}" class="text-decoration-none text-black">
+                        {{ object.title }}
+                    </a>
+                    {% if object.comments > 0 %}
+                        <a href="{% url 'post_detail' board.name object.id %}#comments"
+                           class="text-decoration-none text-black">
+                            [{{ object.comments }}]
+                        </a>
+                    {% endif %}
+                    {% if object.is_private %}
+                        🔒
+                    {% endif %}
+                </td>
                 <td>{{ object.user }}</td>
                 <td>{{ object.created_at.date }}</td>
                 <td>{{ object.views }}</td>
