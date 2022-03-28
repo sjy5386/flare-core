@@ -1,6 +1,8 @@
+import datetime
+
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView, FormView
@@ -45,13 +47,23 @@ class PostCreateView(CreateView):
             return HttpResponse('You do not have permission.')
         return super(PostCreateView, self).get(request, *args, **kwargs)
 
+    def post(self, request, *args, **kwargs):
+        board = get_object_or_404(Board, name=kwargs['board_name'])
+        if not User.check_permission(request.user, board.write_permission):
+            return HttpResponse('You do not have permission.')
+        if not request.user.is_staff:
+            last_post = Post.objects.filter(board=board, user=request.user).last()
+            if last_post and (last_post.created_at + datetime.timedelta(minutes=5) > datetime.datetime.now(
+                    tz=datetime.timezone.utc) and last_post.title == request.POST['title'] and last_post.content ==
+                              request.POST['content']):
+                return redirect(reverse('post_list', kwargs=kwargs))
+        return super(PostCreateView, self).post(request, *args, **kwargs)
+
     def form_valid(self, form):
         post = form.save(commit=False)
         post.board = get_object_or_404(Board, name=self.kwargs['board_name'])
         post.user = self.request.user
         post.ip_address = get_remote_ip_address(self.request)
-        if not User.check_permission(post.user, post.board.write_permission):
-            return HttpResponse('You do not have permission.')
         post.save()
         return super(PostCreateView, self).form_valid(form)
 
@@ -67,6 +79,17 @@ class PostDetailView(DetailView, FormView):
         if not User.check_permission(request.user, board.read_permission):
             return HttpResponse('You do not have permission.')
         return super(PostDetailView, self).get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        post = get_object_or_404(Post, id=self.kwargs['id'], board__name=self.kwargs['board_name'])
+        if not User.check_permission(request.user, post.board.comment_permission):
+            return HttpResponse('You do not have permission.')
+        if not request.user.is_staff:
+            last_comment = Comment.objects.filter(post=post, user=request.user).last()
+            if last_comment and (last_comment.created_at + datetime.timedelta(minutes=5) > datetime.datetime.now(
+                    tz=datetime.timezone.utc) and last_comment.content == request.POST['content']):
+                return redirect(reverse('post_detail', kwargs=kwargs))
+        return super(PostDetailView, self).post(request, *args, **kwargs)
 
     def get_object(self, queryset=None):
         post = get_object_or_404(Post, id=self.kwargs['id'], board__name=self.kwargs['board_name'])
@@ -89,8 +112,6 @@ class PostDetailView(DetailView, FormView):
         comment.post = get_object_or_404(Post, id=self.kwargs['id'])
         comment.user = self.request.user
         comment.ip_address = get_remote_ip_address(self.request)
-        if not User.check_permission(comment.user, comment.post.board.comment_permission):
-            return HttpResponse('You do not have permission.')
         comment.save()
         return super(PostDetailView, self).form_valid(form)
 
