@@ -75,7 +75,7 @@ def update_record(request, subdomain_id, identifier):
             'subdomain': subdomain,
             'record': record,
             'form': RecordForm(initial={
-                'name': record.name,
+                'name': record.get_name(),
                 'ttl': record.ttl,
                 'r_type': record.r_type,
                 'service': record.service,
