@@ -3,15 +3,16 @@
     <h3>Boards</h3>
     <div class="row row-cols-2">
         {% for object in object_list %}
-            <div class="col">
-                <div class="card" onclick="location.href='{% url 'post_list' object.name %}'"
-                     style="cursor: pointer;">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ object.title }}</h5>
-                        <h6 class="card-subtitle mb-2 text-muted">{{ object.name }}</h6>
-                        <p>{{ object.description }}</p>
+            <div class="col p-3">
+                <a href="{% url 'post_list' object.name %}" class="text-decoration-none text-black">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ object.title }}</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">{{ object.name }}</h6>
+                            <p>{{ object.description }}</p>
+                        </div>
                     </div>
-                </div>
+                </a>
             </div>
         {% endfor %}
     </div>
