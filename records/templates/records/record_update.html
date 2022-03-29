@@ -5,6 +5,7 @@
     <form method="post">
         {% csrf_token %}
         {% bootstrap_form form %}
+        <p>My IP address: {{ ip_address }}</p>
         {% bootstrap_button button_type="submit" content="Update" %}
     </form>
 {% endblock %}

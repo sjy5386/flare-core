@@ -4,6 +4,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.views.decorators.http import require_GET
 
+from base.views import get_remote_ip_address
 from subdomains.models import Subdomain
 from .forms import RecordForm, ZoneImportForm
 from .providers import PROVIDER_CLASS
@@ -32,7 +33,8 @@ def create_record(request, subdomain_id):
             'subdomain': subdomain,
             'form': RecordForm(initial={
                 'name': subdomain.name,
-            })
+            }),
+            'ip_address': get_remote_ip_address(request),
         })
     elif request.method == 'POST':
         provider = PROVIDER_CLASS()
@@ -84,7 +86,8 @@ def update_record(request, subdomain_id, identifier):
                 'weight': record.weight,
                 'port': record.port,
                 'target': record.target,
-            })
+            }),
+            'ip_address': get_remote_ip_address(request),
         })
     elif request.method == 'POST':
         name = request.POST['name']
