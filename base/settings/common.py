@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'rest_framework',
 
     'accounts.apps.AccountsConfig',
+    'apis.apps.ApisConfig',
     'boards.apps.BoardsConfig',
     'contacts.apps.ContactsConfig',
     'domains.apps.DomainsConfig',
