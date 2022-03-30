@@ -38,6 +38,8 @@ INSTALLED_APPS = [
 
     'django_bootstrap5',
     'captcha',
+    'corsheaders',
+    'rest_framework',
 
     'accounts.apps.AccountsConfig',
     'boards.apps.BoardsConfig',
@@ -141,6 +143,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'accounts.User'
 
 CSRF_TRUSTED_ORIGINS = ['https://subshorts.com']
+CORS_ORIGIN_WHITELIST = CSRF_TRUSTED_ORIGINS
 
 DEFAULT_FROM_EMAIL = 'no-reply@subshorts.com'
 EMAIL_HOST = 'email-smtp.us-east-1.amazonaws.com'
