@@ -1,6 +1,7 @@
 import re
 
 from django.db import models
+from rest_framework.exceptions import ValidationError
 
 from contacts.models import Contact
 from domains.models import Domain
@@ -8,12 +9,17 @@ from base.settings.common import AUTH_USER_MODEL
 from .validators import validate_domain_name
 
 
+def validate_reserved_name(value):
+    if len(ReservedName.objects.filter(name=value)) > 0:
+        raise ValidationError('This name is reserved.')
+
+
 class Subdomain(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     user = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.RESTRICT)
-    name = models.CharField(max_length=63, validators=[validate_domain_name])
+    name = models.CharField(max_length=63, validators=[validate_domain_name, validate_reserved_name])
     domain = models.ForeignKey(Domain, on_delete=models.RESTRICT)
 
     expiry = models.DateTimeField()

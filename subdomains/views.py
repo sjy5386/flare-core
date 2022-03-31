@@ -135,14 +135,13 @@ class SubdomainCreateView(CreateView):
 
     def form_valid(self, form):
         subdomain = form.save(commit=False)
-        if len(ReservedName.objects.filter(name=subdomain.name)) == 0:
-            subdomain.user = self.request.user
-            subdomain.expiry = datetime.datetime.now() + datetime.timedelta(days=90)
-            subdomain.registrant = form.cleaned_data['registrant']
-            subdomain.admin = form.cleaned_data['admin']
-            subdomain.tech = form.cleaned_data['tech']
-            subdomain.billing = form.cleaned_data['billing']
-            subdomain.save()
+        subdomain.user = self.request.user
+        subdomain.expiry = datetime.datetime.now() + datetime.timedelta(days=90)
+        subdomain.registrant = form.cleaned_data['registrant']
+        subdomain.admin = form.cleaned_data['admin']
+        subdomain.tech = form.cleaned_data['tech']
+        subdomain.billing = form.cleaned_data['billing']
+        subdomain.save()
         return super(SubdomainCreateView, self).form_valid(form)
 
 
