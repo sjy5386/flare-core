@@ -13,9 +13,6 @@ class ContactViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return Contact.objects.filter(user=self.request.user)
 
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
-
 
 class SubdomainViewSet(viewsets.ModelViewSet):
     queryset = Subdomain.objects.all()

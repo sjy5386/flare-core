@@ -8,9 +8,12 @@ from subdomains.models import Subdomain
 
 
 class ContactSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
     class Meta:
         model = Contact
-        exclude = ['created_at', 'updated_at', 'user']
+        fields = '__all__'
+        read_only_fields = ['created_at', 'updated_at']
 
 
 class SubdomainSerializer(serializers.ModelSerializer):
