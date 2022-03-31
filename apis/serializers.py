@@ -5,6 +5,7 @@ from rest_framework.validators import UniqueTogetherValidator
 
 from contacts.models import Contact
 from domains.models import Domain
+from records.types import BaseRecord, Record
 from subdomains.models import Subdomain
 
 
@@ -54,3 +55,48 @@ class SubdomainSerializer(serializers.ModelSerializer):
 
     def get_full_name(self, obj):
         return str(obj)
+
+
+class BaseRecordSerializer(serializers.Serializer):
+    name = serializers.CharField(max_length=255)
+    ttl = serializers.IntegerField(min_value=0, max_value=65535)
+    r_type = serializers.ChoiceField(
+        choices=sorted(map(lambda e: (e[0], f'{e[0]} - {e[1]}'), BaseRecord.get_available_types().items())))
+    data = serializers.CharField()
+
+    def create(self, validated_data):
+        return BaseRecord(**validated_data)
+
+    def update(self, instance, validated_data):
+        instance.name = validated_data.get('name', instance.name)
+        instance.ttl = validated_data.get('ttl', instance.ttl)
+        instance.r_type = validated_data.get('r_type', instance.r_type)
+        instance.data = validated_data.get('data', instance.data)
+        return instance
+
+
+class RecordSerializer(BaseRecordSerializer):
+    identifier = serializers.IntegerField(read_only=True)
+
+    service = serializers.CharField(required=False)
+    protocol = serializers.CharField(required=False)
+
+    priority = serializers.IntegerField(min_value=0, max_value=65535, required=False)
+    weight = serializers.IntegerField(min_value=0, max_value=65535, required=False)
+    port = serializers.IntegerField(min_value=0, max_value=65535, required=False)
+
+    target = serializers.CharField()
+
+    def create(self, validated_data):
+        return Record(**validated_data)
+
+    def update(self, instance, validated_data):
+        instance = super(RecordSerializer, self).update(instance, validated_data)
+        instance.identifier = validated_data.get('identifier', instance.identifier)
+        instance.service = validated_data.get('service', instance.service)
+        instance.protocol = validated_data.get('protocol', instance.protocol)
+        instance.priority = validated_data.get('priority', instance.priority)
+        instance.weight = validated_data.get('weight', instance.weight)
+        instance.port = validated_data.get('port', instance.port)
+        instance.target = validated_data.get('target', instance.target)
+        return instance
