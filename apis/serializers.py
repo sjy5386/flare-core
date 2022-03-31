@@ -4,6 +4,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
 from contacts.models import Contact
+from domains.models import Domain
 from subdomains.models import Subdomain
 
 
@@ -12,6 +13,13 @@ class ContactSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Contact
+        fields = '__all__'
+        read_only_fields = ['created_at', 'updated_at']
+
+
+class DomainSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Domain
         fields = '__all__'
         read_only_fields = ['created_at', 'updated_at']
 
