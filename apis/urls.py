@@ -5,6 +5,7 @@ from . import views
 
 router = DefaultRouter()
 router.register('contacts', views.ContactViewSet)
+router.register('subdomains', views.SubdomainViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
