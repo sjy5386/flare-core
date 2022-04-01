@@ -1,10 +1,12 @@
 import datetime
+import ipaddress
 
 from rest_framework import viewsets, permissions, status
 from rest_framework.exceptions import NotFound
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 
+from base.views import get_remote_ip_address
 from contacts.models import Contact
 from domains.models import Domain
 from shorturls.models import ShortUrl
@@ -67,6 +69,7 @@ class RecordViewSet(viewsets.ViewSet):
         obj = serializer.save()
         provider = self.get_provider()
         subdomain = get_object_or_404(Subdomain, pk=self.kwargs['subdomain_pk'])
+        self.detect_my_ip_address(obj)
         provider.create_record(subdomain, obj)
 
     def retrieve(self, request, *args, **kwargs):
@@ -90,6 +93,7 @@ class RecordViewSet(viewsets.ViewSet):
         obj = serializer.save()
         provider = self.get_provider()
         subdomain = get_object_or_404(Subdomain, pk=self.kwargs['subdomain_pk'])
+        self.detect_my_ip_address(obj)
         provider.update_record(subdomain, obj.identifier, obj)
 
     def partial_update(self, request, *args, **kwargs):
@@ -140,3 +144,13 @@ class RecordViewSet(viewsets.ViewSet):
             'format': self.format_kwarg,
             'view': self
         }
+
+    def detect_my_ip_address(self, record):
+        if record.target == 'MY_IP_ADDRESS' and record.r_type in ('A', 'AAAA'):
+            record.target = get_remote_ip_address(self.request)
+            record.r_type = {
+                ipaddress.IPv4Address: 'A',
+                ipaddress.IPv6Address: 'AAAA',
+            }[type(ipaddress.ip_address(record.target))]
+            return True
+        return False
