@@ -5,10 +5,10 @@ from rest_framework_nested.routers import NestedDefaultRouter
 from . import views
 
 router = DefaultRouter()
-router.register('contacts', views.ContactViewSet)
+router.register('contacts', views.ContactViewSet, basename='contact')
 router.register('domains', views.DomainViewSet)
 router.register('shorturls', views.ShortUrlViewSet, basename='shorturl')
-router.register('subdomains', views.SubdomainViewSet)
+router.register('subdomains', views.SubdomainViewSet, basename='subdomain')
 
 subdomains_router = NestedDefaultRouter(router, 'subdomains', lookup='subdomain')
 subdomains_router.register('records', views.RecordViewSet, basename='record')

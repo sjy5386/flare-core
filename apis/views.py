@@ -11,7 +11,6 @@ from .serializers import ContactSerializer, DomainSerializer, ShortUrlSerializer
 
 
 class ContactViewSet(viewsets.ModelViewSet):
-    queryset = Contact.objects.all()
     serializer_class = ContactSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -34,7 +33,6 @@ class ShortUrlViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class SubdomainViewSet(viewsets.ModelViewSet):
-    queryset = Subdomain.objects.all()
     serializer_class = SubdomainSerializer
     permission_classes = [permissions.IsAuthenticated]
 
