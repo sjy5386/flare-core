@@ -85,6 +85,26 @@ class BaseRecordSerializer(serializers.Serializer):
 
 
 class RecordSerializer(BaseRecordSerializer):
+    class NameField(serializers.CharField):
+        def __init__(self, **kwargs):
+            kwargs['source'] = '*'
+            super().__init__(**kwargs)
+
+        def to_internal_value(self, data):
+            self.source_attrs = [self.field_name]
+            return super().to_internal_value(data)
+
+        def to_representation(self, value):
+            if type(value) is str:
+                if value[0] == '_':
+                    return Record.parse_name_srv(value)[2]
+                return value
+            return value.get_name()
+
+    name = NameField(max_length=255)
+    full_name = serializers.SerializerMethodField()
+    data = serializers.CharField(read_only=True)
+
     identifier = serializers.IntegerField(read_only=True)
 
     service = serializers.CharField(required=False)
@@ -114,10 +134,16 @@ class RecordSerializer(BaseRecordSerializer):
     def update(self, instance, validated_data):
         instance = super(RecordSerializer, self).update(instance, validated_data)
         instance.identifier = validated_data.get('identifier', instance.identifier)
-        instance.service = validated_data.get('service', instance.service)
-        instance.protocol = validated_data.get('protocol', instance.protocol)
-        instance.priority = validated_data.get('priority', instance.priority)
-        instance.weight = validated_data.get('weight', instance.weight)
-        instance.port = validated_data.get('port', instance.port)
         instance.target = validated_data.get('target', instance.target)
+        if instance.r_type == 'MX' or instance.r_type == 'SRV':
+            instance.priority = validated_data.get('priority', instance.priority)
+        if instance.r_type == 'SRV':
+            instance.service = validated_data.get('service', instance.service)
+            instance.protocol = validated_data.get('protocol', instance.protocol)
+            instance.name = f'{instance.service}.{instance.protocol}.{instance.name}'
+            instance.weight = validated_data.get('weight', instance.weight)
+            instance.port = validated_data.get('port', instance.port)
         return instance
+
+    def get_full_name(self, obj):
+        return obj.name
