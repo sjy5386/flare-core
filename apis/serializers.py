@@ -6,6 +6,7 @@ from rest_framework.validators import UniqueTogetherValidator
 from contacts.models import Contact
 from domains.models import Domain
 from records.types import BaseRecord, Record
+from shorturls.models import ShortUrl
 from subdomains.models import Subdomain
 
 
@@ -22,6 +23,15 @@ class DomainSerializer(serializers.ModelSerializer):
     class Meta:
         model = Domain
         fields = ['id', 'name']
+
+
+class ShortUrlSerializer(serializers.ModelSerializer):
+    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
+    class Meta:
+        model = ShortUrl
+        fields = '__all__'
+        read_only_fields = ['created_at', 'updated_at', 'short']
 
 
 class SubdomainSerializer(serializers.ModelSerializer):

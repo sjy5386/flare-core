@@ -7,6 +7,7 @@ from . import views
 router = DefaultRouter()
 router.register('contacts', views.ContactViewSet)
 router.register('domains', views.DomainViewSet)
+router.register('shorturls', views.ShortUrlViewSet, basename='shorturl')
 router.register('subdomains', views.SubdomainViewSet)
 
 subdomains_router = NestedDefaultRouter(router, 'subdomains', lookup='subdomain')

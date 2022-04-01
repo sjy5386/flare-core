@@ -5,8 +5,9 @@ from rest_framework.response import Response
 
 from contacts.models import Contact
 from domains.models import Domain
+from shorturls.models import ShortUrl
 from subdomains.models import Subdomain
-from .serializers import ContactSerializer, DomainSerializer, SubdomainSerializer, RecordSerializer
+from .serializers import ContactSerializer, DomainSerializer, ShortUrlSerializer, SubdomainSerializer, RecordSerializer
 
 
 class ContactViewSet(viewsets.ModelViewSet):
@@ -22,6 +23,14 @@ class DomainViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Domain.objects.all()
     serializer_class = DomainSerializer
     permission_classes = [permissions.IsAuthenticated]
+
+
+class ShortUrlViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = ShortUrlSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return ShortUrl.objects.filter(user=self.request.user)
 
 
 class SubdomainViewSet(viewsets.ModelViewSet):
