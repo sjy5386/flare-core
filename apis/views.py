@@ -18,10 +18,10 @@ class ContactViewSet(viewsets.ModelViewSet):
         return Contact.objects.filter(user=self.request.user)
 
 
-class DomainViewSet(viewsets.ModelViewSet):
+class DomainViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Domain.objects.all()
     serializer_class = DomainSerializer
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [permissions.IsAuthenticated]
 
 
 class SubdomainViewSet(viewsets.ModelViewSet):
