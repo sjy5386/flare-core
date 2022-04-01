@@ -1,3 +1,5 @@
+import datetime
+
 from rest_framework import viewsets, permissions, status
 from rest_framework.exceptions import NotFound
 from rest_framework.generics import get_object_or_404
@@ -38,6 +40,12 @@ class SubdomainViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Subdomain.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(expiry=datetime.datetime.now() + datetime.timedelta(days=90))
+
+    def perform_update(self, serializer):
+        serializer.save(expiry=datetime.datetime.now() + datetime.timedelta(days=90))
 
 
 class RecordViewSet(viewsets.ViewSet):
