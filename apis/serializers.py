@@ -88,7 +88,19 @@ class RecordSerializer(BaseRecordSerializer):
     target = serializers.CharField()
 
     def create(self, validated_data):
-        return Record(**validated_data)
+        name = validated_data.get('name')
+        ttl = validated_data.get('ttl')
+        r_type = validated_data.get('r_type')
+        target = validated_data.get('target')
+        kwargs = {}
+        if r_type == 'MX' or r_type == 'SRV':
+            kwargs['priority'] = validated_data.get('priority')
+        if r_type == 'SRV':
+            kwargs['service'] = validated_data.get('service')
+            kwargs['protocol'] = validated_data.get('protocol')
+            kwargs['weight'] = validated_data.get('weight')
+            kwargs['port'] = validated_data.get('port')
+        return Record(name, ttl, r_type, target, **kwargs)
 
     def update(self, instance, validated_data):
         instance = super(RecordSerializer, self).update(instance, validated_data)
