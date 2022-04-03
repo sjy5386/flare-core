@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'captcha',
     'corsheaders',
     'rest_framework',
+    'rest_framework_simplejwt',
 
     'accounts.apps.AccountsConfig',
     'apis.apps.ApisConfig',
@@ -145,6 +146,13 @@ AUTH_USER_MODEL = 'accounts.User'
 
 CSRF_TRUSTED_ORIGINS = ['https://subshorts.com']
 CORS_ORIGIN_WHITELIST = CSRF_TRUSTED_ORIGINS
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
 
 DEFAULT_FROM_EMAIL = 'no-reply@subshorts.com'
 EMAIL_HOST = 'email-smtp.us-east-1.amazonaws.com'
