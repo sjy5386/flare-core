@@ -7,7 +7,7 @@ class Board(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    name = models.CharField(max_length=31, unique=True)
+    name = models.SlugField(unique=True)
     title = models.CharField(max_length=63)
     description = models.CharField(max_length=255, blank=True)
 
