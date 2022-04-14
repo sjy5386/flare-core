@@ -1,3 +1,4 @@
+import ast
 import datetime
 
 from django.contrib.auth.decorators import login_required
@@ -78,7 +79,15 @@ class PostDetailView(DetailView, FormView):
         board = get_object_or_404(Board, name=kwargs['board_name'])
         if not User.check_permission(request.user, board.read_permission):
             return HttpResponse('You do not have permission.')
-        return super(PostDetailView, self).get(request, *args, **kwargs)
+        response = super(PostDetailView, self).get(request, *args, **kwargs)
+        post_id = kwargs['id']
+        views = request.COOKIES.get('views', [])
+        if type(views) is str:
+            views = ast.literal_eval(views)
+        if post_id not in views:
+            views.append(post_id)
+        response.set_cookie('views', views)
+        return response
 
     def post(self, request, *args, **kwargs):
         post = get_object_or_404(Post, id=self.kwargs['id'], board__name=self.kwargs['board_name'])
@@ -93,10 +102,11 @@ class PostDetailView(DetailView, FormView):
 
     def get_object(self, queryset=None):
         post = get_object_or_404(Post, id=self.kwargs['id'], board__name=self.kwargs['board_name'])
-        if self.request.user.is_authenticated:
+        views = ast.literal_eval(self.request.COOKIES.get('views', '[]'))
+        if post.id not in views:
             post.views += 1
-            post.comments = len(Comment.objects.filter(post=post))
-            post.save()
+        post.comments = len(Comment.objects.filter(post=post))
+        post.save()
         return post
 
     def get_context_data(self, **kwargs):
