@@ -84,3 +84,8 @@ docker-compose up
 2. Enter a name.
 3. Enter a long URL.
 4. Create a short URL.
+
+# Related Projects
+
+* [Subshorts Dynamic DNS Client](https://github.com/sjy5386/subshorts-dynamic-dns-client)
+* [Subshorts Rules](https://github.com/sjy5386/subshorts-rules)
