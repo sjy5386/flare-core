@@ -1,8 +1,8 @@
 import ast
 import datetime
 
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils.decorators import method_decorator
@@ -25,7 +25,8 @@ class PostListView(ListView):
     def get(self, request, *args, **kwargs):
         board = get_object_or_404(Board, name=kwargs['board_name'])
         if not User.check_permission(request.user, board.list_permission):
-            return HttpResponse('You do not have permission.')
+            messages.add_message(request, messages.ERROR, 'You do not have permission.')
+            return redirect(reverse('board_list'))
         return super(PostListView, self).get(request, *args, **kwargs)
 
     def get_queryset(self):
@@ -45,13 +46,15 @@ class PostCreateView(CreateView):
     def get(self, request, *args, **kwargs):
         board = get_object_or_404(Board, name=kwargs['board_name'])
         if not User.check_permission(request.user, board.write_permission):
-            return HttpResponse('You do not have permission.')
+            messages.add_message(request, messages.ERROR, 'You do not have permission.')
+            return redirect(reverse('post_list', kwargs=kwargs))
         return super(PostCreateView, self).get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         board = get_object_or_404(Board, name=kwargs['board_name'])
         if not User.check_permission(request.user, board.write_permission):
-            return HttpResponse('You do not have permission.')
+            messages.add_message(request, messages.ERROR, 'You do not have permission.')
+            return redirect(reverse('post_list', kwargs=kwargs))
         if not request.user.is_staff:
             last_post = Post.objects.filter(board=board, user=request.user).last()
             if last_post and (last_post.created_at + datetime.timedelta(minutes=5) > datetime.datetime.now(
@@ -78,7 +81,8 @@ class PostDetailView(DetailView, FormView):
     def get(self, request, *args, **kwargs):
         board = get_object_or_404(Board, name=kwargs['board_name'])
         if not User.check_permission(request.user, board.read_permission):
-            return HttpResponse('You do not have permission.')
+            messages.add_message(request, messages.ERROR, 'You do not have permission.')
+            return redirect(reverse('post_detail', kwargs=kwargs))
         response = super(PostDetailView, self).get(request, *args, **kwargs)
         post_id = kwargs['id']
         views = request.COOKIES.get('views', [])
@@ -92,7 +96,8 @@ class PostDetailView(DetailView, FormView):
     def post(self, request, *args, **kwargs):
         post = get_object_or_404(Post, id=self.kwargs['id'], board__name=self.kwargs['board_name'])
         if not User.check_permission(request.user, post.board.comment_permission):
-            return HttpResponse('You do not have permission.')
+            messages.add_message(request, messages.ERROR, 'You do not have permission.')
+            return redirect(reverse('post_detail', kwargs=kwargs))
         if not request.user.is_staff:
             last_comment = Comment.objects.filter(post=post, user=request.user).last()
             if last_comment and (last_comment.created_at + datetime.timedelta(minutes=5) > datetime.datetime.now(
