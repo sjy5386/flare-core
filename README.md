@@ -69,6 +69,19 @@ nano .env
 docker-compose up
 ```
 
+### Migrate database
+
+```shell
+python manage.py makemigrations
+python manage.py migrate
+```
+
+### Create superuser
+
+```shell
+python manage.py createsuperuser
+```
+
 ## Usage
 
 ### Subdomains
