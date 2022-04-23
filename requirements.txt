@@ -1,8 +1,8 @@
 asgiref==3.5.0
-beautifulsoup4==4.10.0
+beautifulsoup4==4.11.1
 certifi==2021.10.8
 charset-normalizer==2.0.12
-Django==4.0.3
+Django==4.0.4
 django-bootstrap5==21.3
 django-cors-headers==3.11.0
 django-dotenv==1.4.2
@@ -18,7 +18,7 @@ PyJWT==2.3.0
 python-digitalocean==1.17.0
 pytz==2022.1
 requests==2.27.1
-soupsieve==2.3.1
+soupsieve==2.3.2.post1
 sqlparse==0.4.2
 tzdata==2022.1
 urllib3==1.26.9
