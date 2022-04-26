@@ -28,12 +28,7 @@
 <main>
     <div class="container">
         <section class="messages">
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}"
-                         role="alert">{{ message }}</div>
-                {% endfor %}
-            {% endif %}
+            {% include "common/alert.html" %}
         </section>
         {% block content %}
         {% endblock %}
