@@ -1,0 +1,9 @@
+{% extends 'common/base.html' %}
+{% block content %}
+    <h3>Domains</h3>
+    <ul>
+        {% for object in object_list %}
+            <li>{{ object }}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

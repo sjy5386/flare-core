@@ -25,6 +25,7 @@ urlpatterns = [
     path('api/', include('apis.urls')),
     path('boards/', include('boards.urls')),
     path('contacts/', include('contacts.urls')),
+    path('domains/', include('domains.urls')),
     path('shorturls/', include('shorturls.urls')),
     path('subdomains/', include('subdomains.urls')),
 ]
