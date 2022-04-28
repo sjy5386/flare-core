@@ -19,10 +19,10 @@
         <div class="mt-1 d-flex justify-content-between">
             <div class="mt-2"><b>{{ comments | length }}</b> comments</div>
             <div>
-                <a class="btn btn-primary" href="{% url 'post_list' board.name %}">List</a>
+                <a class="btn btn-primary" href="{% url 'boards:post_list' board.name %}">List</a>
                 {% if object.user == user %}
-                    <a class="btn btn-secondary" href="{% url 'post_update' board.name object.id %}">Edit</a>
-                    <a class="btn btn-danger" href="{% url 'post_delete' board.name object.id %}">Delete</a>
+                    <a class="btn btn-secondary" href="{% url 'boards:post_update' board.name object.id %}">Edit</a>
+                    <a class="btn btn-danger" href="{% url 'boards:post_delete' board.name object.id %}">Delete</a>
                 {% endif %}
             </div>
         </div>
