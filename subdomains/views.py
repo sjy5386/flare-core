@@ -119,7 +119,7 @@ class SubdomainCreateView(CreateView):
     def get(self, request, *args, **kwargs):
         if len(Contact.objects.filter(user=request.user)) == 0:
             messages.add_message(request, messages.INFO, 'Before creating a subdomain, you must create a contact.')
-            return redirect(reverse('contact_create'))
+            return redirect(reverse('contacts:create'))
         return super(SubdomainCreateView, self).get(request, *args, **kwargs)
 
     def get_form_kwargs(self):
