@@ -52,7 +52,7 @@ def create_record(request, subdomain_id):
             kwargs['port'] = request.POST['port']
         record = Record(name, ttl, r_type, target, **kwargs)
         provider.create_record(subdomain, record)
-        return redirect(reverse('record_list', kwargs={'subdomain_id': subdomain_id}))
+        return redirect(reverse('records:list', kwargs={'subdomain_id': subdomain_id}))
 
 
 @login_required
@@ -104,7 +104,7 @@ def update_record(request, subdomain_id, identifier):
             kwargs['port'] = request.POST['port']
         record = Record(name, ttl, r_type, target, **kwargs)
         provider.update_record(subdomain, identifier, record)
-        return redirect(reverse('record_list', kwargs={'subdomain_id': subdomain_id}))
+        return redirect(reverse('records:list', kwargs={'subdomain_id': subdomain_id}))
 
 
 @login_required
@@ -120,7 +120,7 @@ def delete_record(request, subdomain_id, identifier):
         })
     elif request.method == 'POST':
         provider.delete_record(subdomain, identifier)
-        return redirect(reverse('record_list', kwargs={'subdomain_id': subdomain_id}))
+        return redirect(reverse('records:list', kwargs={'subdomain_id': subdomain_id}))
 
 
 @login_required
@@ -147,4 +147,4 @@ def import_zone(request, subdomain_id):
         provider = PROVIDER_CLASS()
         zone = request.POST['zone']
         provider.import_zone(subdomain, zone)
-        return redirect(reverse('record_list', kwargs={'subdomain_id': subdomain_id}))
+        return redirect(reverse('records:list', kwargs={'subdomain_id': subdomain_id}))
