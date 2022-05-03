@@ -33,7 +33,7 @@ def create_short_url(request):
         if len(BlockedDomain.objects.filter(domain=urlparse(long_url).netloc)) == 0:
             short = provider.create_short_url(domain, long_url)
             ShortUrl(user=request.user, domain=domain, name=name, short=short, long_url=long_url).save()
-        return redirect(reverse('shorturl_list'))
+        return redirect(reverse('shorturls:list'))
 
 
 @login_required

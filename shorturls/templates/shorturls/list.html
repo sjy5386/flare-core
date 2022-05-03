@@ -2,7 +2,7 @@
 {% block content %}
     <div class="d-flex justify-content-between mb-3">
         <h3>Short URLs</h3>
-        <a class="btn btn-primary" href="{% url 'shorturl_create' %}">Create</a>
+        <a class="btn btn-primary" href="{% url 'shorturls:create' %}">Create</a>
     </div>
     <table class="table">
         <thead>
@@ -17,7 +17,7 @@
         <tbody>
         {% for object in object_list %}
             <tr>
-                <td><a href="{% url 'shorturl_detail' object.id %}">{{ object.id }}</a></td>
+                <td><a href="{% url 'shorturls:detail' object.id %}">{{ object.id }}</a></td>
                 <td>{{ object.name }}</td>
                 <td><a href="{{ object.get_short_url }}">{{ object.get_short_url }}</a></td>
                 <td><a href="{{ object.long_url }}">{{ object.long_url }}</a></td>
