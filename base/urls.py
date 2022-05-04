@@ -28,4 +28,5 @@ urlpatterns = [
     path('domains/', include('domains.urls')),
     path('shorturls/', include('shorturls.urls')),
     path('subdomains/', include('subdomains.urls')),
+    path('subdomains/<int:subdomain_id>/records/', include('records.urls')),
 ]

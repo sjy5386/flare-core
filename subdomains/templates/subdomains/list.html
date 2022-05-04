@@ -4,7 +4,7 @@
         <h3>Subdomains</h3>
         <div>
             <a class="btn btn-link" href="{% url 'contacts:list' %}">Contacts</a>
-            <a class="btn btn-primary" href="{% url 'subdomain_search' %}">Search</a>
+            <a class="btn btn-primary" href="{% url 'subdomains:search' %}">Search</a>
         </div>
     </div>
     <table class="table">
@@ -18,7 +18,7 @@
         <tbody>
         {% for object in object_list %}
             <tr>
-                <td><a href="{% url 'subdomain_detail' object.id %}">{{ object.id }}</a></td>
+                <td><a href="{% url 'subdomains:detail' object.id %}">{{ object.id }}</a></td>
                 <td><a href="http://{{ object }}">{{ object }}</a></td>
                 <td><a href="{% url 'records:list' object.id %}">{{ object.records }}</a></td>
             </tr>

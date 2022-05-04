@@ -22,9 +22,9 @@
                 <td>
                     {% if is_available %}
                         <a class="btn btn-primary"
-                           href="{% url 'subdomain_create' %}?name={{ name }}&domain={{ domain.id }}">Create</a>
+                           href="{% url 'subdomains:create' %}?name={{ name }}&domain={{ domain.id }}">Create</a>
                     {% else %}
-                        <a class="btn btn-info" href="{% url 'subdomain_whois' %}?q={{ name }}.{{ domain }}">WHOIS</a>
+                        <a class="btn btn-info" href="{% url 'subdomains:whois' %}?q={{ name }}.{{ domain }}">WHOIS</a>
                     {% endif %}
                 </td>
             </tr>

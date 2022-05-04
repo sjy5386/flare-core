@@ -79,7 +79,7 @@
             <tr>
                 <th scope="row">Registrant Email</th>
                 <td>
-                    <a href="{% url 'subdomain_contact' %}?subdomain={{ object }}&contact=registrant">{{ object.registrant.email }}</a>
+                    <a href="{% url 'subdomains:contact' %}?subdomain={{ object }}&contact=registrant">{{ object.registrant.email }}</a>
                 </td>
             </tr>
             <tr>
@@ -121,7 +121,7 @@
             <tr>
                 <th scope="row">Admin Email</th>
                 <td>
-                    <a href="{% url 'subdomain_contact' %}?subdomain={{ object }}&contact=admin">{{ object.admin.email }}</a>
+                    <a href="{% url 'subdomains:contact' %}?subdomain={{ object }}&contact=admin">{{ object.admin.email }}</a>
                 </td>
             </tr>
             <tr>
@@ -163,7 +163,7 @@
             <tr>
                 <th scope="row">Tech Email</th>
                 <td>
-                    <a href="{% url 'subdomain_contact' %}?subdomain={{ object }}&contact=tech">{{ object.tech.email }}</a>
+                    <a href="{% url 'subdomains:contact' %}?subdomain={{ object }}&contact=tech">{{ object.tech.email }}</a>
                 </td>
             </tr>
         </table>

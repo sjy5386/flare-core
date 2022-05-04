@@ -12,7 +12,7 @@ from django.views.generic import ListView, CreateView, DetailView, UpdateView, D
 from contacts.models import Contact
 from domains.models import Domain
 from .forms import SubdomainForm, SubdomainSearchForm, SubdomainWhoisForm, SubdomainContactForm
-from .models import Subdomain, ReservedName
+from .models import Subdomain
 
 
 @method_decorator(login_required, name='dispatch')
@@ -56,7 +56,7 @@ def whois(request):
             subdomain = Subdomain.objects.get(name=name, domain__name=domain__name)
             if subdomain.is_private:
                 def make_contact_url(contact):
-                    return f'{reverse_lazy("subdomain_contact")}?subdomain={subdomain.__str__()}&contact={contact}'
+                    return f'{reverse_lazy("subdomains:contact")}?subdomain={subdomain.__str__()}&contact={contact}'
 
                 subdomain.registrant.redact_data(is_registrant=True, email=make_contact_url('registrant'))
                 subdomain.admin.redact_data(email=make_contact_url('admin'))
@@ -75,7 +75,7 @@ def whois(request):
 class SubdomainContactView(FormView):
     template_name = 'subdomains/contact.html'
     form_class = SubdomainContactForm
-    success_url = reverse_lazy('subdomain_contact')
+    success_url = reverse_lazy('subdomains:contact')
 
     def get_initial(self):
         return {
@@ -113,7 +113,7 @@ class SubdomainContactView(FormView):
 @method_decorator(login_required, name='dispatch')
 class SubdomainCreateView(CreateView):
     template_name = 'subdomains/create.html'
-    success_url = reverse_lazy('subdomain_list')
+    success_url = reverse_lazy('subdomains:list')
     form_class = SubdomainForm
 
     def get(self, request, *args, **kwargs):
@@ -157,7 +157,7 @@ class SubdomainDetailView(DetailView):
 class SubdomainUpdateView(UpdateView):
     template_name = 'subdomains/update.html'
     form_class = SubdomainForm
-    success_url = reverse_lazy('subdomain_list')
+    success_url = reverse_lazy('subdomains:list')
 
     def get_form_kwargs(self):
         kwargs = super(SubdomainUpdateView, self).get_form_kwargs()
@@ -177,7 +177,7 @@ class SubdomainUpdateView(UpdateView):
 @method_decorator(login_required, name='dispatch')
 class SubdomainDeleteView(DeleteView):
     template_name = 'subdomains/delete.html'
-    success_url = reverse_lazy('subdomain_list')
+    success_url = reverse_lazy('subdomains:list')
 
     def get_object(self, queryset=None):
         return get_object_or_404(Subdomain, id=self.kwargs['id'], user=self.request.user)
