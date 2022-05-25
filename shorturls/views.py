@@ -15,7 +15,7 @@ from .providers import PROVIDER_CLASS
 @require_GET
 def list_short_urls(request):
     return render(request, 'shorturls/list.html', {
-        'object_list': ShortUrl.objects.filter(user=request.user)
+        'object_list': ShortUrl.objects.filter(user=request.user).order_by('-id')
     })
 
 

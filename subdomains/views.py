@@ -18,9 +18,10 @@ from .models import Subdomain
 @method_decorator(login_required, name='dispatch')
 class SubdomainListView(ListView):
     template_name = 'subdomains/list.html'
+    ordering = 'name'
 
     def get_queryset(self):
-        return Subdomain.objects.filter(user=self.request.user)
+        return Subdomain.objects.filter(user=self.request.user).order_by(self.get_ordering())
 
 
 @require_GET
