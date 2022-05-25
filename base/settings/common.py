@@ -22,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 def get_secret_key():
-    filename = 'secret_key.txt'
+    filename = 'SECRET_KEY'
     if os.path.isfile(filename):
         f = open(filename, 'r')
         line = f.readline()
