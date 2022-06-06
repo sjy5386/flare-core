@@ -4,80 +4,8 @@ from typing import List
 import digitalocean
 
 from subdomains.models import Subdomain
-from .types import Record
-
-
-class BaseProvider:
-    def list_records(self, subdomain: Subdomain) -> List[Record]:
-        pass
-
-    def create_record(self, subdomain: Subdomain, record: Record) -> Record:
-        pass
-
-    def retrieve_record(self, subdomain: Subdomain, identifier) -> Record:
-        pass
-
-    def update_record(self, subdomain: Subdomain, identifier, record: Record) -> Record:
-        pass
-
-    def delete_record(self, subdomain: Subdomain, identifier):
-        pass
-
-    def export_zone(self, subdomain: Subdomain) -> str:
-        records = self.list_records(subdomain)
-        zone = ''
-        for record in records:
-            zone += str(record) + '\n'
-        return zone
-
-    def import_zone(self, subdomain: Subdomain, zone: str):
-        lines = zone.splitlines()
-        for line in lines:
-            if line[0] == ';':
-                continue
-            r = line.split()
-            record = Record(r[0], int(r[1]), r[3], ' '.join(r[4:]))
-            self.create_record(subdomain, record)
-
-    def provider_record_object_to_record_object(self, provider_record_object) -> Record:
-        pass
-
-    def record_object_to_provider_record_object(self, record_object: Record):
-        pass
-
-
-class MockProvider(BaseProvider):
-    i = 1
-    records = []
-
-    def list_records(self, subdomain: Subdomain) -> List[Record]:
-        return self.records
-
-    def create_record(self, subdomain: Subdomain, record: Record) -> Record:
-        record.identifier = self.i
-        self.i += 1
-        self.records.append(record)
-        return record
-
-    def retrieve_record(self, subdomain: Subdomain, identifier) -> Record:
-        for r in self.records:
-            if r.identifier == identifier:
-                return r
-
-    def update_record(self, subdomain: Subdomain, identifier, record: Record) -> Record:
-        if not record.name.endswith(subdomain.name):
-            return record
-        for r in self.records:
-            if r.identifier == identifier:
-                r = record
-                r.identifier = identifier
-                return r
-
-    def delete_record(self, subdomain: Subdomain, identifier):
-        for r in self.records:
-            if r.identifier == identifier and r.name.endswith(subdomain.name):
-                self.records.remove(r)
-                return
+from .base import BaseProvider
+from ..types import Record
 
 
 class DigitalOceanProvider(BaseProvider):
@@ -153,6 +81,3 @@ class DigitalOceanProvider(BaseProvider):
         record = Record(provider_record_object.name, provider_record_object.ttl, provider_record_object.type,
                         provider_record_object.data, **kwargs)
         return record
-
-
-PROVIDER_CLASS = DigitalOceanProvider
