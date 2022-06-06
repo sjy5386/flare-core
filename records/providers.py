@@ -81,7 +81,7 @@ class MockProvider(BaseProvider):
 
 
 class DigitalOceanProvider(BaseProvider):
-    token = os.environ.get('DIGITALOCEAN_TOKEN')
+    token = os.environ.get('DIGITALOCEAN_ACCESS_TOKEN')
 
     def list_records(self, subdomain: Subdomain) -> List[Record]:
         domain = digitalocean.Domain(token=self.token, name=subdomain.domain.name)
