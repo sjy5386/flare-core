@@ -4,7 +4,7 @@ Free **sub**domains and **short** URLs
 
 ## Available Providers
 
-### Subdomains
+### Records (Subdomains)
 
 * [DigitalOcean](https://docs.digitalocean.com/products/networking/dns/)
 
@@ -46,7 +46,7 @@ You must have your domain to run this project.
 ### Clone this project
 
 ```shell
-git clone https://github.com/sjy5386/subshorts
+git clone https://github.com/subshorts/subshorts
 ```
 
 ### Set environment
@@ -100,5 +100,5 @@ python manage.py createsuperuser
 
 # Related Projects
 
-* [Subshorts Dynamic DNS Client](https://github.com/sjy5386/subshorts-dynamic-dns-client)
-* [Subshorts Rules](https://github.com/sjy5386/subshorts-rules)
+* [Subshorts Dynamic DNS Client](https://github.com/subshorts/subshorts-dynamic-dns-client)
+* [Subshorts Rules](https://github.com/subshorts/subshorts-rules)
