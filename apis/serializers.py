@@ -116,7 +116,8 @@ class RecordSerializer(BaseRecordSerializer):
     full_name = serializers.SerializerMethodField()
     data = serializers.CharField(read_only=True)
 
-    identifier = serializers.IntegerField(read_only=True)
+    id = serializers.IntegerField(read_only=True)
+    identifier = serializers.IntegerField(read_only=True, required=False)  # deprecated
 
     service = serializers.CharField(required=False)
     protocol = serializers.CharField(required=False)
@@ -143,11 +144,16 @@ class RecordSerializer(BaseRecordSerializer):
             kwargs['protocol'] = validated_data.get('protocol')
             kwargs['weight'] = validated_data.get('weight')
             kwargs['port'] = validated_data.get('port')
-        return Record(name, ttl, type, target, **kwargs)
+        instance = Record(name, ttl, type, target, **kwargs)
+        instance.identifier = instance.id  # deprecated
+        return instance
 
     def update(self, instance, validated_data):
         instance = super(RecordSerializer, self).update(instance, validated_data)
-        instance.id = validated_data.get('identifier', instance.id)
+        if 'identifier' in validated_data.keys():  # deprecated
+            validated_data['id'] = validated_data['identifier']
+            del validated_data['identifier']
+        instance.id = validated_data.get('id', instance.id)
         instance.target = validated_data.get('target', instance.target)
         if instance.type == 'MX' or instance.type == 'SRV':
             instance.priority = validated_data.get('priority', instance.priority)
