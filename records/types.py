@@ -8,11 +8,11 @@ class BaseRecord:
     type: str
     data: str
 
-    def __init__(self, name: str, ttl: int, r_type: str, data: str):
+    def __init__(self, name: str, ttl: int, type: str, data: str):
         self.name = name
         self.ttl = ttl
-        if r_type in self.get_available_types().keys():
-            self.type = r_type
+        if type in self.get_available_types().keys():
+            self.type = type
         self.data = data
 
     def __str__(self):
