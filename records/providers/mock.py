@@ -13,27 +13,27 @@ class MockProvider(BaseProvider):
         return self.records
 
     def create_record(self, subdomain: Subdomain, record: Record) -> Record:
-        record.identifier = self.i
+        record.id = self.i
         self.i += 1
         self.records.append(record)
         return record
 
     def retrieve_record(self, subdomain: Subdomain, identifier) -> Record:
         for r in self.records:
-            if r.identifier == identifier:
+            if r.id == identifier:
                 return r
 
     def update_record(self, subdomain: Subdomain, identifier, record: Record) -> Record:
         if not record.name.endswith(subdomain.name):
             return record
         for r in self.records:
-            if r.identifier == identifier:
+            if r.id == identifier:
                 r = record
-                r.identifier = identifier
+                r.id = identifier
                 return r
 
     def delete_record(self, subdomain: Subdomain, identifier):
         for r in self.records:
-            if r.identifier == identifier and r.name.endswith(subdomain.name):
+            if r.id == identifier and r.name.endswith(subdomain.name):
                 self.records.remove(r)
                 return

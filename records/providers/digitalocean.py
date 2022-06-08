@@ -30,7 +30,7 @@ class DigitalOceanProvider(BaseProvider):
             weight=record.priority,
             port=record.port,
         )
-        record.identifier = new_record['domain_record']['id']
+        record.id = new_record['domain_record']['id']
         return record
 
     def retrieve_record(self, subdomain: Subdomain, identifier) -> Record:

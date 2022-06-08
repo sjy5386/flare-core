@@ -133,7 +133,7 @@ class RecordSerializer(BaseRecordSerializer):
 
     def update(self, instance, validated_data):
         instance = super(RecordSerializer, self).update(instance, validated_data)
-        instance.identifier = validated_data.get('identifier', instance.identifier)
+        instance.id = validated_data.get('identifier', instance.id)
         instance.target = validated_data.get('target', instance.target)
         if instance.r_type == 'MX' or instance.r_type == 'SRV':
             instance.priority = validated_data.get('priority', instance.priority)

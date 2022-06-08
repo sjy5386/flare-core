@@ -94,7 +94,7 @@ class RecordViewSet(viewsets.ViewSet):
         provider = self.get_provider()
         subdomain = get_object_or_404(Subdomain, pk=self.kwargs['subdomain_pk'])
         self.detect_my_ip_address(obj)
-        provider.update_record(subdomain, obj.identifier, obj)
+        provider.update_record(subdomain, obj.id, obj)
 
     def partial_update(self, request, *args, **kwargs):
         kwargs['partial'] = True
@@ -108,7 +108,7 @@ class RecordViewSet(viewsets.ViewSet):
     def perform_destroy(self, instance):
         provider = self.get_provider()
         subdomain = get_object_or_404(Subdomain, pk=self.kwargs['subdomain_pk'])
-        provider.delete_record(subdomain, instance.identifier)
+        provider.delete_record(subdomain, instance.id)
 
     def get_provider(self):
         from records.providers import PROVIDER_CLASS

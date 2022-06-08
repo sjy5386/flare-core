@@ -32,7 +32,7 @@ class BaseRecord:
 
 
 class Record(BaseRecord):
-    identifier = None
+    id = None
 
     service: str = None
     protocol: str = None
@@ -79,8 +79,10 @@ class Record(BaseRecord):
                 port = kwargs['port']
             self.set_name_srv(service, protocol, self.name)
             self.set_data_srv(priority, weight, port, self.target)
-        if 'identifier' in kwargs.keys():
-            self.identifier = kwargs['identifier']
+        if 'id' in kwargs.keys():
+            self.id = kwargs['id']
+        elif 'identifier' in kwargs.keys():  # deprecated
+            self.id = kwargs['identifier']
 
     def get_name(self, suffix: str = None) -> str:
         name = self.name
