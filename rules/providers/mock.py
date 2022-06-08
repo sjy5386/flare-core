@@ -13,7 +13,7 @@ class MockProvider(BaseProvider):
         return self.rules
 
     def create_rule(self, subdomain: Subdomain, rule: PageRule) -> PageRule:
-        rule.identifier = self.i
+        rule.id = self.i
         self.i += 1
         self.rules.append(rule)
         return rule
@@ -27,7 +27,7 @@ class MockProvider(BaseProvider):
         for r in self.rules:
             if r.id == id:
                 r = rule
-                r.identifier = id
+                r.id = id
                 return r
 
     def delete_rule(self, subdomain: Subdomain, id):

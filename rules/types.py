@@ -1,5 +1,5 @@
 class PageRule:
-    identifier = None
+    id = None
 
     domain: str
     owner: str
