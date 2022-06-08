@@ -24,7 +24,7 @@ class DigitalOceanProvider(BaseProvider):
         new_record = domain.create_new_domain_record(
             name=record.name,
             ttl=record.ttl,
-            type=record.r_type,
+            type=record.type,
             data=record.target,
             priority=record.priority,
             weight=record.priority,
@@ -51,11 +51,11 @@ class DigitalOceanProvider(BaseProvider):
             if r.id == identifier:
                 r.name = record.name
                 r.ttl = record.ttl
-                r.type = record.r_type
+                r.type = record.type
                 r.data = record.target
-                if record.r_type == 'MX' or record.r_type == 'SRV':
+                if record.type == 'MX' or record.type == 'SRV':
                     r.priority = record.priority
-                if record.r_type == 'SRV':
+                if record.type == 'SRV':
                     r.weight = record.weight
                     r.port = record.port
                 r.save()

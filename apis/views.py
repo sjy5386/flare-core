@@ -146,9 +146,9 @@ class RecordViewSet(viewsets.ViewSet):
         }
 
     def detect_my_ip_address(self, record):
-        if record.target == 'MY_IP_ADDRESS' and record.r_type in ('A', 'AAAA'):
+        if record.target == 'MY_IP_ADDRESS' and record.type in ('A', 'AAAA'):
             record.target = get_remote_ip_address(self.request)
-            record.r_type = {
+            record.type = {
                 ipaddress.IPv4Address: 'A',
                 ipaddress.IPv6Address: 'AAAA',
             }[type(ipaddress.ip_address(record.target))]

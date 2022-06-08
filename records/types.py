@@ -5,18 +5,18 @@ class BaseRecord:
     name: str
     ttl: int
     r_class: str = 'IN'
-    r_type: str
+    type: str
     data: str
 
     def __init__(self, name: str, ttl: int, r_type: str, data: str):
         self.name = name
         self.ttl = ttl
         if r_type in self.get_available_types().keys():
-            self.r_type = r_type
+            self.type = r_type
         self.data = data
 
     def __str__(self):
-        return f'{self.name} {self.ttl} {self.r_class} {self.r_type} {self.data}'
+        return f'{self.name} {self.ttl} {self.r_class} {self.type} {self.data}'
 
     @staticmethod
     def get_available_types() -> Dict[str, str]:
@@ -46,16 +46,16 @@ class Record(BaseRecord):
     def __init__(self, *args, **kwargs):
         super(Record, self).__init__(*args)
         self.target = kwargs['target'] if 'target' in kwargs.keys() else self.data.split()[-1]
-        if self.r_type in {'NS', 'CNAME', 'MX', 'SRV'} and self.target[-1] != '.':
+        if self.type in {'NS', 'CNAME', 'MX', 'SRV'} and self.target[-1] != '.':
             self.target += '.'
         priority = 10
-        if self.r_type == 'MX':
+        if self.type == 'MX':
             if len(self.data) == 2:
                 priority = self.parse_data_mx(self.data)[0]
             if 'priority' in kwargs.keys():
                 priority = kwargs['priority']
             self.set_data_mx(priority, self.target)
-        elif self.r_type == 'SRV':
+        elif self.type == 'SRV':
             service = '_http'
             protocol = '_tcp'
             if self.name[0] == '_':
@@ -86,7 +86,7 @@ class Record(BaseRecord):
 
     def get_name(self, suffix: str = None) -> str:
         name = self.name
-        if self.r_type == 'SRV':
+        if self.type == 'SRV':
             name = self.parse_name_srv(name)[2]
         if suffix is not None:
             name += '.' + suffix

@@ -79,7 +79,7 @@ class BaseRecordSerializer(serializers.Serializer):
     def update(self, instance, validated_data):
         instance.name = validated_data.get('name', instance.name)
         instance.ttl = validated_data.get('ttl', instance.ttl)
-        instance.r_type = validated_data.get('r_type', instance.r_type)
+        instance.type = validated_data.get('r_type', instance.type)
         instance.data = validated_data.get('data', instance.data)
         return instance
 
@@ -135,9 +135,9 @@ class RecordSerializer(BaseRecordSerializer):
         instance = super(RecordSerializer, self).update(instance, validated_data)
         instance.id = validated_data.get('identifier', instance.id)
         instance.target = validated_data.get('target', instance.target)
-        if instance.r_type == 'MX' or instance.r_type == 'SRV':
+        if instance.type == 'MX' or instance.type == 'SRV':
             instance.priority = validated_data.get('priority', instance.priority)
-        if instance.r_type == 'SRV':
+        if instance.type == 'SRV':
             instance.service = validated_data.get('service', instance.service)
             instance.protocol = validated_data.get('protocol', instance.protocol)
             instance.name = f'{instance.service}.{instance.protocol}.{instance.name}'
