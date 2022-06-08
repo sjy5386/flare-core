@@ -33,22 +33,22 @@ class DigitalOceanProvider(BaseProvider):
         record.id = new_record['domain_record']['id']
         return record
 
-    def retrieve_record(self, subdomain: Subdomain, identifier) -> Record:
+    def retrieve_record(self, subdomain: Subdomain, id) -> Record:
         domain = digitalocean.Domain(token=self.token, name=subdomain.domain.name)
-        identifier = int(identifier)
+        id = int(id)
         records = domain.get_records()
         for r in records:
-            if r.id == identifier and r.name.endswith(subdomain.name):
+            if r.id == id and r.name.endswith(subdomain.name):
                 return self.provider_record_object_to_record_object(r)
 
-    def update_record(self, subdomain: Subdomain, identifier, record: Record) -> Record:
+    def update_record(self, subdomain: Subdomain, id, record: Record) -> Record:
         if not record.name.endswith(subdomain.name):
             return record
         domain = digitalocean.Domain(token=self.token, name=subdomain.domain.name)
-        identifier = int(identifier)
+        id = int(id)
         records = domain.get_records()
         for r in records:
-            if r.id == identifier:
+            if r.id == id:
                 r.name = record.name
                 r.ttl = record.ttl
                 r.type = record.type
@@ -61,12 +61,12 @@ class DigitalOceanProvider(BaseProvider):
                 r.save()
         return record
 
-    def delete_record(self, subdomain: Subdomain, identifier):
+    def delete_record(self, subdomain: Subdomain, id):
         domain = digitalocean.Domain(token=self.token, name=subdomain.domain.name)
-        identifier = int(identifier)
+        id = int(id)
         records = domain.get_records()
         for r in records:
-            if r.id == identifier and r.name.endswith(subdomain.name):
+            if r.id == id and r.name.endswith(subdomain.name):
                 r.destroy()
 
     def provider_record_object_to_record_object(self, provider_record_object) -> Record:

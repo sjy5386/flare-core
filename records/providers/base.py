@@ -11,13 +11,13 @@ class BaseProvider:
     def create_record(self, subdomain: Subdomain, record: Record) -> Record:
         pass
 
-    def retrieve_record(self, subdomain: Subdomain, identifier) -> Record:
+    def retrieve_record(self, subdomain: Subdomain, id) -> Record:
         pass
 
-    def update_record(self, subdomain: Subdomain, identifier, record: Record) -> Record:
+    def update_record(self, subdomain: Subdomain, id, record: Record) -> Record:
         pass
 
-    def delete_record(self, subdomain: Subdomain, identifier):
+    def delete_record(self, subdomain: Subdomain, id):
         pass
 
     def export_zone(self, subdomain: Subdomain) -> str:
