@@ -8,7 +8,7 @@ urlpatterns = [
     path('export/', views.export_zone, name='zone_export'),
     path('import/', views.import_zone, name='zone_import'),
     path('create/', views.create_record, name='create'),
-    path('<str:identifier>/', views.retrieve_record, name='detail'),
-    path('<str:identifier>/update/', views.update_record, name='update'),
-    path('<str:identifier>/delete/', views.delete_record, name='delete'),
+    path('<str:id>/', views.retrieve_record, name='detail'),
+    path('<str:id>/update/', views.update_record, name='update'),
+    path('<str:id>/delete/', views.delete_record, name='delete'),
 ]

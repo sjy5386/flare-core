@@ -40,27 +40,27 @@ def create_record(request, subdomain_id):
         provider = PROVIDER_CLASS()
         name = request.POST['name']
         ttl = request.POST['ttl']
-        r_type = request.POST['type']
+        type = request.POST['type']
         target = request.POST['target']
         kwargs = {}
-        if r_type == 'MX' or r_type == 'SRV':
+        if type == 'MX' or type == 'SRV':
             kwargs['priority'] = request.POST['priority']
-        if r_type == 'SRV':
+        if type == 'SRV':
             kwargs['service'] = request.POST['service']
             kwargs['protocol'] = request.POST['protocol']
             kwargs['weight'] = request.POST['weight']
             kwargs['port'] = request.POST['port']
-        record = Record(name, ttl, r_type, target, **kwargs)
+        record = Record(name, ttl, type, target, **kwargs)
         provider.create_record(subdomain, record)
         return redirect(reverse('records:list', kwargs={'subdomain_id': subdomain_id}))
 
 
 @login_required
 @require_GET
-def retrieve_record(request, subdomain_id, identifier):
+def retrieve_record(request, subdomain_id, id):
     provider = PROVIDER_CLASS()
     subdomain = get_object_or_404(Subdomain, id=subdomain_id, user=request.user)
-    record = provider.retrieve_record(subdomain, identifier)
+    record = provider.retrieve_record(subdomain, id)
     return render(request, 'records/record_detail.html', {
         'subdomain': subdomain,
         'record': record
@@ -68,11 +68,11 @@ def retrieve_record(request, subdomain_id, identifier):
 
 
 @login_required
-def update_record(request, subdomain_id, identifier):
+def update_record(request, subdomain_id, id):
     provider = PROVIDER_CLASS()
     subdomain = get_object_or_404(Subdomain, id=subdomain_id, user=request.user)
     if request.method == 'GET':
-        record = provider.retrieve_record(subdomain, identifier)
+        record = provider.retrieve_record(subdomain, id)
         return render(request, 'records/record_update.html', {
             'subdomain': subdomain,
             'record': record,
@@ -92,34 +92,34 @@ def update_record(request, subdomain_id, identifier):
     elif request.method == 'POST':
         name = request.POST['name']
         ttl = request.POST['ttl']
-        r_type = request.POST['type']
+        type = request.POST['type']
         target = request.POST['target']
         kwargs = {}
-        if r_type == 'MX' or r_type == 'SRV':
+        if type == 'MX' or type == 'SRV':
             kwargs['priority'] = request.POST['priority']
-        if r_type == 'SRV':
+        if type == 'SRV':
             kwargs['service'] = request.POST['service']
             kwargs['protocol'] = request.POST['protocol']
             kwargs['weight'] = request.POST['weight']
             kwargs['port'] = request.POST['port']
-        record = Record(name, ttl, r_type, target, **kwargs)
-        provider.update_record(subdomain, identifier, record)
+        record = Record(name, ttl, type, target, **kwargs)
+        provider.update_record(subdomain, id, record)
         return redirect(reverse('records:list', kwargs={'subdomain_id': subdomain_id}))
 
 
 @login_required
-def delete_record(request, subdomain_id, identifier):
+def delete_record(request, subdomain_id, id):
     provider = PROVIDER_CLASS()
     subdomain = get_object_or_404(Subdomain, id=subdomain_id, user=request.user)
     if request.method == 'GET':
-        record = provider.retrieve_record(subdomain, identifier)
+        record = provider.retrieve_record(subdomain, id)
         return render(request, 'records/record_delete.html', {
             'subdomain': subdomain,
             'record': record,
             'form': Form()
         })
     elif request.method == 'POST':
-        provider.delete_record(subdomain, identifier)
+        provider.delete_record(subdomain, id)
         return redirect(reverse('records:list', kwargs={'subdomain_id': subdomain_id}))
 
 
