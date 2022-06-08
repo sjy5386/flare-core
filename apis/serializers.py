@@ -67,19 +67,30 @@ class SubdomainSerializer(serializers.ModelSerializer):
 
 
 class BaseRecordSerializer(serializers.Serializer):
+    class TypeField(serializers.ChoiceField):
+        def __init__(self, **kwargs):
+            choices = sorted(map(lambda e: (e[0], f'{e[0]} - {e[1]}'), BaseRecord.get_available_types().items()))
+            super().__init__(choices, **kwargs)
+
     name = serializers.CharField(max_length=255)
     ttl = serializers.IntegerField(min_value=0, max_value=65535)
-    r_type = serializers.ChoiceField(
-        choices=sorted(map(lambda e: (e[0], f'{e[0]} - {e[1]}'), BaseRecord.get_available_types().items())))
+    type = TypeField()
+    r_type = TypeField(required=False)  # deprecated
     data = serializers.CharField()
 
     def create(self, validated_data):
+        if 'r_type' in validated_data.keys():  # deprecated
+            validated_data['type'] = validated_data['r_type']
+            del validated_data['r_type']
         return BaseRecord(**validated_data)
 
     def update(self, instance, validated_data):
         instance.name = validated_data.get('name', instance.name)
         instance.ttl = validated_data.get('ttl', instance.ttl)
-        instance.type = validated_data.get('r_type', instance.type)
+        if 'r_type' in validated_data.keys():  # deprecated
+            validated_data['type'] = validated_data['r_type']
+            del validated_data['r_type']
+        instance.type = validated_data.get('type', instance.type)
         instance.data = validated_data.get('data', instance.data)
         return instance
 
@@ -119,17 +130,20 @@ class RecordSerializer(BaseRecordSerializer):
     def create(self, validated_data):
         name = validated_data.get('name')
         ttl = validated_data.get('ttl')
-        r_type = validated_data.get('r_type')
+        if 'r_type' in validated_data.keys():  # deprecated
+            validated_data['type'] = validated_data['r_type']
+            del validated_data['r_type']
+        type = validated_data.get('type')
         target = validated_data.get('target')
         kwargs = {}
-        if r_type == 'MX' or r_type == 'SRV':
+        if type == 'MX' or type == 'SRV':
             kwargs['priority'] = validated_data.get('priority')
-        if r_type == 'SRV':
+        if type == 'SRV':
             kwargs['service'] = validated_data.get('service')
             kwargs['protocol'] = validated_data.get('protocol')
             kwargs['weight'] = validated_data.get('weight')
             kwargs['port'] = validated_data.get('port')
-        return Record(name, ttl, r_type, target, **kwargs)
+        return Record(name, ttl, type, target, **kwargs)
 
     def update(self, instance, validated_data):
         instance = super(RecordSerializer, self).update(instance, validated_data)
