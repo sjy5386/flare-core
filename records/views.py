@@ -40,7 +40,7 @@ def create_record(request, subdomain_id):
         provider = PROVIDER_CLASS()
         name = request.POST['name']
         ttl = request.POST['ttl']
-        r_type = request.POST['r_type']
+        r_type = request.POST['type']
         target = request.POST['target']
         kwargs = {}
         if r_type == 'MX' or r_type == 'SRV':
@@ -79,7 +79,7 @@ def update_record(request, subdomain_id, identifier):
             'form': RecordForm(initial={
                 'name': record.get_name(),
                 'ttl': record.ttl,
-                'r_type': record.type,
+                'type': record.type,
                 'service': record.service,
                 'protocol': record.protocol,
                 'priority': record.priority,
@@ -92,7 +92,7 @@ def update_record(request, subdomain_id, identifier):
     elif request.method == 'POST':
         name = request.POST['name']
         ttl = request.POST['ttl']
-        r_type = request.POST['r_type']
+        r_type = request.POST['type']
         target = request.POST['target']
         kwargs = {}
         if r_type == 'MX' or r_type == 'SRV':
