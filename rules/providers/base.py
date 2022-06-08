@@ -11,11 +11,11 @@ class BaseProvider:
     def create_rule(self, subdomain: Subdomain, rule: PageRule) -> PageRule:
         pass
 
-    def retrieve_rule(self, subdomain: Subdomain, identifier) -> PageRule:
+    def retrieve_rule(self, subdomain: Subdomain, id) -> PageRule:
         pass
 
-    def update_rule(self, subdomain: Subdomain, identifier, rule: PageRule) -> PageRule:
+    def update_rule(self, subdomain: Subdomain, id, rule: PageRule) -> PageRule:
         pass
 
-    def delete_rule(self, subdomain: Subdomain, identifier):
+    def delete_rule(self, subdomain: Subdomain, id):
         pass

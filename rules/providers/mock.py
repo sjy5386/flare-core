@@ -18,20 +18,20 @@ class MockProvider(BaseProvider):
         self.rules.append(rule)
         return rule
 
-    def retrieve_rule(self, subdomain: Subdomain, identifier) -> PageRule:
+    def retrieve_rule(self, subdomain: Subdomain, id) -> PageRule:
         for r in self.rules:
-            if r.id == identifier:
+            if r.id == id:
                 return r
 
-    def update_rule(self, subdomain: Subdomain, identifier, rule: PageRule) -> PageRule:
+    def update_rule(self, subdomain: Subdomain, id, rule: PageRule) -> PageRule:
         for r in self.rules:
-            if r.id == identifier:
+            if r.id == id:
                 r = rule
-                r.identifier = identifier
+                r.identifier = id
                 return r
 
-    def delete_rule(self, subdomain: Subdomain, identifier):
+    def delete_rule(self, subdomain: Subdomain, id):
         for r in self.rules:
-            if r.id == identifier:
+            if r.id == id:
                 self.rules.remove(r)
                 return
