@@ -5,7 +5,8 @@
     {% if not object.is_private or object.user == user or user.is_staff %}
         <div class="card">
             <div class="card-header d-flex justify-content-between">
-                <div>{{ object.user }} <span class="text-muted">posted on {{ object.created_at }}</span></div>
+                <div>{{ object.user }} {% if object.user.is_staff %}{% include "common/verified.html" %}{% endif %}
+                    <span class="text-muted">posted on {{ object.created_at }}</span></div>
                 <div class="text-muted"><b>{{ object.views }}</b> views</div>
             </div>
             <div class="card-body">
@@ -31,7 +32,9 @@
             {% for comment in comments %}
                 <div class="card my-3">
                     <div class="card-header d-flex justify-content-between">
-                        <div>{{ comment.user }} <span class="text-muted">commented on {{ comment.created_at }}</span>
+                        <div>{{ comment.user }}
+                            {% if comment.user.is_staff %}{% include "common/verified.html" %}{% endif %}
+                            <span class="text-muted">commented on {{ comment.created_at }}</span>
                         </div>
                         <div>{% if comment.is_private %} 🔒{% endif %}</div>
                     </div>

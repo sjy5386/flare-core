@@ -32,7 +32,7 @@
                         🔒
                     {% endif %}
                 </td>
-                <td>{{ object.user }}</td>
+                <td>{{ object.user }} {% if object.user.is_staff %}{% include "common/verified.html" %}{% endif %}</td>
                 <td>{{ object.created_at.date }}</td>
                 <td>{{ object.views }}</td>
             </tr>
