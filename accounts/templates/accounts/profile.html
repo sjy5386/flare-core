@@ -1,7 +1,12 @@
 {% extends 'common/base.html' %}
-{% load django_bootstrap5 %}
 {% block content %}
     <h4>{{ user.username }}</h4>
+    <p>Username: {{ user.username }} {% if user.is_staff %}{% include "common/verified.html" %}{% endif %}</p>
+    <p>First name: {{ user.first_name }}</p>
+    <p>Last name: {{ user.last_name }}</p>
+    <p>Email address: {{ user.email }}</p>
+    <p>Last login: {{ user.last_login }}</p>
+    <p>Date joined: {{ user.date_joined }}</p>
     <p><a href="{% url 'password_change' %}">Change password</a></p>
     <p><a href="{% url 'logout' %}">Logout</a></p>
 {% endblock %}
