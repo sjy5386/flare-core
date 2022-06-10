@@ -34,7 +34,10 @@ def register(request: HttpRequest):
         if password1 != password2:
             messages.add_message(request, messages.ERROR, 'Your password does not match.')
             return redirect('register')
+        first_name = request.POST['first_name']
+        last_name = request.POST['last_name']
         email = request.POST['email']
-        user = get_user_model().objects.create_user(username=username, password=password1, email=email)
+        user = get_user_model().objects.create_user(username=username, password=password1, email=email,
+                                                    first_name=first_name, last_name=last_name)
         login(request, user)
         return redirect(reverse('profile'))
