@@ -11,7 +11,7 @@
     <table class="table">
         <thead>
         <tr>
-            <th scope="col">Identifier</th>
+            <th scope="col">ID</th>
             <th scope="col">Name</th>
             <th scope="col">TTL</th>
             <th scope="col">Type</th>
@@ -22,16 +22,16 @@
         <tbody>
         {% for record in records %}
             <tr>
-                <td><a href="{% url 'records:detail' subdomain.id record.identifier %}">{{ record.identifier }}</a></td>
+                <td><a href="{% url 'records:detail' subdomain.id record.id %}">{{ record.id }}</a></td>
                 <td>{{ record.name }}</td>
                 <td>{{ record.ttl }}</td>
-                <td>{{ record.r_type }}</td>
+                <td>{{ record.type }}</td>
                 <td>{{ record.data }}</td>
                 <td>
                     <a class="btn btn-secondary"
-                       href="{% url 'records:update' subdomain.id record.identifier %}">Edit</a>
+                       href="{% url 'records:update' subdomain.id record.id %}">Edit</a>
                     <a class="btn btn-danger"
-                       href="{% url 'records:delete' subdomain.id record.identifier %}">Delete</a>
+                       href="{% url 'records:delete' subdomain.id record.id %}">Delete</a>
                 </td>
             </tr>
         {% endfor %}
