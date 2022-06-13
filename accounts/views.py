@@ -5,6 +5,7 @@ from django.http import HttpRequest
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.views.decorators.http import require_GET
+from social_django.models import UserSocialAuth
 
 from .decorators import logout_required
 from .forms import UserRegisterForm, CaptchaForm
@@ -13,7 +14,9 @@ from .forms import UserRegisterForm, CaptchaForm
 @login_required
 @require_GET
 def profile(request: HttpRequest):
-    return render(request, 'accounts/profile.html')
+    return render(request, 'accounts/profile.html', {
+        'oauth': UserSocialAuth.objects.filter(user=request.user)
+    })
 
 
 @logout_required
