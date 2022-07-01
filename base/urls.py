@@ -26,6 +26,7 @@ urlpatterns = [
     path('boards/', include('boards.urls')),
     path('contacts/', include('contacts.urls')),
     path('domains/', include('domains.urls')),
+    path('reports/', include('reports.urls')),
     path('shorturls/', include('shorturls.urls')),
     path('subdomains/', include('subdomains.urls')),
     path('subdomains/<int:subdomain_id>/records/', include('records.urls')),
