@@ -17,7 +17,7 @@ class Route53Provider(BaseProvider):
         )
         resource_record_sets = response['ResourceRecordSets']
         return sum(list(map(lambda x: self.provider_record_object_to_record_objects(x),
-                            filter(lambda x: str(x['Name']).endswith(subdomain.name), resource_record_sets))), [])
+                            filter(lambda x: str(x['Name']).endswith(str(subdomain) + '.'), resource_record_sets))), [])
 
     def create_record(self, subdomain: Subdomain, record: Record) -> Record:
         response = self.client.change_resource_record_sets(
