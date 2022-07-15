@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     'contacts.apps.ContactsConfig',
     'domains.apps.DomainsConfig',
     'records.apps.RecordsConfig',
+    'reports.apps.ReportsConfig',
     'rules.apps.RulesConfig',
     'shorturls.apps.ShorturlsConfig',
     'subdomains.apps.SubdomainsConfig',
