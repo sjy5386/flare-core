@@ -4,18 +4,26 @@ from domains.models import Domain
 
 
 class Record(models.Model):
+    class RecordType(models.TextChoices):
+        A = 'A', 'A - a host address',
+        NS = 'NS', 'NS - an authoritative name server',
+        CNAME = 'CNAME', 'CNAME - the canonical name for an alias',
+        MX = 'MX', 'MX - mail exchange',
+        TXT = 'TXT', 'TXT - text strings',
+        AAAA = 'AAAA', 'AAAA - IP6 Address',
+        SRV = 'SRV', 'SRV - Server Selection'
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     provider_id = models.CharField(max_length=255, unique=True, null=True)
 
     subdomain_name = models.CharField(max_length=63)
-    domain = models.ForeignKey(Domain)
+    domain = models.ForeignKey(Domain, on_delete=models.RESTRICT)
 
     name = models.CharField('Name', max_length=63)
     ttl = models.IntegerField('TTL', default=3600)
-    type = models.CharField('Type', max_length=10)
-    # data = models.CharField('Data', max_length=255)
+    type = models.CharField('Type', max_length=10, choices=RecordType.choices)
 
     # Required for SRV record.
     service = models.CharField('Service', max_length=63, null=True)
