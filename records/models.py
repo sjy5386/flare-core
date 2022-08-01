@@ -70,9 +70,10 @@ class Record(models.Model):
 
     @classmethod
     def retrieve_record(cls, provider: Optional[BaseProvider], subdomain: Subdomain, id: int):
+        record = cls.objects.get(subdomain_name=subdomain.name, pk=id)
         if provider:
-            return provider.retrieve_record(subdomain, id)
-        return cls.objects.get(subdomain_name=subdomain.name, pk=id)
+            return provider.retrieve_record(subdomain, record.provider_id)
+        return record
 
     @classmethod
     def update_record(cls, provider: Optional[BaseProvider], subdomain: Subdomain, id: int, **kwargs):
@@ -80,12 +81,12 @@ class Record(models.Model):
         for k, v in kwargs.items():
             setattr(record, k, v)
         if provider:
-            provider.update_record(subdomain, id, record)
+            provider.update_record(subdomain, record.provider_id, record)
         return record.save()
 
     @classmethod
     def delete_record(cls, provider: Optional[BaseProvider], subdomain: Subdomain, id: int):
         record = cls.objects.get(subdomain_name=subdomain.name, pk=id)
         if provider:
-            provider.delete_record(subdomain, id)
+            provider.delete_record(subdomain, record.provider_id)
         record.delete()
