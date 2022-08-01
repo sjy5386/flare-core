@@ -21,3 +21,16 @@ services:
       - 8000:8000
     depends_on:
       - db
+    extra_hosts:
+      - host.docker.internal:host-gateway
+
+  web:
+    image: nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/app.conf
+      - ~/ssl:/ssl
+    ports:
+      - 80:80
+      - 443:443
+    extra_hosts:
+      - host.docker.internal:host-gateway
