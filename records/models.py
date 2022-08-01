@@ -1,6 +1,10 @@
+from typing import Optional
+
 from django.db import models
 
 from domains.models import Domain
+from subdomains.models import Subdomain
+from .providers.base import BaseProvider
 
 
 class Record(models.Model):
@@ -50,3 +54,38 @@ class Record(models.Model):
 
     def __str__(self):
         return f'{self.full_name} {self.ttl} IN {self.type} {self.data}'
+
+    @classmethod
+    def list_records(cls, provider: Optional[BaseProvider], subdomain: Subdomain):
+        if provider:
+            return provider.list_records(subdomain)
+        return cls.objects.filter(subdomain_name=subdomain.name)
+
+    @classmethod
+    def create_record(cls, provider: Optional[BaseProvider], subdomain: Subdomain, **kwargs):
+        record = cls(**kwargs)
+        if provider:
+            provider.create_record(subdomain, record)
+        return record.save()
+
+    @classmethod
+    def retrieve_record(cls, provider: Optional[BaseProvider], subdomain: Subdomain, id: int):
+        if provider:
+            return provider.retrieve_record(subdomain, id)
+        return cls.objects.get(subdomain_name=subdomain.name, pk=id)
+
+    @classmethod
+    def update_record(cls, provider: Optional[BaseProvider], subdomain: Subdomain, id: int, **kwargs):
+        record = cls.objects.get(subdomain_name=subdomain.name, pk=id)
+        for k, v in kwargs.items():
+            setattr(record, k, v)
+        if provider:
+            provider.update_record(subdomain, id, record)
+        return record.save()
+
+    @classmethod
+    def delete_record(cls, provider: Optional[BaseProvider], subdomain: Subdomain, id: int):
+        record = cls.objects.get(subdomain_name=subdomain.name, pk=id)
+        if provider:
+            provider.delete_record(subdomain, id)
+        record.delete()
