@@ -29,17 +29,12 @@ class Record(models.Model):
     ttl = models.IntegerField('TTL', default=3600)
     type = models.CharField('Type', max_length=10, choices=RecordType.choices)
 
-    # Required for SRV record.
-    service = models.CharField('Service', max_length=63, null=True)
-    # Required for SRV record.
-    protocol = models.CharField('Protocol', max_length=63, null=True)
+    service = models.CharField('Service', max_length=63, null=True, help_text='Required for SRV record.')
+    protocol = models.CharField('Protocol', max_length=63, null=True, help_text='Required for SRV record.')
 
-    # Required for MX and SRV records.
-    priority = models.IntegerField('Priority', null=True)
-    # Required for SRV record.
-    weight = models.IntegerField('Weight', null=True)
-    # Required for SRV record.
-    port = models.IntegerField('Port', null=True)
+    priority = models.IntegerField('Priority', null=True, help_text='Required for MX and SRV records.')
+    weight = models.IntegerField('Weight', null=True, help_text='Required for SRV record.')
+    port = models.IntegerField('Port', null=True, help_text='Required for SRV record.')
 
     target = models.CharField('Target', max_length=255)
 
