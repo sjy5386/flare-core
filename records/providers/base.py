@@ -4,7 +4,7 @@ from subdomains.models import Subdomain
 from ..types import Record
 
 
-class BaseProvider:
+class BaseRecordProvider:
     def list_records(self, subdomain: Subdomain) -> List[Record]:
         pass
 

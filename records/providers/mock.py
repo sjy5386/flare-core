@@ -1,11 +1,11 @@
 from typing import List
 
 from subdomains.models import Subdomain
-from .base import BaseProvider
+from .base import BaseRecordProvider
 from ..types import Record
 
 
-class MockProvider(BaseProvider):
+class MockRecordProvider(BaseRecordProvider):
     i = 1
     records = []
 

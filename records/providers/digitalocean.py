@@ -4,11 +4,11 @@ from typing import List
 import digitalocean
 
 from subdomains.models import Subdomain
-from .base import BaseProvider
+from .base import BaseRecordProvider
 from ..types import Record
 
 
-class DigitalOceanProvider(BaseProvider):
+class DigitalOceanRecordProvider(BaseRecordProvider):
     token = os.environ.get('DIGITALOCEAN_ACCESS_TOKEN')
 
     def list_records(self, subdomain: Subdomain) -> List[Record]:
