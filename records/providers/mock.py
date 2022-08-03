@@ -1,39 +1,35 @@
-from typing import List
+from typing import Any, Dict, List, Optional
 
-from subdomains.models import Subdomain
 from .base import BaseRecordProvider
-from ..types import Record
 
 
 class MockRecordProvider(BaseRecordProvider):
     i = 1
     records = []
 
-    def list_records(self, subdomain: Subdomain) -> List[Record]:
-        return self.records
+    def list_records(self, subdomain_name: str) -> List[Dict[str, Any]]:
+        return list(filter(lambda x: x['subdomain_name'] == subdomain_name, self.records))
 
-    def create_record(self, subdomain: Subdomain, record: Record) -> Record:
-        record.id = self.i
-        self.i += 1
+    def create_record(self, subdomain_name: str, **kwargs) -> Dict[str, Any]:
+        record = {
+            'provider_id': self.i,
+            'subdomain_name': subdomain_name,
+        }
+        record.update(kwargs)
         self.records.append(record)
+        self.i += 1
         return record
 
-    def retrieve_record(self, subdomain: Subdomain, id) -> Record:
-        for r in self.records:
-            if r.id == id:
-                return r
+    def retrieve_record(self, subdomain_name: str, provider_id: str) -> Optional[Dict[str, Any]]:
+        try:
+            return next(filter(lambda x: x['provider_id'] == provider_id, self.records))
+        except StopIteration:
+            pass
 
-    def update_record(self, subdomain: Subdomain, id, record: Record) -> Record:
-        if not record.name.endswith(subdomain.name):
-            return record
-        for r in self.records:
-            if r.id == id:
-                r = record
-                r.id = id
-                return r
+    def update_record(self, subdomain_name: str, provider_id: str, **kwargs) -> Optional[Dict[str, Any]]:
+        record = self.retrieve_record(subdomain_name, provider_id)
+        record.update(kwargs)
+        return record
 
-    def delete_record(self, subdomain: Subdomain, id):
-        for r in self.records:
-            if r.id == id and r.name.endswith(subdomain.name):
-                self.records.remove(r)
-                return
+    def delete_record(self, subdomain_name: str, provider_id: str) -> None:
+        self.records.remove(self.retrieve_record(subdomain_name, provider_id))
