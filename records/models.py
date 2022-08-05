@@ -53,21 +53,27 @@ class Record(models.Model):
     @classmethod
     def list_records(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain):
         if provider:
-            return provider.list_records(subdomain)
+            provider_records = provider.list_records(subdomain.name)
+            for provider_record in provider_records:
+                cls.objects.update_or_create(provider_id=provider_record.get('provider_id'), defaults=provider_records)
         return cls.objects.filter(subdomain_name=subdomain.name)
 
     @classmethod
     def create_record(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain, **kwargs):
         record = cls(**kwargs)
         if provider:
-            provider.create_record(subdomain, record)
+            provider_record = provider.create_record(subdomain.name, **kwargs)
+            record.provider_id = provider_record.get('provider_id')
         return record.save()
 
     @classmethod
     def retrieve_record(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain, id: int):
         record = cls.objects.get(subdomain_name=subdomain.name, pk=id)
         if provider:
-            return provider.retrieve_record(subdomain, record.provider_id)
+            provider_record = provider.retrieve_record(subdomain.name, record.provider_id)
+            for k, v in provider_record.items():
+                setattr(record, k, v)
+            return record.save()
         return record
 
     @classmethod
@@ -76,12 +82,12 @@ class Record(models.Model):
         for k, v in kwargs.items():
             setattr(record, k, v)
         if provider:
-            provider.update_record(subdomain, record.provider_id, record)
+            provider.update_record(subdomain.name, record.provider_id, **kwargs)
         return record.save()
 
     @classmethod
     def delete_record(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain, id: int):
         record = cls.objects.get(subdomain_name=subdomain.name, pk=id)
         if provider:
-            provider.delete_record(subdomain, record.provider_id)
+            provider.delete_record(subdomain.name, record.provider_id)
         record.delete()
