@@ -12,7 +12,7 @@ class MockRecordProvider(BaseRecordProvider):
 
     def create_record(self, subdomain_name: str, **kwargs) -> Dict[str, Any]:
         record = {
-            'provider_id': self.i,
+            'provider_id': str(self.i),
             'subdomain_name': subdomain_name,
         }
         record.update(kwargs)
