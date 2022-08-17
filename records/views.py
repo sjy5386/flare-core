@@ -2,27 +2,40 @@ from django.contrib.auth.decorators import login_required
 from django.forms import Form
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
+from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_GET
+from django.views.generic import ListView
 
 from base.views import get_remote_ip_address
 from subdomains.models import Subdomain
+from . import models
 from .forms import RecordForm, ZoneImportForm
 from .providers import PROVIDER_CLASS
 from .types import Record
 
 
-@login_required
-@require_GET
-def list_records(request, subdomain_id):
-    provider = PROVIDER_CLASS()
-    subdomain = get_object_or_404(Subdomain, id=subdomain_id, user=request.user)
-    records = provider.list_records(subdomain)
-    subdomain.records = len(records)
-    subdomain.save()
-    return render(request, 'records/record_list.html', {
-        'subdomain': subdomain,
-        'records': records
-    })
+@method_decorator(login_required, name='dispatch')
+class RecordListView(ListView):
+    context_object_name = 'records'
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.subdomain = None
+
+    def get(self, request, *args, **kwargs):
+        self.subdomain = get_object_or_404(Subdomain, id=kwargs['subdomain_id'], user=request.user)
+        return super(RecordListView, self).get(request, *args, **kwargs)
+
+    def get_queryset(self):
+        provider = PROVIDER_CLASS()
+        return models.Record.list_records(provider, self.subdomain)
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(RecordListView, self).get_context_data(**kwargs)
+        context.update({
+            'subdomain': self.subdomain
+        })
+        return context
 
 
 @login_required
