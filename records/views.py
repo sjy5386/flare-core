@@ -22,9 +22,9 @@ class RecordListView(ListView):
         super().__init__(**kwargs)
         self.subdomain = None
 
-    def get(self, request, *args, **kwargs):
+    def dispatch(self, request, *args, **kwargs):
         self.subdomain = get_object_or_404(Subdomain, id=kwargs['subdomain_id'], user=request.user)
-        return super(RecordListView, self).get(request, *args, **kwargs)
+        return super(RecordListView, self).dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
         provider = PROVIDER_CLASS()
