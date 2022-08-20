@@ -4,12 +4,12 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_GET
-from django.views.generic import ListView
+from django.views.generic import ListView, FormView
 
 from base.views import get_remote_ip_address
 from subdomains.models import Subdomain
 from . import models
-from .forms import RecordForm, ZoneImportForm
+from .forms import RecordForm, ZoneImportForm, RecordModelForm
 from .providers import PROVIDER_CLASS
 from .types import Record
 
@@ -38,34 +38,39 @@ class RecordListView(ListView):
         return context
 
 
-@login_required
-def create_record(request, subdomain_id):
-    subdomain = get_object_or_404(Subdomain, id=subdomain_id, user=request.user)
-    if request.method == 'GET':
-        return render(request, 'records/record_create.html', {
-            'subdomain': subdomain,
-            'form': RecordForm(initial={
-                'name': subdomain.name,
-            }),
-            'ip_address': get_remote_ip_address(request),
+@method_decorator(login_required, name='dispatch')
+class RecordCreateView(FormView):
+    template_name = 'records/record_create.html'
+    form_class = RecordModelForm
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.subdomain = None
+
+    def dispatch(self, request, *args, **kwargs):
+        self.subdomain = get_object_or_404(Subdomain, id=kwargs['subdomain_id'], user=request.user)
+        return super(RecordCreateView, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(RecordCreateView, self).get_context_data(**kwargs)
+        context.update({
+            'subdomain': self.subdomain,
+            'ip_address': get_remote_ip_address(self.request),
         })
-    elif request.method == 'POST':
+        return context
+
+    def get_initial(self):
+        return {
+            'name': self.subdomain.name
+        }
+
+    def form_valid(self, form):
         provider = PROVIDER_CLASS()
-        name = request.POST['name']
-        ttl = request.POST['ttl']
-        type = request.POST['type']
-        target = request.POST['target']
-        kwargs = {}
-        if type == 'MX' or type == 'SRV':
-            kwargs['priority'] = request.POST['priority']
-        if type == 'SRV':
-            kwargs['service'] = request.POST['service']
-            kwargs['protocol'] = request.POST['protocol']
-            kwargs['weight'] = request.POST['weight']
-            kwargs['port'] = request.POST['port']
-        record = Record(name, ttl, type, target, **kwargs)
-        provider.create_record(subdomain, record)
-        return redirect(reverse('records:list', kwargs={'subdomain_id': subdomain_id}))
+        models.Record.create_record(provider, self.subdomain, **form.cleaned_data)
+        return super(RecordCreateView, self).form_valid(form)
+
+    def get_success_url(self):
+        return reverse('records:list', kwargs=self.kwargs)
 
 
 @login_required
