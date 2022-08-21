@@ -60,7 +60,7 @@ class Record(models.Model):
 
     @classmethod
     def create_record(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain, **kwargs):
-        record = cls(**kwargs)
+        record = cls(subdomain_name=subdomain.name, domain=subdomain.domain, **kwargs)
         if provider:
             provider_record = provider.create_record(subdomain.name, subdomain.domain, **kwargs)
             record.provider_id = provider_record.get('provider_id')
