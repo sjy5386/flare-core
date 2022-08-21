@@ -11,7 +11,7 @@ class MockRecordProvider(BaseRecordProvider):
     def list_records(self, subdomain_name: str, domain: Domain) -> List[Dict[str, Any]]:
         return list(filter(lambda x: x['subdomain_name'] == subdomain_name, self.records))
 
-    def create_record(self, subdomain_name: str, **kwargs) -> Dict[str, Any]:
+    def create_record(self, subdomain_name: str, domain: Domain, **kwargs) -> Dict[str, Any]:
         record = {
             'provider_id': str(self.i),
             'subdomain_name': subdomain_name,
