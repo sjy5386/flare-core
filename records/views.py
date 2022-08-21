@@ -8,7 +8,7 @@ from django.views.generic import ListView, FormView, DetailView
 
 from base.views import get_remote_ip_address
 from subdomains.models import Subdomain
-from .forms import ZoneImportForm, RecordModelForm
+from .forms import ZoneImportForm, RecordForm
 from .models import Record
 from .providers import PROVIDER_CLASS
 
@@ -40,7 +40,7 @@ class RecordListView(ListView):
 @method_decorator(login_required, name='dispatch')
 class RecordCreateView(FormView):
     template_name = 'records/record_create.html'
-    form_class = RecordModelForm
+    form_class = RecordForm
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -97,7 +97,7 @@ class RecordDetailView(DetailView):
 @method_decorator(login_required, name='dispatch')
 class RecordUpdateView(FormView):
     template_name = 'records/record_update.html'
-    form_class = RecordModelForm
+    form_class = RecordForm
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
