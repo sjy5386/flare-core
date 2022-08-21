@@ -8,8 +8,8 @@ from django.views.generic import ListView, FormView, DetailView
 
 from base.views import get_remote_ip_address
 from subdomains.models import Subdomain
-from . import models
 from .forms import ZoneImportForm, RecordModelForm
+from .models import Record
 from .providers import PROVIDER_CLASS
 
 
@@ -27,7 +27,7 @@ class RecordListView(ListView):
 
     def get_queryset(self):
         provider = PROVIDER_CLASS()
-        return models.Record.list_records(provider, self.subdomain)
+        return Record.list_records(provider, self.subdomain)
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super(RecordListView, self).get_context_data(**kwargs)
@@ -65,7 +65,7 @@ class RecordCreateView(FormView):
 
     def form_valid(self, form):
         provider = PROVIDER_CLASS()
-        models.Record.create_record(provider, self.subdomain, **form.cleaned_data)
+        Record.create_record(provider, self.subdomain, **form.cleaned_data)
         return super(RecordCreateView, self).form_valid(form)
 
     def get_success_url(self):
@@ -84,7 +84,7 @@ class RecordDetailView(DetailView):
 
     def get_object(self, queryset=None):
         provider = PROVIDER_CLASS()
-        return models.Record.retrieve_record(provider, self.subdomain, self.kwargs['id'])
+        return Record.retrieve_record(provider, self.subdomain, self.kwargs['id'])
 
     def get_context_data(self, **kwargs):
         context = super(RecordDetailView, self).get_context_data(**kwargs)
@@ -106,7 +106,7 @@ class RecordUpdateView(FormView):
 
     def dispatch(self, request, *args, **kwargs):
         self.subdomain = get_object_or_404(Subdomain, id=kwargs['subdomain_id'], user=request.user)
-        self.record = get_object_or_404(models.Record, id=kwargs['id'])
+        self.record = get_object_or_404(Record, id=kwargs['id'])
         return super(RecordUpdateView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -133,27 +133,43 @@ class RecordUpdateView(FormView):
 
     def form_valid(self, form):
         provider = PROVIDER_CLASS()
-        models.Record.update_record(provider, self.subdomain, self.kwargs['id'], **form.cleaned_data)
+        Record.update_record(provider, self.subdomain, self.kwargs['id'], **form.cleaned_data)
         return super(RecordUpdateView, self).form_valid(form)
 
     def get_success_url(self):
         return reverse('records:list', kwargs=self.kwargs)
 
 
-@login_required
-def delete_record(request, subdomain_id, id):
-    provider = PROVIDER_CLASS()
-    subdomain = get_object_or_404(Subdomain, id=subdomain_id, user=request.user)
-    if request.method == 'GET':
-        record = provider.retrieve_record(subdomain, id)
-        return render(request, 'records/record_delete.html', {
-            'subdomain': subdomain,
-            'record': record,
-            'form': Form()
+@method_decorator(login_required, name='dispatch')
+class RecordDeleteView(FormView):
+    template_name = 'records/record_delete.html'
+    form_class = Form
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.subdomain = None
+        self.record = None
+
+    def dispatch(self, request, *args, **kwargs):
+        self.subdomain = get_object_or_404(Subdomain, id=kwargs['subdomain_id'], user=request.user)
+        self.record = get_object_or_404(Record, id=kwargs['id'])
+        return super(RecordDeleteView, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(RecordDeleteView, self).get_context_data(**kwargs)
+        context.update({
+            'subdomain': self.subdomain,
+            'record': self.record,
         })
-    elif request.method == 'POST':
-        provider.delete_record(subdomain, id)
-        return redirect(reverse('records:list', kwargs={'subdomain_id': subdomain_id}))
+        return context
+
+    def form_valid(self, form):
+        provider = PROVIDER_CLASS()
+        Record.delete_record(provider, self.subdomain, self.kwargs['id'])
+        return super(RecordDeleteView, self).form_valid(form)
+
+    def get_success_url(self):
+        return reverse('records:list', kwargs=self.kwargs)
 
 
 @login_required
