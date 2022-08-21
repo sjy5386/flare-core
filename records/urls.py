@@ -8,7 +8,7 @@ urlpatterns = [
     path('export/', views.export_zone, name='zone_export'),
     path('import/', views.import_zone, name='zone_import'),
     path('create/', views.RecordCreateView.as_view(), name='create'),
-    path('<str:id>/', views.RecordDetailView.as_view(), name='detail'),
-    path('<str:id>/update/', views.update_record, name='update'),
+    path('<int:id>/', views.RecordDetailView.as_view(), name='detail'),
+    path('<int:id>/update/', views.RecordUpdateView.as_view(), name='update'),
     path('<str:id>/delete/', views.delete_record, name='delete'),
 ]
