@@ -4,7 +4,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_GET
-from django.views.generic import ListView, FormView
+from django.views.generic import ListView, FormView, DetailView
 
 from base.views import get_remote_ip_address
 from subdomains.models import Subdomain
@@ -73,16 +73,26 @@ class RecordCreateView(FormView):
         return reverse('records:list', kwargs=self.kwargs)
 
 
-@login_required
-@require_GET
-def retrieve_record(request, subdomain_id, id):
-    provider = PROVIDER_CLASS()
-    subdomain = get_object_or_404(Subdomain, id=subdomain_id, user=request.user)
-    record = provider.retrieve_record(subdomain, id)
-    return render(request, 'records/record_detail.html', {
-        'subdomain': subdomain,
-        'record': record
-    })
+@method_decorator(login_required, name='dispatch')
+class RecordDetailView(DetailView):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.subdomain = None
+
+    def dispatch(self, request, *args, **kwargs):
+        self.subdomain = get_object_or_404(Subdomain, id=kwargs['subdomain_id'], user=request.user)
+        return super(RecordDetailView, self).dispatch(request, *args, **kwargs)
+
+    def get_object(self, queryset=None):
+        provider = PROVIDER_CLASS()
+        return models.Record.retrieve_record(provider, self.subdomain, self.kwargs['id'])
+
+    def get_context_data(self, **kwargs):
+        context = super(RecordDetailView, self).get_context_data(**kwargs)
+        context.update({
+            'subdomain': self.subdomain,
+        })
+        return context
 
 
 @login_required
