@@ -95,3 +95,16 @@ class Record(models.Model):
     @classmethod
     def export_zone(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain) -> str:
         return '\n'.join(map(str, cls.list_records(provider, subdomain)))
+
+    @classmethod
+    def import_zone(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain, zone: str) -> None:
+        lines = list(filter(lambda x: x[0] != ';', map(lambda x: x.strip(), zone.splitlines())))
+        for line in lines:
+            r = line.split()
+            kwargs = {
+                'name': r[0],
+                'ttl': int(r[1]) if r[1] != 'IN' else int(r[2]),
+                'type': r[3],
+                'target': r[-1],
+            }
+            cls.create_record(provider, subdomain, **kwargs)
