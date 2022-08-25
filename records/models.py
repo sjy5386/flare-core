@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 from django.db import models
 
@@ -108,3 +108,11 @@ class Record(models.Model):
                 'target': r[-1],
             }
             cls.create_record(provider, subdomain, **kwargs)
+
+    @staticmethod
+    def split_name(full_name: str) -> Tuple[Optional[str], Optional[str], str]:
+        names = full_name.split('.')
+        service = names.pop(0) if names[0].startswith('_') else None
+        protocol = names.pop(0) if names[0].startswith('_') else None
+        name = '.'.join(names)
+        return service, protocol, name
