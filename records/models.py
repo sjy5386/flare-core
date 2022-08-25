@@ -124,3 +124,12 @@ class Record(models.Model):
         if not protocol.startswith('_'):
             protocol = '_' + protocol
         return '.'.join(filter(lambda x: x is not None, [service, protocol, name]))
+
+    @staticmethod
+    def split_data(data: str) -> Tuple[Optional[int], Optional[int], Optional[int], str]:
+        values = data.split()
+        priority = int(values[0]) if len(values) > 1 else None
+        weight = int(values[1]) if len(values) == 4 else None
+        port = int(values[2]) if len(values) == 4 else None
+        target = values[-1]
+        return priority, weight, port, target
