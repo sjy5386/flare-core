@@ -116,3 +116,11 @@ class Record(models.Model):
         protocol = names.pop(0) if names[0].startswith('_') else None
         name = '.'.join(names)
         return service, protocol, name
+
+    @staticmethod
+    def join_name(service: Optional[str], protocol: Optional[str], name: str) -> str:
+        if not service.startswith('_'):
+            service = '_' + service
+        if not protocol.startswith('_'):
+            protocol = '_' + protocol
+        return '.'.join(filter(lambda x: x is not None, [service, protocol, name]))
