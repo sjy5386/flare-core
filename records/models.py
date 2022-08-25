@@ -133,3 +133,7 @@ class Record(models.Model):
         port = int(values[2]) if len(values) == 4 else None
         target = values[-1]
         return priority, weight, port, target
+
+    @staticmethod
+    def join_data(priority: Optional[int], weight: Optional[int], port: Optional[int], target: str) -> str:
+        return ' '.join(map(str, filter(lambda x: x is not None, [priority, weight, port, target])))
