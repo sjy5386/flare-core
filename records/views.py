@@ -73,6 +73,8 @@ class RecordCreateView(FormView):
 
 @method_decorator(login_required, name='dispatch')
 class RecordDetailView(DetailView):
+    template_name = 'records/record_detail.html'
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.subdomain = None
