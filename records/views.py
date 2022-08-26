@@ -3,7 +3,6 @@ from django.forms import Form
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.utils.decorators import method_decorator
-from django.views.decorators.http import require_GET
 from django.views.generic import ListView, FormView, DetailView
 
 from base.views import get_remote_ip_address
@@ -172,16 +171,29 @@ class RecordDeleteView(FormView):
         return reverse('records:list', kwargs=self.kwargs)
 
 
-@login_required
-@require_GET
-def export_zone(request, subdomain_id):
-    provider = PROVIDER_CLASS()
-    subdomain = get_object_or_404(Subdomain, id=subdomain_id, user=request.user)
-    zone = provider.export_zone(subdomain)
-    return render(request, 'records/zone_export.html', {
-        'subdomain': subdomain,
-        'zone': zone
-    })
+@method_decorator(login_required, name='dispatch')
+class ZoneExportView(DetailView):
+    template_name = 'records/zone_export.html'
+    context_object_name = 'zone'
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.subdomain = None
+
+    def dispatch(self, request, *args, **kwargs):
+        self.subdomain = get_object_or_404(Subdomain, id=kwargs['subdomain_id'], user=request.user)
+        return super(ZoneExportView, self).dispatch(request, *args, **kwargs)
+
+    def get_object(self, queryset=None):
+        provider = PROVIDER_CLASS()
+        return Record.export_zone(provider, self.subdomain)
+
+    def get_context_data(self, **kwargs):
+        context = super(ZoneExportView, self).get_context_data(**kwargs)
+        context.update({
+            'subdomain': self.subdomain,
+        })
+        return context
 
 
 @login_required

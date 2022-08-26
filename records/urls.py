@@ -5,7 +5,7 @@ from . import views
 app_name = 'records'
 urlpatterns = [
     path('', views.RecordListView.as_view(), name='list'),
-    path('export/', views.export_zone, name='zone_export'),
+    path('export/', views.ZoneExportView.as_view(), name='zone_export'),
     path('import/', views.import_zone, name='zone_import'),
     path('create/', views.RecordCreateView.as_view(), name='create'),
     path('<int:id>/', views.RecordDetailView.as_view(), name='detail'),
