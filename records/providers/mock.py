@@ -34,4 +34,6 @@ class MockRecordProvider(BaseRecordProvider):
         return record
 
     def delete_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> None:
-        self.records.remove(self.retrieve_record(subdomain_name, provider_id))
+        record = self.retrieve_record(subdomain_name, domain, provider_id)
+        if record in self.records:
+            self.records.remove(record)
