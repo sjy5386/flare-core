@@ -8,6 +8,11 @@ class RecordForm(forms.ModelForm):
         model = Record
         exclude = ['created_at', 'updated_at', 'provider_id', 'subdomain_name', 'domain']
 
+    def __init__(self, *args, **kwargs):
+        super(RecordForm, self).__init__(*args, **kwargs)
+        for field in ['service', 'protocol', 'priority', 'weight', 'port']:
+            self.fields[field].required = False
+
 
 class ZoneImportForm(forms.Form):
     zone = forms.CharField(widget=forms.Textarea,
