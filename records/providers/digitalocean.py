@@ -5,7 +5,6 @@ import digitalocean
 
 from domains.models import Domain
 from .base import BaseRecordProvider
-from ..models import Record
 
 
 class DigitalOceanRecordProvider(BaseRecordProvider):
@@ -17,6 +16,7 @@ class DigitalOceanRecordProvider(BaseRecordProvider):
         return list(map(self.record_to_dict, filter(lambda e: e.name.endswith(subdomain_name), records)))
 
     def create_record(self, subdomain_name: str, domain: Domain, **kwargs) -> Dict[str, Any]:
+        from ..models import Record
         if not kwargs.get('name', subdomain_name).endswith(subdomain_name):
             return kwargs
         do_domain = digitalocean.Domain(token=self.token, name=domain.name)
@@ -69,6 +69,7 @@ class DigitalOceanRecordProvider(BaseRecordProvider):
 
     @staticmethod
     def record_to_dict(record) -> Dict[str, Any]:
+        from ..models import Record
         service, protocol, name = Record.split_name(record.name)
         d = {
             'provider_id': record.id,
