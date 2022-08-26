@@ -5,6 +5,7 @@ import digitalocean
 
 from domains.models import Domain
 from .base import BaseRecordProvider
+from ..models import Record
 
 
 class DigitalOceanRecordProvider(BaseRecordProvider):
@@ -20,7 +21,7 @@ class DigitalOceanRecordProvider(BaseRecordProvider):
             return kwargs
         do_domain = digitalocean.Domain(token=self.token, name=domain.name)
         new_record = do_domain.create_new_domain_record(
-            name=kwargs.get('name'),
+            name=Record.join_name(kwargs.get('service'), kwargs.get('protocol'), kwargs.get('name')),
             ttl=kwargs.get('ttl'),
             type=kwargs.get('ttl'),
             data=kwargs.get('target'),
@@ -68,11 +69,14 @@ class DigitalOceanRecordProvider(BaseRecordProvider):
 
     @staticmethod
     def record_to_dict(record) -> Dict[str, Any]:
+        service, protocol, name = Record.split_name(record.name)
         d = {
             'provider_id': record.id,
-            'name': record.name,
+            'name': name,
             'ttl': record.ttl,
             'type': record.type,
+            'service': service,
+            'protocol': protocol,
             'target': record.data,
         }
         if record.type in ['MX', 'SRV']:
