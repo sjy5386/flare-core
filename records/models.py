@@ -40,12 +40,11 @@ class Record(models.Model):
 
     @property
     def full_name(self) -> str:
-        name = f'{self.name}.{self.subdomain_name}.{self.domain.name}'
-        return name if self.type != 'SRV' else f'{self.service}.{self.protocol}.{name}'
+        return self.join_name(self.service, self.protocol, self.name)
 
     @property
     def data(self) -> str:
-        return f'{self.priority} {self.weight} {self.port} {self.target}'.strip()
+        return self.join_data(self.priority, self.weight, self.port, self.target)
 
     def __str__(self):
         return f'{self.full_name} {self.ttl} IN {self.type} {self.data}'
@@ -101,11 +100,18 @@ class Record(models.Model):
         lines = list(filter(lambda x: x[0] != ';', map(lambda x: x.strip(), zone.splitlines())))
         for line in lines:
             r = line.split()
+            service, protocol, name = cls.split_name(r[0])
+            priority, weight, port, target = cls.split_data(r[-1])
             kwargs = {
-                'name': r[0],
+                'name': name,
                 'ttl': int(r[1]) if r[1] != 'IN' else int(r[2]),
                 'type': r[3],
-                'target': r[-1],
+                'service': service,
+                'protocol': protocol,
+                'priority': priority,
+                'weight': weight,
+                'port': port,
+                'target': target,
             }
             cls.create_record(provider, subdomain, **kwargs)
 
