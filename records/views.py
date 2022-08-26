@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.forms import Form
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import ListView, FormView, DetailView
@@ -196,16 +196,31 @@ class ZoneExportView(DetailView):
         return context
 
 
-@login_required
-def import_zone(request, subdomain_id):
-    subdomain = get_object_or_404(Subdomain, id=subdomain_id, user=request.user)
-    if request.method == 'GET':
-        return render(request, 'records/zone_import.html', {
-            'subdomain': subdomain,
-            'form': ZoneImportForm()
+@method_decorator(login_required, name='dispatch')
+class ZoneImportView(FormView):
+    template_name = 'records/zone_import.html'
+    form_class = ZoneImportForm
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.subdomain = None
+
+    def dispatch(self, request, *args, **kwargs):
+        self.subdomain = get_object_or_404(Subdomain, id=kwargs['subdomain_id'], user=request.user)
+        return super(ZoneImportView, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(ZoneImportView, self).get_context_data(**kwargs)
+        context.update({
+            'subdomain': self.subdomain,
         })
-    elif request.method == 'POST':
+        return context
+
+    def form_valid(self, form):
         provider = PROVIDER_CLASS()
-        zone = request.POST['zone']
-        provider.import_zone(subdomain, zone)
-        return redirect(reverse('records:list', kwargs={'subdomain_id': subdomain_id}))
+        zone = form.cleaned_data.get('zone', '')
+        Record.import_zone(provider, self.subdomain, zone)
+        return super(ZoneImportView, self).form_valid(form)
+
+    def get_success_url(self):
+        return reverse('records:list', kwargs=self.kwargs)
