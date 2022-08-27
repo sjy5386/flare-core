@@ -125,9 +125,9 @@ class Record(models.Model):
 
     @staticmethod
     def join_name(service: Optional[str], protocol: Optional[str], name: str) -> str:
-        if not service.startswith('_'):
+        if service is not None and not service.startswith('_'):
             service = '_' + service
-        if not protocol.startswith('_'):
+        if protocol is not None and not protocol.startswith('_'):
             protocol = '_' + protocol
         return '.'.join(filter(lambda x: x is not None, [service, protocol, name]))
 
