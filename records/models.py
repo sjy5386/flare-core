@@ -76,7 +76,7 @@ class Record(models.Model):
             provider_record = provider.retrieve_record(subdomain.name, subdomain.domain, record.provider_id)
             for k, v in provider_record.items():
                 setattr(record, k, v)
-            return record.save()
+            record.save()
         return record
 
     @classmethod
