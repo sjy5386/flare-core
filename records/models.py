@@ -67,7 +67,8 @@ class Record(models.Model):
         if provider:
             provider_record = provider.create_record(subdomain.name, subdomain.domain, **kwargs)
             record.provider_id = provider_record.get('provider_id')
-        return record.save()
+        record.save()
+        return record
 
     @classmethod
     def retrieve_record(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain, id: int) -> 'Record':
