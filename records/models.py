@@ -53,8 +53,12 @@ class Record(models.Model):
     def list_records(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain) -> List['Record']:
         if provider:
             provider_records = provider.list_records(subdomain.name, subdomain.domain)
+            provider_record_id_set = set(map(lambda x: x['provider_id'], provider_records))
+            for record in cls.objects.filter(subdomain_name=subdomain.name):
+                if record.provider_id not in provider_record_id_set:
+                    record.delete()
             for provider_record in provider_records:
-                cls.objects.update_or_create(provider_id=provider_record.get('provider_id'), defaults=provider_records)
+                cls.objects.update_or_create(provider_id=provider_record.get('provider_id'), defaults=provider_record)
         return cls.objects.filter(subdomain_name=subdomain.name)
 
     @classmethod
