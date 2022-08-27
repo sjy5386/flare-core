@@ -138,7 +138,7 @@ class RecordUpdateView(FormView):
         return super(RecordUpdateView, self).form_valid(form)
 
     def get_success_url(self):
-        return reverse('records:list', kwargs=self.kwargs)
+        return reverse('records:list', kwargs={'subdomain_id': self.kwargs['subdomain_id']})
 
 
 @method_decorator(login_required, name='dispatch')
