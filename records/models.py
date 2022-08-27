@@ -62,7 +62,7 @@ class Record(models.Model):
         return cls.objects.filter(subdomain_name=subdomain.name)
 
     @classmethod
-    def create_record(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain, **kwargs) -> 'List':
+    def create_record(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain, **kwargs) -> 'Record':
         record = cls(subdomain_name=subdomain.name, domain=subdomain.domain, **kwargs)
         if provider:
             provider_record = provider.create_record(subdomain.name, subdomain.domain, **kwargs)
@@ -70,7 +70,7 @@ class Record(models.Model):
         return record.save()
 
     @classmethod
-    def retrieve_record(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain, id: int) -> 'List':
+    def retrieve_record(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain, id: int) -> 'Record':
         record = cls.objects.get(subdomain_name=subdomain.name, pk=id)
         if provider:
             provider_record = provider.retrieve_record(subdomain.name, subdomain.domain, record.provider_id)
@@ -80,7 +80,7 @@ class Record(models.Model):
         return record
 
     @classmethod
-    def update_record(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain, id: int, **kwargs) -> 'List':
+    def update_record(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain, id: int, **kwargs) -> 'Record':
         record = cls.objects.get(subdomain_name=subdomain.name, pk=id)
         for k, v in kwargs.items():
             setattr(record, k, v)
