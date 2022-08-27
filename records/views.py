@@ -26,7 +26,10 @@ class RecordListView(ListView):
 
     def get_queryset(self):
         provider = PROVIDER_CLASS()
-        return Record.list_records(provider, self.subdomain)
+        records = Record.list_records(provider, self.subdomain)
+        self.subdomain.records = len(records)
+        self.subdomain.save()
+        return records
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super(RecordListView, self).get_context_data(**kwargs)
