@@ -87,7 +87,8 @@ class Record(models.Model):
             setattr(record, k, v)
         if provider:
             provider.update_record(subdomain.name, subdomain.domain, record.provider_id, **kwargs)
-        return record.save()
+        record.save()
+        return record
 
     @classmethod
     def delete_record(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain, id: int) -> None:
