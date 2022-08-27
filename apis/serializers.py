@@ -75,21 +75,14 @@ class BaseRecordSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=255)
     ttl = serializers.IntegerField(min_value=0, max_value=65535)
     type = TypeField()
-    r_type = TypeField(required=False)  # deprecated
     data = serializers.CharField()
 
     def create(self, validated_data):
-        if 'r_type' in validated_data.keys():  # deprecated
-            validated_data['type'] = validated_data['r_type']
-            del validated_data['r_type']
         return BaseRecord(**validated_data)
 
     def update(self, instance, validated_data):
         instance.name = validated_data.get('name', instance.name)
         instance.ttl = validated_data.get('ttl', instance.ttl)
-        if 'r_type' in validated_data.keys():  # deprecated
-            validated_data['type'] = validated_data['r_type']
-            del validated_data['r_type']
         instance.type = validated_data.get('type', instance.type)
         instance.data = validated_data.get('data', instance.data)
         return instance
@@ -117,7 +110,6 @@ class RecordSerializer(BaseRecordSerializer):
     data = serializers.CharField(read_only=True)
 
     id = serializers.IntegerField(read_only=True)
-    identifier = serializers.IntegerField(read_only=True, required=False)  # deprecated
 
     service = serializers.CharField(required=False)
     protocol = serializers.CharField(required=False)
@@ -131,9 +123,6 @@ class RecordSerializer(BaseRecordSerializer):
     def create(self, validated_data):
         name = validated_data.get('name')
         ttl = validated_data.get('ttl')
-        if 'r_type' in validated_data.keys():  # deprecated
-            validated_data['type'] = validated_data['r_type']
-            del validated_data['r_type']
         type = validated_data.get('type')
         target = validated_data.get('target')
         kwargs = {}
@@ -145,14 +134,10 @@ class RecordSerializer(BaseRecordSerializer):
             kwargs['weight'] = validated_data.get('weight')
             kwargs['port'] = validated_data.get('port')
         instance = Record(name, ttl, type, target, **kwargs)
-        instance.identifier = instance.id  # deprecated
         return instance
 
     def update(self, instance, validated_data):
         instance = super(RecordSerializer, self).update(instance, validated_data)
-        if 'identifier' in validated_data.keys():  # deprecated
-            validated_data['id'] = validated_data['identifier']
-            del validated_data['identifier']
         instance.id = validated_data.get('id', instance.id)
         instance.target = validated_data.get('target', instance.target)
         if instance.type == 'MX' or instance.type == 'SRV':

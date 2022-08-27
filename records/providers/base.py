@@ -1,43 +1,21 @@
-from typing import List
+from typing import Any, Dict, List, Optional
 
-from subdomains.models import Subdomain
-from ..types import Record
+from domains.models import Domain
 
 
-class BaseProvider:
-    def list_records(self, subdomain: Subdomain) -> List[Record]:
+class BaseRecordProvider:
+    def list_records(self, subdomain_name: str, domain: Domain) -> List[Dict[str, Any]]:
         pass
 
-    def create_record(self, subdomain: Subdomain, record: Record) -> Record:
+    def create_record(self, subdomain_name: str, domain: Domain, **kwargs) -> Dict[str, Any]:
         pass
 
-    def retrieve_record(self, subdomain: Subdomain, id) -> Record:
+    def retrieve_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> Optional[Dict[str, Any]]:
         pass
 
-    def update_record(self, subdomain: Subdomain, id, record: Record) -> Record:
+    def update_record(self, subdomain_name: str, domain: Domain, provider_id: str, **kwargs
+                      ) -> Optional[Dict[str, Any]]:
         pass
 
-    def delete_record(self, subdomain: Subdomain, id):
-        pass
-
-    def export_zone(self, subdomain: Subdomain) -> str:
-        records = self.list_records(subdomain)
-        zone = ''
-        for record in records:
-            zone += str(record) + '\n'
-        return zone
-
-    def import_zone(self, subdomain: Subdomain, zone: str):
-        lines = zone.splitlines()
-        for line in lines:
-            if line[0] == ';':
-                continue
-            r = line.split()
-            record = Record(r[0], int(r[1]), r[3], ' '.join(r[4:]))
-            self.create_record(subdomain, record)
-
-    def provider_record_object_to_record_object(self, provider_record_object) -> Record:
-        pass
-
-    def record_object_to_provider_record_object(self, record_object: Record):
+    def delete_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> None:
         pass
