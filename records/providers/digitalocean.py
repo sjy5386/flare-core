@@ -29,7 +29,7 @@ class DigitalOceanRecordProvider(BaseRecordProvider):
             weight=kwargs.get('weight'),
             port=kwargs.get('port'),
         )
-        kwargs['provider_id'] = new_record['domain_record']['id']
+        kwargs['provider_id'] = str(new_record['domain_record']['id'])
         return kwargs
 
     def retrieve_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> Optional[Dict[str, Any]]:
@@ -72,7 +72,7 @@ class DigitalOceanRecordProvider(BaseRecordProvider):
         from ..models import Record
         service, protocol, name = Record.split_name(record.name)
         d = {
-            'provider_id': record.id,
+            'provider_id': str(record.id),
             'name': name,
             'ttl': record.ttl,
             'type': record.type,
