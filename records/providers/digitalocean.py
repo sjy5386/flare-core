@@ -23,13 +23,13 @@ class DigitalOceanRecordProvider(BaseRecordProvider):
         new_record = do_domain.create_new_domain_record(
             name=Record.join_name(kwargs.get('service'), kwargs.get('protocol'), kwargs.get('name')),
             ttl=kwargs.get('ttl'),
-            type=kwargs.get('ttl'),
+            type=kwargs.get('type'),
             data=kwargs.get('target'),
             priority=kwargs.get('priority'),
             weight=kwargs.get('weight'),
             port=kwargs.get('port'),
         )
-        kwargs['provider_id'] = new_record['domain_record']['id']
+        kwargs['provider_id'] = str(new_record['domain_record']['id'])
         return kwargs
 
     def retrieve_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> Optional[Dict[str, Any]]:
@@ -44,7 +44,7 @@ class DigitalOceanRecordProvider(BaseRecordProvider):
                       ) -> Optional[Dict[str, Any]]:
         if not kwargs.get('name', subdomain_name).endswith(subdomain_name):
             return kwargs
-        do_domain = digitalocean.Domain(token=self.token, name=subdomain_name)
+        do_domain = digitalocean.Domain(token=self.token, name=domain.name)
         do_id = int(provider_id)
         records = do_domain.get_records()
         for r in records:
@@ -60,7 +60,7 @@ class DigitalOceanRecordProvider(BaseRecordProvider):
         return kwargs
 
     def delete_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> None:
-        do_domain = digitalocean.Domain(token=self.token, name=subdomain_name)
+        do_domain = digitalocean.Domain(token=self.token, name=domain.name)
         do_id = int(provider_id)
         records = do_domain.get_records()
         for r in records:
@@ -72,7 +72,7 @@ class DigitalOceanRecordProvider(BaseRecordProvider):
         from ..models import Record
         service, protocol, name = Record.split_name(record.name)
         d = {
-            'provider_id': record.id,
+            'provider_id': str(record.id),
             'name': name,
             'ttl': record.ttl,
             'type': record.type,
