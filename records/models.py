@@ -58,6 +58,10 @@ class Record(models.Model):
                 if record.provider_id not in provider_record_id_set:
                     record.delete()
             for provider_record in provider_records:
+                provider_record.update({
+                    'subdomain_name': subdomain.name,
+                    'domain': subdomain.domain,
+                })
                 cls.objects.update_or_create(provider_id=provider_record.get('provider_id'), defaults=provider_record)
         return cls.objects.filter(subdomain_name=subdomain.name)
 
