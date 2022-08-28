@@ -1,3 +1,3 @@
-from .digitalocean import DigitalOceanProvider
+from .digitalocean import DigitalOceanRecordProvider
 
-PROVIDER_CLASS = DigitalOceanProvider
+PROVIDER_CLASS = DigitalOceanRecordProvider
