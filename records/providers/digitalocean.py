@@ -44,7 +44,7 @@ class DigitalOceanRecordProvider(BaseRecordProvider):
                       ) -> Optional[Dict[str, Any]]:
         if not kwargs.get('name', subdomain_name).endswith(subdomain_name):
             return kwargs
-        do_domain = digitalocean.Domain(token=self.token, name=subdomain_name)
+        do_domain = digitalocean.Domain(token=self.token, name=domain.name)
         do_id = int(provider_id)
         records = do_domain.get_records()
         for r in records:
@@ -60,7 +60,7 @@ class DigitalOceanRecordProvider(BaseRecordProvider):
         return kwargs
 
     def delete_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> None:
-        do_domain = digitalocean.Domain(token=self.token, name=subdomain_name)
+        do_domain = digitalocean.Domain(token=self.token, name=domain.name)
         do_id = int(provider_id)
         records = do_domain.get_records()
         for r in records:
