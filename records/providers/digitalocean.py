@@ -23,7 +23,7 @@ class DigitalOceanRecordProvider(BaseRecordProvider):
         new_record = do_domain.create_new_domain_record(
             name=Record.join_name(kwargs.get('service'), kwargs.get('protocol'), kwargs.get('name')),
             ttl=kwargs.get('ttl'),
-            type=kwargs.get('ttl'),
+            type=kwargs.get('type'),
             data=kwargs.get('target'),
             priority=kwargs.get('priority'),
             weight=kwargs.get('weight'),
