@@ -37,3 +37,6 @@ class MockRecordProvider(BaseRecordProvider):
         record = self.retrieve_record(subdomain_name, domain, provider_id)
         if record in self.records:
             self.records.remove(record)
+
+    def get_records(self, domain: Domain) -> List[Dict[str, Any]]:
+        return list(filter(lambda x: x['domain'] == domain, self.records))
