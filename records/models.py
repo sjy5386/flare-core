@@ -153,3 +153,10 @@ class Record(models.Model):
     @staticmethod
     def join_data(priority: Optional[int], weight: Optional[int], port: Optional[int], target: str) -> str:
         return ' '.join(map(str, filter(lambda x: x is not None, [priority, weight, port, target])))
+
+    @classmethod
+    def synchronize_records(cls, provider: BaseRecordProvider) -> None:
+        print('Start synchronizing records.')
+        for subdomain in Subdomain.objects.all():
+            cls.list_records(provider, subdomain)
+        print('End synchronizing records.')
