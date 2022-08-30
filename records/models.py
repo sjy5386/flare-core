@@ -128,8 +128,8 @@ class Record(models.Model):
     @staticmethod
     def split_name(full_name: str) -> Tuple[Optional[str], Optional[str], str]:
         names = full_name.split('.')
-        service = names.pop(0) if names[0].startswith('_') else None
-        protocol = names.pop(0) if names[0].startswith('_') else None
+        service = names.pop(0) if len(names) >= 3 and names[0].startswith('_') else None
+        protocol = names.pop(0) if len(names) >= 2 and names[0].startswith('_') else None
         name = '.'.join(names)
         return service, protocol, name
 
