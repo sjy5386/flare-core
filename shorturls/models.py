@@ -1,7 +1,10 @@
+from typing import List, Optional
+
 from django.db import models
 
 from base.settings.common import AUTH_USER_MODEL
 from domains.models import Domain
+from .providers.base import BaseShortUrlProvider
 
 
 class ShortUrl(models.Model):
@@ -30,6 +33,11 @@ class ShortUrl(models.Model):
 
     def get_short_url(self):  # deprecated
         return self.short_url
+
+    @classmethod
+    def list_short_urls(cls, provider: Optional[BaseShortUrlProvider], user: Optional[AUTH_USER_MODEL]
+                        ) -> List['ShortUrl']:
+        return cls.objects.filter(user=user)
 
 
 class BlockedDomain(models.Model):
