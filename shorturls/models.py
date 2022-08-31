@@ -21,11 +21,15 @@ class ShortUrl(models.Model):
             models.UniqueConstraint(fields=['domain', 'short'], name='unique_domain_short'),
         ]
 
+    @property
+    def short_url(self):
+        return f'https://{self.domain.name}/{self.short}'
+
     def __str__(self):
         return self.name
 
-    def get_short_url(self):
-        return f'https://{self.domain.name}/{self.short}'
+    def get_short_url(self):  # deprecated
+        return self.short_url
 
 
 class BlockedDomain(models.Model):
