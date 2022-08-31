@@ -46,6 +46,11 @@ class ShortUrl(models.Model):
         short_url.save()
         return short_url
 
+    @classmethod
+    def retrieve_short_url(cls, provider: Optional[BaseShortUrlProvider], user: Optional[AUTH_USER_MODEL],
+                           id: int) -> 'ShortUrl':
+        return cls.objects.get(id=id, user=user)
+
 
 class BlockedDomain(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
