@@ -136,6 +136,13 @@ class RecordUpdateView(FormView):
             'target': self.record.target,
         }
 
+    def get_form_kwargs(self):
+        kwargs = super(RecordUpdateView, self).get_form_kwargs()
+        kwargs.update({
+            'readonly_fields': ['name', 'type', 'service', 'protocol'],
+        })
+        return kwargs
+
     def form_valid(self, form):
         provider = PROVIDER_CLASS()
         Record.update_record(provider, self.subdomain, self.kwargs['id'], **form.cleaned_data)
