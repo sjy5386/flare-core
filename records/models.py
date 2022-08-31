@@ -88,6 +88,8 @@ class Record(models.Model):
     def update_record(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain, id: int, **kwargs) -> 'Record':
         record = cls.objects.get(subdomain_name=subdomain.name, pk=id)
         for k, v in kwargs.items():
+            if k in ['name', 'type', 'service', 'protocol']:
+                continue
             setattr(record, k, v)
         if provider:
             provider.update_record(subdomain.name, subdomain.domain, record.provider_id, **kwargs)
