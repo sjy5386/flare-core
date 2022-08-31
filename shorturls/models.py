@@ -39,6 +39,13 @@ class ShortUrl(models.Model):
                         ) -> List['ShortUrl']:
         return cls.objects.filter(user=user)
 
+    @classmethod
+    def create_short_url(cls, provider: Optional[BaseShortUrlProvider], user: Optional[AUTH_USER_MODEL],
+                         **kwargs) -> 'ShortUrl':
+        short_url = cls(user=user, **kwargs)
+        short_url.save()
+        return short_url
+
 
 class BlockedDomain(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
