@@ -30,7 +30,8 @@ class DigitalOceanRecordProvider(BaseRecordProvider):
             port=kwargs.get('port'),
         )
         kwargs['provider_id'] = str(new_record['domain_record']['id'])
-        del self.records[domain]
+        if domain in self.records:
+            del self.records[domain]
         return kwargs
 
     def retrieve_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> Optional[Dict[str, Any]]:
@@ -59,7 +60,8 @@ class DigitalOceanRecordProvider(BaseRecordProvider):
                     r.weight = kwargs.get('weight')
                     r.port = kwargs.get('port')
                 r.save()
-                del self.records[domain]
+                if domain in self.records:
+                    del self.records[domain]
                 break
         return kwargs
 
@@ -70,7 +72,8 @@ class DigitalOceanRecordProvider(BaseRecordProvider):
         for r in do_records:
             if r.id == do_id and r.name.endswith(subdomain_name):
                 r.destroy()
-                del self.records[domain]
+                if domain in self.records:
+                    del self.records[domain]
                 break
 
     @staticmethod
@@ -93,7 +96,7 @@ class DigitalOceanRecordProvider(BaseRecordProvider):
         return d
 
     def get_records(self, domain: Domain) -> List[Dict[str, Any]]:
-        if domain not in self.records.keys():
+        if domain not in self.records:
             do_domain = digitalocean.Domain(token=self.token, name=domain.name)
             do_records = do_domain.get_records()
             self.records[domain] = list(map(self.record_to_dict, do_records))
