@@ -9,11 +9,11 @@ from .base import BaseRecordProvider
 
 class DigitalOceanRecordProvider(BaseRecordProvider):
     token = os.environ.get('DIGITALOCEAN_ACCESS_TOKEN')
+    records: Dict[Domain, List[Dict[str, Any]]] = {}
 
     def list_records(self, subdomain_name: str, domain: Domain) -> List[Dict[str, Any]]:
-        do_domain = digitalocean.Domain(token=self.token, name=domain.name)
-        records = do_domain.get_records()
-        return list(map(self.record_to_dict, filter(lambda e: e.name.endswith(subdomain_name), records)))
+        records = self.get_records(domain)
+        return list(filter(lambda e: e.get('name').endswith(subdomain_name), records))
 
     def create_record(self, subdomain_name: str, domain: Domain, **kwargs) -> Dict[str, Any]:
         from ..models import Record
@@ -30,15 +30,18 @@ class DigitalOceanRecordProvider(BaseRecordProvider):
             port=kwargs.get('port'),
         )
         kwargs['provider_id'] = str(new_record['domain_record']['id'])
+        if domain in self.records:
+            del self.records[domain]
         return kwargs
 
     def retrieve_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> Optional[Dict[str, Any]]:
-        do_domain = digitalocean.Domain(token=self.token, name=domain.name)
         do_id = int(provider_id)
-        records = do_domain.get_records()
-        for r in records:
-            if r.id == do_id and r.name.endswith(subdomain_name):
-                return self.record_to_dict(r)
+        records = self.get_records(domain)
+        try:
+            return next(filter(lambda x: int(x.get('provider_id')) == do_id and x.get('name').endswith(subdomain_name),
+                               records))
+        except StopIteration:
+            pass
 
     def update_record(self, subdomain_name: str, domain: Domain, provider_id: str, **kwargs
                       ) -> Optional[Dict[str, Any]]:
@@ -46,8 +49,8 @@ class DigitalOceanRecordProvider(BaseRecordProvider):
             return kwargs
         do_domain = digitalocean.Domain(token=self.token, name=domain.name)
         do_id = int(provider_id)
-        records = do_domain.get_records()
-        for r in records:
+        do_records = do_domain.get_records()
+        for r in do_records:
             if r.id == do_id:
                 r.ttl = kwargs.get('ttl')
                 r.data = kwargs.get('target')
@@ -57,15 +60,21 @@ class DigitalOceanRecordProvider(BaseRecordProvider):
                     r.weight = kwargs.get('weight')
                     r.port = kwargs.get('port')
                 r.save()
+                if domain in self.records:
+                    del self.records[domain]
+                break
         return kwargs
 
     def delete_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> None:
         do_domain = digitalocean.Domain(token=self.token, name=domain.name)
         do_id = int(provider_id)
-        records = do_domain.get_records()
-        for r in records:
+        do_records = do_domain.get_records()
+        for r in do_records:
             if r.id == do_id and r.name.endswith(subdomain_name):
                 r.destroy()
+                if domain in self.records:
+                    del self.records[domain]
+                break
 
     @staticmethod
     def record_to_dict(record) -> Dict[str, Any]:
@@ -85,3 +94,10 @@ class DigitalOceanRecordProvider(BaseRecordProvider):
         if record.type in ['SRV']:
             d.update({'weight': record.weight, 'port': record.port})
         return d
+
+    def get_records(self, domain: Domain) -> List[Dict[str, Any]]:
+        if domain not in self.records:
+            do_domain = digitalocean.Domain(token=self.token, name=domain.name)
+            do_records = do_domain.get_records()
+            self.records[domain] = list(map(self.record_to_dict, do_records))
+        return self.records.get(domain)
