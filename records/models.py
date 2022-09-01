@@ -88,6 +88,8 @@ class Record(models.Model):
     def update_record(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain, id: int, **kwargs) -> 'Record':
         record = cls.objects.get(subdomain_name=subdomain.name, pk=id)
         for k, v in kwargs.items():
+            if k in ['name', 'type', 'service', 'protocol']:
+                continue
             setattr(record, k, v)
         if provider:
             provider.update_record(subdomain.name, subdomain.domain, record.provider_id, **kwargs)
@@ -128,8 +130,8 @@ class Record(models.Model):
     @staticmethod
     def split_name(full_name: str) -> Tuple[Optional[str], Optional[str], str]:
         names = full_name.split('.')
-        service = names.pop(0) if names[0].startswith('_') else None
-        protocol = names.pop(0) if names[0].startswith('_') else None
+        service = names.pop(0) if len(names) >= 3 and names[0].startswith('_') else None
+        protocol = names.pop(0) if len(names) >= 2 and names[0].startswith('_') else None
         name = '.'.join(names)
         return service, protocol, name
 
@@ -153,3 +155,10 @@ class Record(models.Model):
     @staticmethod
     def join_data(priority: Optional[int], weight: Optional[int], port: Optional[int], target: str) -> str:
         return ' '.join(map(str, filter(lambda x: x is not None, [priority, weight, port, target])))
+
+    @classmethod
+    def synchronize_records(cls, provider: BaseRecordProvider) -> None:
+        print('Start synchronizing records.')
+        for subdomain in Subdomain.objects.all():
+            cls.list_records(provider, subdomain)
+        print('End synchronizing records.')

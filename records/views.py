@@ -15,6 +15,7 @@ from .providers import PROVIDER_CLASS
 @method_decorator(login_required, name='dispatch')
 class RecordListView(ListView):
     context_object_name = 'records'
+    ordering = 'name'
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -134,6 +135,13 @@ class RecordUpdateView(FormView):
             'port': self.record.port,
             'target': self.record.target,
         }
+
+    def get_form_kwargs(self):
+        kwargs = super(RecordUpdateView, self).get_form_kwargs()
+        kwargs.update({
+            'readonly_fields': ['name', 'type', 'service', 'protocol'],
+        })
+        return kwargs
 
     def form_valid(self, form):
         provider = PROVIDER_CLASS()
