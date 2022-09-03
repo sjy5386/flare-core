@@ -27,7 +27,7 @@ class ShortUrl(models.Model):
 
     @property
     def short_url(self):
-        return f'https://{self.domain.name}/{self.short}'
+        return self.join_short_url(self.domain.name, self.short)
 
     def __str__(self):
         return self.name
@@ -58,6 +58,10 @@ class ShortUrl(models.Model):
     def split_short_url(short_url: str) -> Tuple[str, str]:
         parsed_url = urlparse(short_url)
         return parsed_url.netloc, parsed_url.path[1:]
+
+    @staticmethod
+    def join_short_url(domain_name: str, short: str) -> str:
+        return f'https://{domain_name}/{short}'
 
 
 class BlockedDomain(models.Model):
