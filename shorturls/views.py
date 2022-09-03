@@ -3,7 +3,9 @@ from urllib.parse import urlparse
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
+from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_GET
+from django.views.generic import ListView
 
 from domains.models import Domain
 from .forms import ShortUrlForm
@@ -11,12 +13,14 @@ from .models import ShortUrl, BlockedDomain
 from .providers import PROVIDER_CLASS
 
 
-@login_required
-@require_GET
-def list_short_urls(request):
-    return render(request, 'shorturls/list.html', {
-        'object_list': ShortUrl.objects.filter(user=request.user).order_by('-id')
-    })
+@method_decorator(login_required, name='dispatch')
+class ShortUrlListView(ListView):
+    template_name = 'shorturls/list.html'
+    ordering = '-id'
+
+    def get_queryset(self):
+        provider = PROVIDER_CLASS()
+        return ShortUrl.list_short_urls(provider, self.request.user).order_by(self.get_ordering())
 
 
 @login_required

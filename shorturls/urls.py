@@ -4,7 +4,7 @@ from . import views
 
 app_name = 'shorturls'
 urlpatterns = [
-    path('', views.list_short_urls, name='list'),
+    path('', views.ShortUrlListView.as_view(), name='list'),
     path('create/', views.create_short_url, name='create'),
     path('<int:id>/', views.detail_short_url, name='detail'),
 ]
