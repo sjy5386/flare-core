@@ -1,9 +1,7 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
-from django.views.decorators.http import require_GET
-from django.views.generic import ListView, FormView
+from django.views.generic import ListView, FormView, DetailView
 
 from .forms import ShortUrlForm
 from .models import ShortUrl
@@ -32,9 +30,10 @@ class ShortUrlCreateView(FormView):
         return super(ShortUrlCreateView, self).form_valid(form)
 
 
-@login_required
-@require_GET
-def detail_short_url(request, id: int):
-    return render(request, 'shorturls/detail.html', {
-        'object': get_object_or_404(ShortUrl, id=id, user=request.user)
-    })
+@method_decorator(login_required, name='dispatch')
+class ShortUrlDetailView(DetailView):
+    template_name = 'shorturls/detail.html'
+
+    def get_object(self, queryset=None):
+        provider = PROVIDER_CLASS()
+        return ShortUrl.retrieve_short_url(provider, self.request.user, self.kwargs['id'])
