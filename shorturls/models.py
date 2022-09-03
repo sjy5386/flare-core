@@ -42,6 +42,8 @@ class ShortUrl(models.Model):
     @classmethod
     def create_short_url(cls, provider: Optional[BaseShortUrlProvider], user: Optional[AUTH_USER_MODEL],
                          **kwargs) -> 'ShortUrl':
+        if provider:
+            kwargs['short'] = provider.create_short_url(kwargs.get('domain'), kwargs.get('long_url'))
         short_url = cls(user=user, **kwargs)
         short_url.save()
         return short_url
