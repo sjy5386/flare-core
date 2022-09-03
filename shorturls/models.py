@@ -1,4 +1,5 @@
-from typing import List, Optional
+from typing import List, Optional, Tuple
+from urllib.parse import urlparse
 
 from django.db import models
 
@@ -52,6 +53,11 @@ class ShortUrl(models.Model):
     def retrieve_short_url(cls, provider: Optional[BaseShortUrlProvider], user: Optional[AUTH_USER_MODEL],
                            id: int) -> 'ShortUrl':
         return cls.objects.get(id=id, user=user)
+
+    @staticmethod
+    def split_short_url(short_url: str) -> Tuple[str, str]:
+        parsed_url = urlparse(short_url)
+        return parsed_url.netloc, parsed_url.path[1:]
 
 
 class BlockedDomain(models.Model):
