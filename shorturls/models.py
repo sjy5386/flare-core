@@ -62,13 +62,3 @@ class ShortUrl(models.Model):
     @staticmethod
     def join_short_url(domain_name: str, short: str) -> str:
         return f'https://{domain_name}/{short}'
-
-
-class BlockedDomain(models.Model):
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    domain = models.CharField(max_length=255, unique=True)
-
-    def __str__(self):
-        return self.domain
