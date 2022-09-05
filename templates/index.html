@@ -1,4 +1,5 @@
 {% extends 'common/base.html' %}
+{% load django_bootstrap5 %}
 {% block content %}
     {% if user.is_authenticated %}
         <h3>Dashboard</h3>
@@ -20,4 +21,14 @@
     {% else %}
         <p>Free subdomains and short URLs.</p>
     {% endif %}
+    <h3>Subdomains</h3>
+    <form method="get" action="/subdomains/search">
+        {% bootstrap_form subdomain_form %}
+        {% bootstrap_button button_type="submit" content="Search" %}
+    </form>
+    <h3>Short URLs</h3>
+    <form method="get" action="/shorturls/create">
+        {% bootstrap_form short_url_form %}
+        {% bootstrap_button button_type="submit" content="Shorten" %}
+    </form>
 {% endblock %}

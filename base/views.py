@@ -3,20 +3,25 @@ from django.shortcuts import render
 
 from boards.models import Post, Comment
 from contacts.models import Contact
+from shorturls.forms import ShortUrlLiteForm
 from shorturls.models import ShortUrl
+from subdomains.forms import SubdomainSearchLiteForm
 from subdomains.models import Subdomain
 
 
 def index(request: HttpRequest):
-    context = None
+    context = {
+        'subdomain_form': SubdomainSearchLiteForm(),
+        'short_url_form': ShortUrlLiteForm(),
+    }
     if request.user.is_authenticated:
-        context = {
+        context.update({
             'subdomains': Subdomain.objects.filter(user=request.user),
             'contacts': Contact.objects.filter(user=request.user),
             'shorturls': ShortUrl.objects.filter(user=request.user),
             'posts': Post.objects.filter(user=request.user),
             'comments': Comment.objects.filter(user=request.user),
-        }
+        })
     return render(request, 'index.html', context)
 
 
