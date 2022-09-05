@@ -101,3 +101,10 @@ class Filter(models.Model):
                 return urlparse(t) > urlparse(self.content)
 
         return not f(target.lower() if self.ignore_case else target) ^ self.is_positive
+
+    @classmethod
+    def filter_all(cls, target: str) -> bool:
+        for f in cls.objects.all():
+            if not f.filter(target):
+                return False
+        return True
