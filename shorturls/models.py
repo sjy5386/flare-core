@@ -82,3 +82,22 @@ class Filter(models.Model):
     is_positive = models.BooleanField('Is positive', default=False)
 
     count = models.PositiveIntegerField('Count', default=0)
+
+    def filter(self, target: str) -> bool:
+        def f(t: str) -> bool:
+            if self.type == self.FilterType.EQUAL:
+                return t == self.content
+            elif self.type == self.FilterType.CONTAIN:
+                return self.content in t
+            elif self.type == self.FilterType.START_WITH:
+                return t.startswith(self.content)
+            elif self.type == self.FilterType.END_WITH:
+                return t.endswith(self.content)
+            elif self.type == self.FilterType.REGEX:
+                import re
+                return bool(re.search(self.content, t))
+            elif self.type == self.FilterType.URL:
+                from urllib.parse import urlparse
+                return urlparse(t) > urlparse(self.content)
+
+        return not f(target.lower() if self.ignore_case else target) ^ self.is_positive
