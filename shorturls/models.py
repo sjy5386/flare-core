@@ -66,18 +66,18 @@ class ShortUrl(models.Model):
 
 class Filter(models.Model):
     class FilterType(models.TextChoices):
-        EQUAL = 'E', 'Equal'
-        CONTAIN = 'C', 'Contain'
-        START_WITH = 'S', 'Start with'
-        END_WITH = 'E', 'End with'
-        REGEX = 'R', 'Regular expression'
-        URL = 'U', 'URL'
+        EQUAL = 'EQ', 'Equal'
+        CONTAIN = 'CO', 'Contain'
+        START_WITH = 'ST', 'Start with'
+        END_WITH = 'EN', 'End with'
+        REGEX = 'RE', 'Regular expression'
+        URL = 'UR', 'URL'
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     content = models.CharField('Content', max_length=511)
-    type = models.CharField('Type', max_length=1, choices=FilterType.choices, default=FilterType.EQUAL)
+    type = models.CharField('Type', max_length=2, choices=FilterType.choices, default=FilterType.EQUAL)
     ignore_case = models.BooleanField('Ignore case', default=True)
     is_positive = models.BooleanField('Is positive', default=False)
 
