@@ -24,6 +24,11 @@ class ShortUrlCreateView(FormView):
     form_class = ShortUrlForm
     success_url = reverse_lazy('shorturls:list')
 
+    def get_initial(self):
+        return {
+            'long_url': self.request.GET.get('long_url'),
+        }
+
     def form_valid(self, form):
         provider = PROVIDER_CLASS()
         ShortUrl.create_short_url(provider, self.request.user, **form.cleaned_data)
