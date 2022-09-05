@@ -62,3 +62,23 @@ class ShortUrl(models.Model):
     @staticmethod
     def join_short_url(domain_name: str, short: str) -> str:
         return f'https://{domain_name}/{short}'
+
+
+class Filter(models.Model):
+    class FilterType(models.TextChoices):
+        EQUAL = 'E', 'Equal'
+        CONTAIN = 'C', 'Contain'
+        START_WITH = 'S', 'Start with'
+        END_WITH = 'E', 'End with'
+        REGEX = 'R', 'Regular expression'
+        URL = 'U', 'URL'
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    content = models.CharField('Content', max_length=511)
+    type = models.CharField('Type', max_length=1, choices=FilterType.choices, default=FilterType.EQUAL)
+    ignore_case = models.BooleanField('Ignore case', default=True)
+    is_positive = models.BooleanField('Is positive', default=False)
+
+    count = models.PositiveIntegerField('Count', default=0)
