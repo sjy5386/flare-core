@@ -6,6 +6,7 @@ from django.db import models
 from base.settings.common import AUTH_USER_MODEL
 from domains.models import Domain
 from .providers.base import BaseShortUrlProvider
+from .validators import validate_filter_long_url
 
 
 class ShortUrl(models.Model):
@@ -18,7 +19,7 @@ class ShortUrl(models.Model):
     name = models.CharField(max_length=63)
 
     short = models.CharField(max_length=31)
-    long_url = models.URLField(max_length=2047)
+    long_url = models.URLField(max_length=2047, validators=[validate_filter_long_url])
 
     class Meta:
         constraints = [
