@@ -1,44 +1,44 @@
-from urllib.parse import urlparse
-
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect, get_object_or_404
-from django.urls import reverse
-from django.views.decorators.http import require_GET
+from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
+from django.views.generic import ListView, FormView, DetailView
 
-from domains.models import Domain
 from .forms import ShortUrlForm
-from .models import ShortUrl, BlockedDomain
+from .models import ShortUrl
 from .providers import PROVIDER_CLASS
 
 
-@login_required
-@require_GET
-def list_short_urls(request):
-    return render(request, 'shorturls/list.html', {
-        'object_list': ShortUrl.objects.filter(user=request.user).order_by('-id')
-    })
+@method_decorator(login_required, name='dispatch')
+class ShortUrlListView(ListView):
+    template_name = 'shorturls/list.html'
+    ordering = '-id'
 
-
-@login_required
-def create_short_url(request):
-    if request.method == 'GET':
-        return render(request, 'shorturls/create.html', {
-            'form': ShortUrlForm()
-        })
-    elif request.method == 'POST':
+    def get_queryset(self):
         provider = PROVIDER_CLASS()
-        domain = get_object_or_404(Domain, id=request.POST['domain'])
-        name = request.POST['name']
-        long_url = request.POST['long_url']
-        if len(BlockedDomain.objects.filter(domain=urlparse(long_url).netloc)) == 0:
-            short = provider.create_short_url(domain, long_url)
-            ShortUrl(user=request.user, domain=domain, name=name, short=short, long_url=long_url).save()
-        return redirect(reverse('shorturls:list'))
+        return ShortUrl.list_short_urls(provider, self.request.user).order_by(self.get_ordering())
 
 
-@login_required
-@require_GET
-def detail_short_url(request, id: int):
-    return render(request, 'shorturls/detail.html', {
-        'object': get_object_or_404(ShortUrl, id=id, user=request.user)
-    })
+@method_decorator(login_required, name='dispatch')
+class ShortUrlCreateView(FormView):
+    template_name = 'shorturls/create.html'
+    form_class = ShortUrlForm
+    success_url = reverse_lazy('shorturls:list')
+
+    def get_initial(self):
+        return {
+            'long_url': self.request.GET.get('long_url'),
+        }
+
+    def form_valid(self, form):
+        provider = PROVIDER_CLASS()
+        ShortUrl.create_short_url(provider, self.request.user, **form.cleaned_data)
+        return super(ShortUrlCreateView, self).form_valid(form)
+
+
+@method_decorator(login_required, name='dispatch')
+class ShortUrlDetailView(DetailView):
+    template_name = 'shorturls/detail.html'
+
+    def get_object(self, queryset=None):
+        provider = PROVIDER_CLASS()
+        return ShortUrl.retrieve_short_url(provider, self.request.user, self.kwargs['id'])

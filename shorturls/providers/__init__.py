@@ -1,3 +1,3 @@
-from .firebase import FirebaseDynamicLinksProvider
+from .firebase import FirebaseDynamicLinksShortUrlProvider
 
-PROVIDER_CLASS = FirebaseDynamicLinksProvider
+PROVIDER_CLASS = FirebaseDynamicLinksShortUrlProvider
