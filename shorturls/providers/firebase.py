@@ -3,10 +3,10 @@ import os
 import requests
 
 from domains.models import Domain
-from .base import BaseProvider
+from .base import BaseShortUrlProvider
 
 
-class FirebaseDynamicLinksProvider(BaseProvider):
+class FirebaseDynamicLinksShortUrlProvider(BaseShortUrlProvider):
     api_key = os.environ.get("FIREBASE_WEB_API_KEY")
 
     def create_short_url(self, domain: Domain, long_url: str) -> str:

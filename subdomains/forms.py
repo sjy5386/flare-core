@@ -12,6 +12,11 @@ class SubdomainSearchForm(forms.Form):
     hide_unavailable = forms.BooleanField(required=False)
 
 
+class SubdomainSearchLiteForm(SubdomainSearchForm):
+    domain = None
+    hide_unavailable = None
+
+
 class SubdomainWhoisForm(forms.Form):
     q = forms.CharField(label='Subdomain Name')
 
