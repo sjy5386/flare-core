@@ -1,13 +1,16 @@
 import datetime
 
 from rest_framework import viewsets, permissions
+from rest_framework.generics import get_object_or_404
 
+import records.providers
 import shorturls.providers
 from contacts.models import Contact
 from domains.models import Domain
+from records.models import Record
 from shorturls.models import ShortUrl
 from subdomains.models import Subdomain
-from .serializers import ContactSerializer, DomainSerializer, ShortUrlSerializer, SubdomainSerializer
+from .serializers import ContactSerializer, DomainSerializer, ShortUrlSerializer, SubdomainSerializer, RecordSerializer
 
 
 class ContactViewSet(viewsets.ModelViewSet):
@@ -45,3 +48,13 @@ class SubdomainViewSet(viewsets.ModelViewSet):
 
     def perform_update(self, serializer):
         serializer.save(expiry=datetime.datetime.now() + datetime.timedelta(days=90))
+
+
+class RecordViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = RecordSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        provider = records.providers.PROVIDER_CLASS()
+        subdomain = get_object_or_404(Subdomain, pk=self.kwargs['subdomain_pk'])
+        return Record.list_records(provider, subdomain)

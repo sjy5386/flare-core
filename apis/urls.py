@@ -12,6 +12,7 @@ router.register('shorturls', views.ShortUrlViewSet, basename='shorturl')
 router.register('subdomains', views.SubdomainViewSet, basename='subdomain')
 
 subdomains_router = NestedDefaultRouter(router, 'subdomains', lookup='subdomain')
+subdomains_router.register('records', views.RecordViewSet, basename='record')
 
 urlpatterns = [
     path('', include(router.urls)),
