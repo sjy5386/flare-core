@@ -2,6 +2,7 @@ import datetime
 
 from rest_framework import viewsets, permissions
 
+import shorturls.providers
 from contacts.models import Contact
 from domains.models import Domain
 from shorturls.models import ShortUrl
@@ -28,7 +29,8 @@ class ShortUrlViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        return ShortUrl.objects.filter(user=self.request.user)
+        provider = shorturls.providers.PROVIDER_CLASS()
+        return ShortUrl.list_short_urls(provider, self.request.user)
 
 
 class SubdomainViewSet(viewsets.ModelViewSet):
