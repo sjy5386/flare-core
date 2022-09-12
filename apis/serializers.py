@@ -5,6 +5,7 @@ from rest_framework.validators import UniqueTogetherValidator
 
 from contacts.models import Contact
 from domains.models import Domain
+from records.models import Record
 from shorturls.models import ShortUrl
 from subdomains.models import Subdomain
 
@@ -63,3 +64,10 @@ class SubdomainSerializer(serializers.ModelSerializer):
 
     def get_full_name(self, obj):
         return str(obj)
+
+
+class RecordSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Record
+        exclude = ['provider_id']
+        read_only_fields = ['created_at', 'updated_at']
