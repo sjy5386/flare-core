@@ -23,7 +23,7 @@
         {% for record in records %}
             <tr>
                 <td><a href="{% url 'records:detail' subdomain.id record.id %}">{{ record.id }}</a></td>
-                <td>{{ record.name }}</td>
+                <td>{{ record.full_name }}</td>
                 <td>{{ record.ttl }}</td>
                 <td>{{ record.type }}</td>
                 <td>{{ record.data }}</td>
