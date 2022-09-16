@@ -4,6 +4,7 @@ from django.db import models
 
 from domains.models import Domain
 from subdomains.models import Subdomain
+from .exceptions import RecordError
 from .providers.base import BaseRecordProvider
 
 
@@ -67,6 +68,8 @@ class Record(models.Model):
 
     @classmethod
     def create_record(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain, **kwargs) -> 'Record':
+        if not kwargs.get('name', '').endswith(subdomain.name):
+            raise RecordError('Name is invalid.')
         if kwargs.get('type') in ['NS', 'CNAME', 'MX', 'SRV'] and not kwargs.get('target').endswith('.'):
             kwargs['target'] = kwargs.get('target') + '.'
         record = cls(subdomain_name=subdomain.name, domain=subdomain.domain, **kwargs)
