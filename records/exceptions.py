@@ -1,0 +1,2 @@
+class RecordError(Exception):
+    pass
