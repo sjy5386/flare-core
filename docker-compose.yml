@@ -13,16 +13,17 @@ services:
       - 3306:3306
 
   app:
-    build:
-      context: .
+    image: python:3.10
     volumes:
       - .:/app
+    working_dir: /app
     ports:
       - 8000:8000
     depends_on:
       - db
     extra_hosts:
       - host.docker.internal:host-gateway
+    entrypoint: [ "/bin/bash", "./python.sh" ]
 
   web:
     image: nginx
