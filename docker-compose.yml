@@ -12,6 +12,11 @@ services:
     ports:
       - 3306:3306
 
+  cache:
+    image: redis
+    ports:
+      - 6379:6379
+
   app:
     image: python:3.10
     volumes:
@@ -21,6 +26,7 @@ services:
       - 8000:8000
     depends_on:
       - db
+      - cache
     extra_hosts:
       - host.docker.internal:host-gateway
     entrypoint: [ "/bin/bash", "./python.sh" ]
