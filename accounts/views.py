@@ -1,11 +1,12 @@
 from django.contrib import messages
 from django.contrib.auth import get_user_model, login
 from django.contrib.auth.decorators import login_required
+from django.forms import Form
 from django.http import HttpRequest
 from django.shortcuts import render, redirect
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, FormView
 from social_django.models import UserSocialAuth
 
 from .decorators import logout_required
@@ -49,3 +50,15 @@ def register(request: HttpRequest):
                                                     first_name=first_name, last_name=last_name)
         login(request, user)
         return redirect(reverse('profile'))
+
+
+@method_decorator(login_required, name='dispatch')
+class UnregisterView(FormView):
+    template_name = 'accounts/unregister.html'
+    form_class = Form
+    success_url = reverse_lazy('login')
+
+    def form_valid(self, form):
+        self.request.user.is_active = False
+        self.request.user.save()
+        return super(UnregisterView, self).form_valid(form)
