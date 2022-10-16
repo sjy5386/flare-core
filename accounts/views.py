@@ -10,7 +10,7 @@ from django.views.generic import TemplateView, FormView
 from social_django.models import UserSocialAuth
 
 from .decorators import logout_required
-from .forms import UserRegisterForm, CaptchaForm
+from .forms import RegisterForm, CaptchaForm
 
 
 @method_decorator(login_required, name='dispatch')
@@ -29,7 +29,7 @@ class ProfileView(TemplateView):
 def register(request: HttpRequest):
     if request.method == 'GET':
         return render(request, 'accounts/register.html', {
-            'form': UserRegisterForm(),
+            'form': RegisterForm(),
             'captcha_form': CaptchaForm()
         })
     elif request.method == 'POST':
