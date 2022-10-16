@@ -1,16 +1,13 @@
-from django.contrib import messages
 from django.contrib.auth import get_user_model, login
 from django.contrib.auth.decorators import login_required
 from django.forms import Form
-from django.http import HttpRequest
-from django.shortcuts import render, redirect
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView, FormView
 from social_django.models import UserSocialAuth
 
 from .decorators import logout_required
-from .forms import RegisterForm, CaptchaForm
+from .forms import RegisterForm
 
 
 @method_decorator(login_required, name='dispatch')
@@ -25,31 +22,22 @@ class ProfileView(TemplateView):
         return context
 
 
-@logout_required
-def register(request: HttpRequest):
-    if request.method == 'GET':
-        return render(request, 'accounts/register.html', {
-            'form': RegisterForm(),
-            'captcha_form': CaptchaForm()
-        })
-    elif request.method == 'POST':
-        captcha = CaptchaForm(request.POST).is_valid()
-        if not captcha:
-            messages.add_message(request, messages.ERROR, captcha)
-            return redirect('register')
-        username = request.POST['username']
-        password1 = request.POST['password1']
-        password2 = request.POST['password2']
-        if password1 != password2:
-            messages.add_message(request, messages.ERROR, 'Your password does not match.')
-            return redirect('register')
-        first_name = request.POST['first_name']
-        last_name = request.POST['last_name']
-        email = request.POST['email']
-        user = get_user_model().objects.create_user(username=username, password=password1, email=email,
+@method_decorator(logout_required, name='dispatch')
+class RegisterView(FormView):
+    template_name = 'accounts/register.html'
+    form_class = RegisterForm
+    success_url = reverse_lazy('profile')
+
+    def form_valid(self, form):
+        username = form.cleaned_data.get('username')
+        password = form.cleaned_data.get('password1')
+        email = form.cleaned_data.get('email')
+        first_name = form.cleaned_data.get('first_name')
+        last_name = form.cleaned_data.get('last_name')
+        user = get_user_model().objects.create_user(username=username, password=password, email=email,
                                                     first_name=first_name, last_name=last_name)
-        login(request, user)
-        return redirect(reverse('profile'))
+        login(self.request, user, 'django.contrib.auth.backends.ModelBackend')
+        return super(RegisterView, self).form_valid(form)
 
 
 @method_decorator(login_required, name='dispatch')
