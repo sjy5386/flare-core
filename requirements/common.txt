@@ -2,7 +2,6 @@ Django==4.1.2
 django-bootstrap5==22.1
 django-cors-headers==3.13.0
 django-dotenv==1.4.2
-django-recaptcha==3.0.0
 djangorestframework==3.14.0
 djangorestframework-simplejwt==5.2.1
 drf-nested-routers==0.93.4
