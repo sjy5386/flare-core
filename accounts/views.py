@@ -4,19 +4,24 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest
 from django.shortcuts import render, redirect
 from django.urls import reverse
-from django.views.decorators.http import require_GET
+from django.utils.decorators import method_decorator
+from django.views.generic import TemplateView
 from social_django.models import UserSocialAuth
 
 from .decorators import logout_required
 from .forms import UserRegisterForm, CaptchaForm
 
 
-@login_required
-@require_GET
-def profile(request: HttpRequest):
-    return render(request, 'accounts/profile.html', {
-        'oauth': UserSocialAuth.objects.filter(user=request.user)
-    })
+@method_decorator(login_required, name='dispatch')
+class ProfileView(TemplateView):
+    template_name = 'accounts/profile.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ProfileView, self).get_context_data(**kwargs)
+        context.update({
+            'oauth': UserSocialAuth.objects.filter(user=self.request.user),
+        })
+        return context
 
 
 @logout_required
