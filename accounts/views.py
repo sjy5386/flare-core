@@ -7,7 +7,7 @@ from django.views.generic import TemplateView, FormView
 from social_django.models import UserSocialAuth
 
 from .decorators import logout_required
-from .forms import RegisterForm
+from .forms import RegisterForm, ProfileUpdateForm
 
 
 @method_decorator(login_required, name='dispatch')
@@ -20,6 +20,26 @@ class ProfileView(TemplateView):
             'oauth': UserSocialAuth.objects.filter(user=self.request.user),
         })
         return context
+
+
+@method_decorator(login_required, name='dispatch')
+class ProfileUpdateView(FormView):
+    template_name = 'accounts/profile_update.html'
+    form_class = ProfileUpdateForm
+    success_url = reverse_lazy('profile')
+
+    def get_initial(self):
+        return {
+            'first_name': self.request.user.first_name,
+            'last_name': self.request.user.last_name,
+            'email': self.request.user.email,
+        }
+
+    def form_valid(self, form):
+        for k, v in form.cleaned_data.items():
+            setattr(self.request.user, k, v)
+        self.request.user.save()
+        return super(ProfileUpdateView, self).form_valid(form)
 
 
 @method_decorator(logout_required, name='dispatch')
