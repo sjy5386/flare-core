@@ -1,13 +1,12 @@
 from django.contrib.auth import get_user_model, login
 from django.contrib.auth.decorators import login_required
-from django.forms import Form
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView, FormView
 from social_django.models import UserSocialAuth
 
 from .decorators import logout_required
-from .forms import RegisterForm, ProfileUpdateForm
+from .forms import RegisterForm, ProfileUpdateForm, UnregisterForm
 
 
 @method_decorator(login_required, name='dispatch')
@@ -63,8 +62,13 @@ class RegisterView(FormView):
 @method_decorator(login_required, name='dispatch')
 class UnregisterView(FormView):
     template_name = 'accounts/unregister.html'
-    form_class = Form
+    form_class = UnregisterForm
     success_url = reverse_lazy('login')
+
+    def get_initial(self):
+        return {
+            'username': self.request.user.username,
+        }
 
     def form_valid(self, form):
         self.request.user.is_active = False
