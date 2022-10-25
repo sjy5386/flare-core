@@ -1,13 +1,10 @@
 {% extends 'common/base.html' %}
 {% load django_bootstrap5 %}
 {% block content %}
+    <h3>Update a profile</h3>
     <form method="post">
         {% csrf_token %}
         {% bootstrap_form form %}
-
-        {% bootstrap_button button_type="submit" content="Register" %}
+        {% bootstrap_button button_type="submit" content="Update" %}
     </form>
-
-    <p><a href="{% url 'login' %}">Login</a></p>
-
 {% endblock %}

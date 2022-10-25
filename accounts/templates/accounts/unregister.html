@@ -1,13 +1,11 @@
 {% extends 'common/base.html' %}
 {% load django_bootstrap5 %}
 {% block content %}
+    <h3>Unregister</h3>
     <form method="post">
         {% csrf_token %}
+        <p>Are you sure you want to unregister?</p>
         {% bootstrap_form form %}
-
-        {% bootstrap_button button_type="submit" content="Register" %}
+        {% bootstrap_button button_type="submit" content="Unregister" %}
     </form>
-
-    <p><a href="{% url 'login' %}">Login</a></p>
-
 {% endblock %}
