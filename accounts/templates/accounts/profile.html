@@ -7,6 +7,7 @@
         <p>First name: {{ user.first_name }}</p>
         <p>Last name: {{ user.last_name }}</p>
         <p>Email address: {{ user.email }}</p>
+        <p><a href="{% url 'profile_update' %}">Update</a></p>
     </section>
     <section>
         <h5>Security</h5>
@@ -23,4 +24,5 @@
         </ul>
     </section>
     <p><a href="{% url 'logout' %}">Logout</a></p>
+    <p><a href="{% url 'unregister' %}">Unregister</a></p>
 {% endblock %}
