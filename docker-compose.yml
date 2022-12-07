@@ -29,7 +29,7 @@ services:
       - cache
     extra_hosts:
       - host.docker.internal:host-gateway
-    entrypoint: [ "/bin/bash", "./python.sh" ]
+    entrypoint: [ "/bin/bash", "./app.sh" ]
 
   web:
     image: nginx
