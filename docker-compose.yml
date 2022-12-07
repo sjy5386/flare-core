@@ -29,12 +29,12 @@ services:
       - cache
     extra_hosts:
       - host.docker.internal:host-gateway
-    entrypoint: [ "/bin/bash", "./app.sh" ]
+    entrypoint: [ "/bin/bash", "./docker/app.sh" ]
 
   web:
     image: nginx
     volumes:
-      - ./web.conf:/etc/nginx/conf.d/web.conf
+      - ./docker/web.conf:/etc/nginx/conf.d/web.conf
       - ~/ssl:/ssl
     ports:
       - 80:80
