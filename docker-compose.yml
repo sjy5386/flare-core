@@ -34,7 +34,7 @@ services:
   web:
     image: nginx
     volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/web.conf
+      - ./web.conf:/etc/nginx/conf.d/web.conf
       - ~/ssl:/ssl
     ports:
       - 80:80
