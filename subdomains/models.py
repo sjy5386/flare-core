@@ -1,7 +1,7 @@
 import re
 
 from django.db import models
-from rest_framework.exceptions import ValidationError
+from django.core.exceptions import ValidationError
 
 from contacts.models import Contact
 from domains.models import Domain
