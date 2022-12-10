@@ -24,25 +24,39 @@ class SubdomainListView(ListView):
         return Subdomain.objects.filter(user=self.request.user).order_by(self.get_ordering())
 
 
-@require_GET
-def search(request):
-    q = request.GET.get('q', '')
-    domain = request.GET.getlist('domain', list(map(lambda e: e.id, Domain.objects.filter(is_active=True))))
-    hide_unavailable = (lambda x: x == 'on')(request.GET.get('hide_unavailable', 'off'))
-    results = []
-    for domain_id in domain:
-        d = Domain.objects.get(id=domain_id)
-        is_available = Subdomain.is_available(name=q, domain=d)
-        if is_available or not hide_unavailable:
-            results.append((q.lower, d, is_available))
-    return render(request, 'subdomains/search.html', {
-        'form': SubdomainSearchForm(initial={
-            'q': q,
-            'domain': domain,
-            'hide_unavailable': hide_unavailable
-        }),
-        'results': results
-    })
+@method_decorator(require_GET, name='dispatch')
+class SearchView(FormView, ListView):
+    template_name = 'subdomains/search.html'
+    form_class = SubdomainSearchForm
+    context_object_name = 'results'
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.q = None
+        self.domain = None
+        self.hide_unavailable = None
+
+    def dispatch(self, request, *args, **kwargs):
+        self.q = request.GET.get('q', '').lower()
+        self.domain = request.GET.getlist('domain', list(map(lambda e: e.id, Domain.objects.filter(is_active=True))))
+        self.hide_unavailable = request.GET.get('hide_unavailable', 'off') == 'on'
+        return super(SearchView, self).dispatch(request, *args, **kwargs)
+
+    def get_initial(self):
+        return {
+            'q': self.q,
+            'domain': self.domain,
+            'hide_unavailable': self.hide_unavailable,
+        }
+
+    def get_queryset(self):
+        results = []
+        for domain_id in self.domain:
+            d = Domain.objects.get(id=domain_id)
+            is_available = Subdomain.is_available(name=self.q, domain=d)
+            if is_available or not self.hide_unavailable:
+                results.append((self.q, d, is_available))
+        return results
 
 
 @require_GET
