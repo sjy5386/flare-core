@@ -3,7 +3,7 @@ import datetime
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.mail import EmailMessage
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
 from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_GET
@@ -24,53 +24,78 @@ class SubdomainListView(ListView):
         return Subdomain.objects.filter(user=self.request.user).order_by(self.get_ordering())
 
 
-@require_GET
-def search(request):
-    q = request.GET.get('q', '')
-    domain = request.GET.getlist('domain', list(map(lambda e: e.id, Domain.objects.filter(is_active=True))))
-    hide_unavailable = (lambda x: x == 'on')(request.GET.get('hide_unavailable', 'off'))
-    results = []
-    for domain_id in domain:
-        d = Domain.objects.get(id=domain_id)
-        is_available = Subdomain.is_available(name=q, domain=d)
-        if is_available or not hide_unavailable:
-            results.append((q.lower, d, is_available))
-    return render(request, 'subdomains/search.html', {
-        'form': SubdomainSearchForm(initial={
-            'q': q,
-            'domain': domain,
-            'hide_unavailable': hide_unavailable
-        }),
-        'results': results
-    })
+@method_decorator(require_GET, name='dispatch')
+class SearchView(FormView, ListView):
+    template_name = 'subdomains/search.html'
+    form_class = SubdomainSearchForm
+    context_object_name = 'results'
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.q = None
+        self.domain = None
+        self.hide_unavailable = None
+
+    def dispatch(self, request, *args, **kwargs):
+        self.q = request.GET.get('q', '').lower()
+        self.domain = request.GET.getlist('domain', list(map(lambda e: e.id, Domain.objects.filter(is_active=True))))
+        self.hide_unavailable = request.GET.get('hide_unavailable', 'off') == 'on'
+        return super(SearchView, self).dispatch(request, *args, **kwargs)
+
+    def get_initial(self):
+        return {
+            'q': self.q,
+            'domain': self.domain,
+            'hide_unavailable': self.hide_unavailable,
+        }
+
+    def get_queryset(self):
+        results = []
+        for domain_id in self.domain:
+            d = Domain.objects.get(id=domain_id)
+            is_available = Subdomain.is_available(name=self.q, domain=d)
+            if is_available or not self.hide_unavailable:
+                results.append((self.q, d, is_available))
+        return results
 
 
-@require_GET
-def whois(request):
-    q = request.GET.get('q', '')
-    subdomain = None
-    if '.' in q:
-        i = q.index('.')
-        name = q[:i]
-        domain__name = q[i + 1:]
-        try:
-            subdomain = Subdomain.objects.get(name=name, domain__name=domain__name)
-            if subdomain.is_private:
-                def make_contact_url(contact):
-                    return f'{reverse_lazy("subdomains:contact")}?subdomain={subdomain.__str__()}&contact={contact}'
+@method_decorator(require_GET, name='dispatch')
+class WhoisView(FormView, DetailView):
+    template_name = 'subdomains/whois.html'
+    form_class = SubdomainWhoisForm
 
-                subdomain.registrant.redact_data(is_registrant=True, email=make_contact_url('registrant'))
-                subdomain.admin.redact_data(email=make_contact_url('admin'))
-                subdomain.tech.redact_data(email=make_contact_url('tech'))
-                subdomain.billing.redact_data(email=make_contact_url('billing'))
-        except Subdomain.DoesNotExist:
-            pass
-    return render(request, 'subdomains/whois.html', {
-        'form': SubdomainWhoisForm(initial={
-            'q': q,
-        }),
-        'object': subdomain
-    })
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.q = None
+
+    def dispatch(self, request, *args, **kwargs):
+        self.q = request.GET.get('q', '')
+        return super(WhoisView, self).dispatch(request, *args, **kwargs)
+
+    def get_initial(self):
+        return {
+            'q': self.q
+        }
+
+    def get_object(self, queryset=None):
+        subdomain = None
+        if '.' in self.q:
+            i = self.q.index('.')
+            name = self.q[:i]
+            domain__name = self.q[i + 1:]
+            try:
+                subdomain = Subdomain.objects.get(name=name, domain__name=domain__name)
+                if subdomain.is_private:
+                    def make_contact_url(contact):
+                        return f'{reverse_lazy("subdomains:contact")}?subdomain={subdomain.__str__()}&contact={contact}'
+
+                    subdomain.registrant.redact_data(is_registrant=True, email=make_contact_url('registrant'))
+                    subdomain.admin.redact_data(email=make_contact_url('admin'))
+                    subdomain.tech.redact_data(email=make_contact_url('tech'))
+                    subdomain.billing.redact_data(email=make_contact_url('billing'))
+            except Subdomain.DoesNotExist:
+                pass
+        return subdomain
 
 
 class SubdomainContactView(FormView):

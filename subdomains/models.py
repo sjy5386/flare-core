@@ -1,17 +1,11 @@
 import re
 
 from django.db import models
-from rest_framework.exceptions import ValidationError
 
+from base.settings.common import AUTH_USER_MODEL
 from contacts.models import Contact
 from domains.models import Domain
-from base.settings.common import AUTH_USER_MODEL
-from .validators import validate_domain_name
-
-
-def validate_reserved_name(value):
-    if len(ReservedName.objects.filter(name=value)) > 0:
-        raise ValidationError('This name is reserved.')
+from .validators import validate_domain_name, validate_reserved_name
 
 
 class Subdomain(models.Model):

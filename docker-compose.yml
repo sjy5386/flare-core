@@ -18,7 +18,7 @@ services:
       - 6379:6379
 
   app:
-    image: python:3.10
+    image: python:3.11
     volumes:
       - .:/app
     working_dir: /app
@@ -29,12 +29,12 @@ services:
       - cache
     extra_hosts:
       - host.docker.internal:host-gateway
-    entrypoint: [ "/bin/bash", "./python.sh" ]
+    entrypoint: [ "/bin/bash", "./docker/app.sh" ]
 
   web:
     image: nginx
     volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/web.conf
+      - ./docker/web.conf:/etc/nginx/conf.d/web.conf
       - ~/ssl:/ssl
     ports:
       - 80:80
