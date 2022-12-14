@@ -14,6 +14,9 @@ class AuthenticationToken(models.Model):
     token = models.CharField(primary_key=True, max_length=32)
     expire_at = models.DateTimeField(null=True)
 
+    def is_expired(self):
+        return self.expire_at < datetime.datetime.now()
+
     @classmethod
     def create(cls, record: Record) -> 'AuthenticationToken':
         return cls(token=secrets.token_hex(16), expire_at=datetime.datetime.now() + datetime.timedelta(days=90),
