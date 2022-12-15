@@ -156,7 +156,7 @@ class SubdomainCreateView(CreateView):
     def form_valid(self, form):
         subdomain = form.save(commit=False)
         subdomain.user = self.request.user
-        subdomain.expiry = datetime.datetime.now() + datetime.timedelta(days=90)
+        subdomain.expiry = datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(days=90)
         subdomain.registrant = form.cleaned_data['registrant']
         subdomain.admin = form.cleaned_data['admin']
         subdomain.tech = form.cleaned_data['tech']
@@ -189,7 +189,7 @@ class SubdomainUpdateView(UpdateView):
 
     def form_valid(self, form):
         subdomain = form.save(commit=False)
-        subdomain.expiry = datetime.datetime.now() + datetime.timedelta(days=90)
+        subdomain.expiry = datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(days=90)
         subdomain.save()
         return super(SubdomainUpdateView, self).form_valid(form)
 
