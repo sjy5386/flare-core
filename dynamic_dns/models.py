@@ -15,9 +15,10 @@ class AuthenticationToken(models.Model):
     expire_at = models.DateTimeField(null=True)
 
     def is_expired(self):
-        return self.expire_at < datetime.datetime.now()
+        return self.expire_at < datetime.datetime.now(tz=datetime.timezone.utc)
 
     @classmethod
     def create(cls, record: Record) -> 'AuthenticationToken':
-        return cls(token=secrets.token_hex(16), expire_at=datetime.datetime.now() + datetime.timedelta(days=90),
+        return cls(token=secrets.token_hex(16),
+                   expire_at=datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(days=90),
                    record=record)
