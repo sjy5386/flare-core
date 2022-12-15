@@ -1,11 +1,14 @@
+from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404
+from django.utils.decorators import method_decorator
+from django.views.generic import ListView
 
 from base.views import get_remote_ip_address
-from dynamic_dns.models import AuthenticationToken
 from records.models import Record
 from records.providers import PROVIDER_CLASS
 from subdomains.models import Subdomain
+from .models import AuthenticationToken
 
 
 def dynamic_dns(request: HttpRequest, token: str) -> HttpResponse:
@@ -26,3 +29,10 @@ def dynamic_dns(request: HttpRequest, token: str) -> HttpResponse:
         return HttpResponse(ip_address == record.target)
     else:
         return HttpResponse(status=405)
+
+
+@method_decorator(login_required, name='dispatch')
+class AuthenticationTokenListView(ListView):
+    def get_queryset(self):
+        return AuthenticationToken.objects.filter(
+            record__in=Record.objects.filter(subdomain_name__in=Subdomain.objects.filter(user=self.request.user)))
