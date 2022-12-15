@@ -36,8 +36,8 @@ def dynamic_dns(request: HttpRequest, token: str) -> HttpResponse:
 @method_decorator(login_required, name='dispatch')
 class AuthenticationTokenListView(ListView):
     def get_queryset(self):
-        return AuthenticationToken.objects.filter(
-            record__in=Record.objects.filter(subdomain_name__in=Subdomain.objects.filter(user=self.request.user)))
+        return AuthenticationToken.objects.filter(record__in=Record.objects.filter(
+            subdomain_name__in=map(lambda x: x.name, Subdomain.objects.filter(user=self.request.user))))
 
 
 @method_decorator(login_required, name='dispatch')
