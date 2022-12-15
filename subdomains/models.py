@@ -35,11 +35,11 @@ class Subdomain(models.Model):
     def __str__(self):
         return self.name + '.' + self.domain.name
 
-    @staticmethod
-    def is_available(name: str, domain: Domain):
+    @classmethod
+    def is_available(cls, name: str, domain: Domain) -> bool:
         name = name.lower()
         return 3 <= len(name) <= 63 and re.match('^[a-z0-9][a-z0-9-]*[a-z0-9]$', name) is not None and len(
-            Subdomain.objects.filter(name=name, domain=domain)) == 0 and len(
+            cls.objects.filter(name=name, domain=domain)) == 0 and len(
             ReservedName.objects.filter(name=name)) == 0
 
     @classmethod
