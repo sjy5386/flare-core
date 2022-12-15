@@ -33,6 +33,9 @@ class Subdomain(models.Model):
             models.UniqueConstraint(fields=['name', 'domain'], name='unique_domain_name')
         ]
 
+    def has_expired(self) -> bool:
+        return self.expiry < datetime.datetime.now(tz=datetime.timezone.utc)
+
     def renew(self, period: datetime.timedelta = datetime.timedelta(days=90)) -> bool:
         now = datetime.datetime.now(tz=datetime.timezone.utc)
         if self.expiry - now <= datetime.timedelta(days=30):
