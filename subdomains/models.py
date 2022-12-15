@@ -1,3 +1,4 @@
+import datetime
 import re
 from typing import List, Tuple
 
@@ -31,6 +32,10 @@ class Subdomain(models.Model):
         constraints = [
             models.UniqueConstraint(fields=['name', 'domain'], name='unique_domain_name')
         ]
+
+    def renew(self):
+        self.expiry = datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(days=90)
+        self.save()
 
     def __str__(self):
         return self.name + '.' + self.domain.name
