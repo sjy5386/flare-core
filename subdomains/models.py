@@ -1,4 +1,5 @@
 import re
+from typing import List, Tuple
 
 from django.db import models
 
@@ -40,6 +41,15 @@ class Subdomain(models.Model):
         return 3 <= len(name) <= 63 and re.match('^[a-z0-9][a-z0-9-]*[a-z0-9]$', name) is not None and len(
             Subdomain.objects.filter(name=name, domain=domain)) == 0 and len(
             ReservedName.objects.filter(name=name)) == 0
+
+    @classmethod
+    def search(cls, name: str, domains: List[Domain], hide_unavailable: bool = False) -> List[Tuple[str, Domain, bool]]:
+        results = []
+        for domain in domains:
+            is_available = cls.is_available(name, domain)
+            if is_available or not hide_unavailable:
+                results.append((name, domain, is_available))
+        return results
 
 
 class ReservedName(models.Model):

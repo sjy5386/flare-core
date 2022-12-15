@@ -50,13 +50,7 @@ class SearchView(FormView, ListView):
         }
 
     def get_queryset(self):
-        results = []
-        for domain_id in self.domain:
-            d = Domain.objects.get(id=domain_id)
-            is_available = Subdomain.is_available(name=self.q, domain=d)
-            if is_available or not self.hide_unavailable:
-                results.append((self.q, d, is_available))
-        return results
+        return Subdomain.search(self.q, Domain.objects.filter(id__in=self.domain), self.hide_unavailable)
 
 
 @method_decorator(require_GET, name='dispatch')
