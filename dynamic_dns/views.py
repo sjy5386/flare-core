@@ -15,7 +15,7 @@ from .models import AuthenticationToken
 
 def dynamic_dns(request: HttpRequest, token: str) -> HttpResponse:
     authentication_token = get_object_or_404(AuthenticationToken, token=token)
-    if authentication_token.is_expired():
+    if authentication_token.has_expired():
         return HttpResponse(status=401)
     record = authentication_token.record
     if record.type not in ('A', 'AAAA'):
