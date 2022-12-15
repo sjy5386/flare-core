@@ -1,13 +1,15 @@
 from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404
+from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
-from django.views.generic import ListView
+from django.views.generic import ListView, FormView
 
 from base.views import get_remote_ip_address
 from records.models import Record
 from records.providers import PROVIDER_CLASS
 from subdomains.models import Subdomain
+from .forms import AuthenticationTokenForm
 from .models import AuthenticationToken
 
 
@@ -36,3 +38,14 @@ class AuthenticationTokenListView(ListView):
     def get_queryset(self):
         return AuthenticationToken.objects.filter(
             record__in=Record.objects.filter(subdomain_name__in=Subdomain.objects.filter(user=self.request.user)))
+
+
+@method_decorator(login_required, name='dispatch')
+class AuthenticationTokenCreateView(FormView):
+    template_name = 'dynamic_dns/authenticationtoken_create.html'
+    form_class = AuthenticationTokenForm
+    success_url = reverse_lazy('dynamic_dns:list')
+
+    def form_valid(self, form):
+        AuthenticationToken.create(form.cleaned_data.get('record')).save()
+        return super(AuthenticationTokenCreateView, self).form_valid(form)
