@@ -3,7 +3,7 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
-from django.views.generic import ListView, FormView
+from django.views.generic import ListView, FormView, DeleteView
 
 from base.views import get_remote_ip_address
 from records.models import Record
@@ -49,3 +49,11 @@ class AuthenticationTokenCreateView(FormView):
     def form_valid(self, form):
         AuthenticationToken.create(form.cleaned_data.get('record')).save()
         return super(AuthenticationTokenCreateView, self).form_valid(form)
+
+
+@method_decorator(login_required, name='dispatch')
+class AuthenticationTokenDeleteView(DeleteView):
+    success_url = reverse_lazy('dynamic_dns:list')
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(AuthenticationToken, token=self.kwargs['token'])
