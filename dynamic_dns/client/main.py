@@ -1,3 +1,5 @@
+import argparse
+
 import requests
 
 host = {
@@ -18,11 +20,13 @@ def update(token: str) -> str:
     return requests.post(f'{host[target]}/{endpoint}/{token}/').text
 
 
-def main():
-    token = 'your token'
+def main(args: argparse.Namespace) -> None:
+    token = args.token
     print(retrieve(token))
     print(update(token))
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('token')
+    main(parser.parse_args())
