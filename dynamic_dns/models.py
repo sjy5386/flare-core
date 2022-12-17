@@ -16,6 +16,8 @@ class AuthenticationToken(models.Model):
     expire_at = models.DateTimeField(null=True)
 
     def has_expired(self) -> bool:
+        if self.expire_at is None:
+            return False
         return self.expire_at < datetime.datetime.now(tz=datetime.timezone.utc)
 
     @classmethod
