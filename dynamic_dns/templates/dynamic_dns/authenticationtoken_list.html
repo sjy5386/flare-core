@@ -7,6 +7,7 @@
     <table class="table">
         <thead>
         <tr>
+            <th scope="col">Name</th>
             <th scope="col">Record</th>
             <th scope="col">Token</th>
             <th scope="col">Expire At</th>
@@ -15,6 +16,7 @@
         <tbody>
         {% for object in object_list %}
             <tr>
+                <td>{{ object.name }}</td>
                 <td>{{ object.record }}</td>
                 <td>{{ object.token }}</td>
                 <td>{{ object.expire_at }}</td>

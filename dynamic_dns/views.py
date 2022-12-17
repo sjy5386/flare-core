@@ -56,7 +56,7 @@ class AuthenticationTokenCreateView(FormView):
     success_url = reverse_lazy('dynamic_dns:list')
 
     def form_valid(self, form):
-        AuthenticationToken.create(form.cleaned_data.get('record')).save()
+        AuthenticationToken.create(form.cleaned_data.get('name', ''), form.cleaned_data.get('record')).save()
         return super(AuthenticationTokenCreateView, self).form_valid(form)
 
 

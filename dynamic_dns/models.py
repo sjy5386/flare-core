@@ -10,6 +10,7 @@ class AuthenticationToken(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    name = models.CharField(max_length=63, blank=True)
     record = models.ForeignKey(Record, on_delete=models.CASCADE)
     token = models.CharField(primary_key=True, max_length=32)
     expire_at = models.DateTimeField(null=True)
@@ -18,7 +19,7 @@ class AuthenticationToken(models.Model):
         return self.expire_at < datetime.datetime.now(tz=datetime.timezone.utc)
 
     @classmethod
-    def create(cls, record: Record) -> 'AuthenticationToken':
+    def create(cls, name: str, record: Record) -> 'AuthenticationToken':
         return cls(token=secrets.token_hex(16),
                    expire_at=datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(days=90),
-                   record=record)
+                   name=name, record=record)
