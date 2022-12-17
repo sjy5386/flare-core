@@ -76,6 +76,12 @@ class ReservedName(models.Model):
     def __str__(self):
         return self.name
 
+    @classmethod
+    def gen_master(cls, apps, scheme_editor):
+        reserved_names = ['co', 'com', 'example', 'go', 'gov', 'icann', 'ne', 'net', 'nic', 'or', 'org', 'whois', 'www']
+        for reserved_name in reserved_names:
+            cls(name=reserved_name).save()
+
 
 class SubdomainStatus(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
