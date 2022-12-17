@@ -100,5 +100,4 @@ python manage.py createsuperuser
 
 # Related Projects
 
-* [Subshorts Dynamic DNS Client](https://github.com/subshorts/subshorts-dynamic-dns-client)
 * [Subshorts Rules](https://github.com/subshorts/subshorts-rules)
