@@ -26,6 +26,7 @@ urlpatterns = [
     path('boards/', include('boards.urls')),
     path('contacts/', include('contacts.urls')),
     path('domains/', include('domains.urls')),
+    path('dynamic-dns/', include('dynamic_dns.urls')),
     path('reports/', include('reports.urls')),
     path('shorturls/', include('shorturls.urls')),
     path('subdomains/', include('subdomains.urls')),

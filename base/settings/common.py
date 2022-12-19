@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     'boards.apps.BoardsConfig',
     'contacts.apps.ContactsConfig',
     'domains.apps.DomainsConfig',
+    'dynamic_dns.apps.DynamicDnsConfig',
     'records.apps.RecordsConfig',
     'reports.apps.ReportsConfig',
     'rules.apps.RulesConfig',
