@@ -1,4 +1,6 @@
+import datetime
 import re
+from typing import List, Tuple
 
 from django.db import models
 
@@ -31,15 +33,38 @@ class Subdomain(models.Model):
             models.UniqueConstraint(fields=['name', 'domain'], name='unique_domain_name')
         ]
 
+    def has_expired(self) -> bool:
+        return self.expiry < datetime.datetime.now(tz=datetime.timezone.utc)
+
+    def renew(self, period: datetime.timedelta = datetime.timedelta(days=90)) -> bool:
+        now = datetime.datetime.now(tz=datetime.timezone.utc)
+        if self.expiry - now <= datetime.timedelta(days=30):
+            return False
+        if self.expiry > now:
+            self.expiry += period
+        else:
+            self.expiry = now + period
+        self.save()
+        return True
+
     def __str__(self):
         return self.name + '.' + self.domain.name
 
-    @staticmethod
-    def is_available(name: str, domain: Domain):
+    @classmethod
+    def is_available(cls, name: str, domain: Domain) -> bool:
         name = name.lower()
         return 3 <= len(name) <= 63 and re.match('^[a-z0-9][a-z0-9-]*[a-z0-9]$', name) is not None and len(
-            Subdomain.objects.filter(name=name, domain=domain)) == 0 and len(
+            cls.objects.filter(name=name, domain=domain)) == 0 and len(
             ReservedName.objects.filter(name=name)) == 0
+
+    @classmethod
+    def search(cls, name: str, domains: List[Domain], hide_unavailable: bool = False) -> List[Tuple[str, Domain, bool]]:
+        results = []
+        for domain in domains:
+            is_available = cls.is_available(name, domain)
+            if is_available or not hide_unavailable:
+                results.append((name, domain, is_available))
+        return results
 
 
 class ReservedName(models.Model):
@@ -50,6 +75,12 @@ class ReservedName(models.Model):
 
     def __str__(self):
         return self.name
+
+    @classmethod
+    def gen_master(cls, apps, scheme_editor):
+        reserved_names = ['co', 'com', 'example', 'go', 'gov', 'icann', 'ne', 'net', 'nic', 'or', 'org', 'whois', 'www']
+        for reserved_name in reserved_names:
+            cls(name=reserved_name).save()
 
 
 class SubdomainStatus(models.Model):
