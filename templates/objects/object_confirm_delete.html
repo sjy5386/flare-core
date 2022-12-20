@@ -6,6 +6,6 @@
         {% csrf_token %}
         <p>Are you sure you want to delete "{{ object }}"?</p>
         {% bootstrap_form form %}
-        {% bootstrap_button button_type="submit" content="Delete" %}
+        {% bootstrap_button button_type="submit" button_class="btn-danger" content="Delete" %}
     </form>
 {% endblock %}
