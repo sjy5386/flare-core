@@ -149,7 +149,10 @@ class PostUpdateView(UpdateView):
 
 @method_decorator(login_required, name='dispatch')
 class PostDeleteView(DeleteView):
-    template_name = 'boards/post_delete.html'
+    template_name = 'objects/object_confirm_delete.html'
+    extra_context = {
+        'title': 'Delete a post',
+    }
 
     def get_object(self, queryset=None):
         return get_object_or_404(Post, id=self.kwargs['id'], board__name=self.kwargs['board_name'],

@@ -62,7 +62,11 @@ class AuthenticationTokenCreateView(FormView):
 
 @method_decorator(login_required, name='dispatch')
 class AuthenticationTokenDeleteView(DeleteView):
+    template_name = 'objects/object_confirm_delete.html'
     success_url = reverse_lazy('dynamic_dns:list')
+    extra_context = {
+        'title': 'Delete an authentication token',
+    }
 
     def get_object(self, queryset=None):
         return get_object_or_404(AuthenticationToken, token=self.kwargs['token'])

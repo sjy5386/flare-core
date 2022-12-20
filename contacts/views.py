@@ -44,7 +44,11 @@ class ContactUpdateView(UpdateView):
 
 @method_decorator(login_required, name='dispatch')
 class ContactDeleteView(DeleteView):
+    template_name = 'objects/object_confirm_delete.html'
     success_url = reverse_lazy('contacts:list')
+    extra_context = {
+        'title': 'Delete a contact',
+    }
 
     def get_object(self, queryset=None):
         return get_object_or_404(Contact, id=self.kwargs['id'], user=self.request.user)
