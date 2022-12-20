@@ -51,9 +51,12 @@ class AuthenticationTokenListView(ListView):
 
 @method_decorator(login_required, name='dispatch')
 class AuthenticationTokenCreateView(FormView):
-    template_name = 'dynamic_dns/authenticationtoken_create.html'
+    template_name = 'objects/object_form.html'
     form_class = AuthenticationTokenForm
     success_url = reverse_lazy('dynamic_dns:list')
+    extra_context = {
+        'title': 'Create a new authentication token',
+    }
 
     def form_valid(self, form):
         AuthenticationToken.create(form.cleaned_data.get('name', ''), form.cleaned_data.get('record')).save()

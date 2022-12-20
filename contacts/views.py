@@ -16,9 +16,12 @@ class ContactListView(ListView):
 
 @method_decorator(login_required, name='dispatch')
 class ContactCreateView(CreateView):
-    template_name = 'contacts/contact_create.html'
+    template_name = 'objects/object_form.html'
     form_class = ContactForm
     success_url = reverse_lazy('contacts:list')
+    extra_context = {
+        'title': 'Create a new contact',
+    }
 
     def form_valid(self, form):
         contact = form.save(commit=False)
@@ -35,8 +38,12 @@ class ContactDetailView(DetailView):
 
 @method_decorator(login_required, name='dispatch')
 class ContactUpdateView(UpdateView):
+    template_name = 'objects/object_form.html'
     form_class = ContactForm
     success_url = reverse_lazy('contacts:list')
+    extra_context = {
+        'title': 'Update a contact',
+    }
 
     def get_object(self, queryset=None):
         return get_object_or_404(Contact, id=self.kwargs['id'], user=self.request.user)

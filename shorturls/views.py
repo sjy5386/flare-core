@@ -20,9 +20,12 @@ class ShortUrlListView(ListView):
 
 @method_decorator(login_required, name='dispatch')
 class ShortUrlCreateView(FormView):
-    template_name = 'shorturls/create.html'
+    template_name = 'objects/object_form.html'
     form_class = ShortUrlForm
     success_url = reverse_lazy('shorturls:list')
+    extra_context = {
+        'title': 'Create a new short URL',
+    }
 
     def get_initial(self):
         return {

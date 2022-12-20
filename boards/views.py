@@ -40,8 +40,11 @@ class PostListView(ListView):
 
 @method_decorator(login_required, name='dispatch')
 class PostCreateView(CreateView):
-    template_name = 'boards/post_create.html'
+    template_name = 'objects/object_form.html'
     form_class = PostForm
+    extra_context = {
+        'title': 'Write a new post',
+    }
 
     def get(self, request, *args, **kwargs):
         board = get_object_or_404(Board, name=kwargs['board_name'])
@@ -136,8 +139,11 @@ class PostDetailView(DetailView, FormView):
 
 @method_decorator(login_required, name='dispatch')
 class PostUpdateView(UpdateView):
-    template_name = 'boards/post_update.html'
+    template_name = 'objects/object_form.html'
     form_class = PostForm
+    extra_context = {
+        'title': 'Edit a post',
+    }
 
     def get_object(self, queryset=None):
         return get_object_or_404(Post, id=self.kwargs['id'], board__name=self.kwargs['board_name'],

@@ -93,9 +93,12 @@ class WhoisView(FormView, DetailView):
 
 
 class SubdomainContactView(FormView):
-    template_name = 'subdomains/contact.html'
+    template_name = 'objects/object_form.html'
     form_class = SubdomainContactForm
     success_url = reverse_lazy('subdomains:contact')
+    extra_context = {
+        'title': 'Contact the subdomain owner',
+    }
 
     def get_initial(self):
         return {
@@ -132,9 +135,12 @@ class SubdomainContactView(FormView):
 
 @method_decorator(login_required, name='dispatch')
 class SubdomainCreateView(CreateView):
-    template_name = 'subdomains/create.html'
+    template_name = 'objects/object_form.html'
     success_url = reverse_lazy('subdomains:list')
     form_class = SubdomainForm
+    extra_context = {
+        'title': 'Create a new subdomain',
+    }
 
     def get(self, request, *args, **kwargs):
         if len(Contact.objects.filter(user=request.user)) == 0:
@@ -175,9 +181,12 @@ class SubdomainDetailView(DetailView):
 
 @method_decorator(login_required, name='dispatch')
 class SubdomainUpdateView(UpdateView):
-    template_name = 'subdomains/update.html'
+    template_name = 'objects/object_form.html'
     form_class = SubdomainForm
     success_url = reverse_lazy('subdomains:list')
+    extra_context = {
+        'title': 'Update a subdomain',
+    }
 
     def get_form_kwargs(self):
         kwargs = super(SubdomainUpdateView, self).get_form_kwargs()

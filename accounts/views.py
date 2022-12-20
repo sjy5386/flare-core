@@ -23,9 +23,12 @@ class ProfileView(TemplateView):
 
 @method_decorator(login_required, name='dispatch')
 class ProfileUpdateView(FormView):
-    template_name = 'accounts/profile_update.html'
+    template_name = 'objects/object_form.html'
     form_class = ProfileUpdateForm
     success_url = reverse_lazy('profile')
+    extra_context = {
+        'title': 'Update a profile',
+    }
 
     def get_initial(self):
         return {
