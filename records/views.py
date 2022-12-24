@@ -154,8 +154,11 @@ class RecordUpdateView(FormView):
 
 @method_decorator(login_required, name='dispatch')
 class RecordDeleteView(FormView):
-    template_name = 'records/record_delete.html'
+    template_name = 'objects/object_confirm_delete.html'
     form_class = Form
+    extra_context = {
+        'title': 'Delete a record',
+    }
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -170,8 +173,7 @@ class RecordDeleteView(FormView):
     def get_context_data(self, **kwargs):
         context = super(RecordDeleteView, self).get_context_data(**kwargs)
         context.update({
-            'subdomain': self.subdomain,
-            'record': self.record,
+            'object': self.record,
         })
         return context
 

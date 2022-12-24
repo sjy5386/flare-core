@@ -17,7 +17,6 @@ from .models import Subdomain
 
 @method_decorator(login_required, name='dispatch')
 class SubdomainListView(ListView):
-    template_name = 'subdomains/list.html'
     ordering = 'name'
 
     def get_queryset(self):
@@ -93,9 +92,12 @@ class WhoisView(FormView, DetailView):
 
 
 class SubdomainContactView(FormView):
-    template_name = 'subdomains/contact.html'
+    template_name = 'objects/object_form.html'
     form_class = SubdomainContactForm
     success_url = reverse_lazy('subdomains:contact')
+    extra_context = {
+        'title': 'Contact the subdomain owner',
+    }
 
     def get_initial(self):
         return {
@@ -132,9 +134,12 @@ class SubdomainContactView(FormView):
 
 @method_decorator(login_required, name='dispatch')
 class SubdomainCreateView(CreateView):
-    template_name = 'subdomains/create.html'
+    template_name = 'objects/object_form.html'
     success_url = reverse_lazy('subdomains:list')
     form_class = SubdomainForm
+    extra_context = {
+        'title': 'Create a new subdomain',
+    }
 
     def get(self, request, *args, **kwargs):
         if len(Contact.objects.filter(user=request.user)) == 0:
@@ -167,17 +172,18 @@ class SubdomainCreateView(CreateView):
 
 @method_decorator(login_required, name='dispatch')
 class SubdomainDetailView(DetailView):
-    template_name = 'subdomains/detail.html'
-
     def get_object(self, queryset=None):
         return get_object_or_404(Subdomain, id=self.kwargs['id'], user=self.request.user)
 
 
 @method_decorator(login_required, name='dispatch')
 class SubdomainUpdateView(UpdateView):
-    template_name = 'subdomains/update.html'
+    template_name = 'objects/object_form.html'
     form_class = SubdomainForm
     success_url = reverse_lazy('subdomains:list')
+    extra_context = {
+        'title': 'Update a subdomain',
+    }
 
     def get_form_kwargs(self):
         kwargs = super(SubdomainUpdateView, self).get_form_kwargs()
@@ -196,8 +202,11 @@ class SubdomainUpdateView(UpdateView):
 
 @method_decorator(login_required, name='dispatch')
 class SubdomainDeleteView(DeleteView):
-    template_name = 'subdomains/delete.html'
+    template_name = 'objects/object_confirm_delete.html'
     success_url = reverse_lazy('subdomains:list')
+    extra_context = {
+        'title': 'Delete a subdomain',
+    }
 
     def get_object(self, queryset=None):
         return get_object_or_404(Subdomain, id=self.kwargs['id'], user=self.request.user)
