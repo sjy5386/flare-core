@@ -10,7 +10,6 @@ from .providers import PROVIDER_CLASS
 
 @method_decorator(login_required, name='dispatch')
 class ShortUrlListView(ListView):
-    template_name = 'shorturls/list.html'
     ordering = '-id'
 
     def get_queryset(self):
@@ -40,7 +39,7 @@ class ShortUrlCreateView(FormView):
 
 @method_decorator(login_required, name='dispatch')
 class ShortUrlDetailView(DetailView):
-    template_name = 'shorturls/detail.html'
+    template_name = 'shorturls/shorturl_detail.html'
 
     def get_object(self, queryset=None):
         provider = PROVIDER_CLASS()

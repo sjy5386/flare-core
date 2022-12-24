@@ -17,7 +17,6 @@ from .models import Subdomain
 
 @method_decorator(login_required, name='dispatch')
 class SubdomainListView(ListView):
-    template_name = 'subdomains/list.html'
     ordering = 'name'
 
     def get_queryset(self):
@@ -173,8 +172,6 @@ class SubdomainCreateView(CreateView):
 
 @method_decorator(login_required, name='dispatch')
 class SubdomainDetailView(DetailView):
-    template_name = 'subdomains/detail.html'
-
     def get_object(self, queryset=None):
         return get_object_or_404(Subdomain, id=self.kwargs['id'], user=self.request.user)
 
