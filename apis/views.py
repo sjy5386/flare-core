@@ -71,3 +71,7 @@ class RecordViewSet(viewsets.ModelViewSet):
 
     def perform_update(self, serializer):
         serializer.save(subdomain=self.subdomain)
+
+    def perform_destroy(self, instance):
+        provider = records.providers.PROVIDER_CLASS()
+        Record.delete_record(provider, self.subdomain, instance.id)
