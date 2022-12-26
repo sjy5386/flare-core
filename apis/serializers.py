@@ -3,6 +3,7 @@ import datetime
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
+import records.providers
 from contacts.models import Contact
 from domains.models import Domain
 from records.models import Record
@@ -75,3 +76,7 @@ class RecordSerializer(serializers.ModelSerializer):
         model = Record
         exclude = ('provider_id', 'subdomain_name', 'domain',)
         read_only_fields = ['created_at', 'updated_at']
+
+    def create(self, validated_data):
+        provider = records.providers.PROVIDER_CLASS()
+        return Record.create_record(provider, **validated_data)
