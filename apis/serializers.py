@@ -80,3 +80,7 @@ class RecordSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         provider = records.providers.PROVIDER_CLASS()
         return Record.create_record(provider, **validated_data)
+
+    def update(self, instance, validated_data):
+        provider = records.providers.PROVIDER_CLASS()
+        return Record.update_record(provider, id=instance.id, **validated_data)
