@@ -67,7 +67,11 @@ class SubdomainSerializer(serializers.ModelSerializer):
 
 
 class RecordSerializer(serializers.ModelSerializer):
+    full_name = serializers.CharField(read_only=True)
+    data = serializers.CharField(read_only=True)
+    subdomain = serializers.CharField(read_only=True)
+
     class Meta:
         model = Record
-        exclude = ['provider_id']
+        exclude = ('provider_id', 'subdomain_name', 'domain',)
         read_only_fields = ['created_at', 'updated_at']
