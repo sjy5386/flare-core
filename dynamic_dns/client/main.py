@@ -1,6 +1,6 @@
 import argparse
 
-import requests
+from dynamic_dns.client.client import DynamicDnsClient
 
 host = {
     'prod': 'https://subshorts.com',
@@ -12,18 +12,11 @@ endpoint = 'dynamic-dns'
 target = 'prod'
 
 
-def retrieve(token: str) -> str:
-    return requests.get(f'{host[target]}/{endpoint}/{token}/').text
-
-
-def update(token: str) -> str:
-    return requests.post(f'{host[target]}/{endpoint}/{token}/').text
-
-
 def main(args: argparse.Namespace) -> None:
     token = args.token
-    print(retrieve(token))
-    print(update(token))
+    client = DynamicDnsClient(token, host[target], endpoint)
+    print(client.retrieve())
+    print(client.update())
 
 
 if __name__ == '__main__':
