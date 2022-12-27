@@ -47,6 +47,10 @@ class Record(models.Model):
     def data(self) -> str:
         return self.join_data(self.priority, self.weight, self.port, self.target)
 
+    @property
+    def subdomain(self) -> Subdomain:
+        return Subdomain.objects.get(name=self.subdomain_name, domain=self.domain)
+
     def __str__(self):
         return f'{self.full_name} {self.ttl} IN {self.type} {self.data}'
 

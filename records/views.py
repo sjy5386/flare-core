@@ -213,7 +213,7 @@ class ZoneExportView(DetailView):
 
 @method_decorator(login_required, name='dispatch')
 class ZoneImportView(FormView):
-    template_name = 'records/zone_import.html'
+    template_name = 'objects/object_form.html'
     form_class = ZoneImportForm
 
     def __init__(self, **kwargs):
@@ -228,6 +228,7 @@ class ZoneImportView(FormView):
         context = super(ZoneImportView, self).get_context_data(**kwargs)
         context.update({
             'subdomain': self.subdomain,
+            'title': f'Import zone {self.subdomain}',
         })
         return context
 

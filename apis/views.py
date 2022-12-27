@@ -50,11 +50,28 @@ class SubdomainViewSet(viewsets.ModelViewSet):
         serializer.save(expiry=datetime.datetime.now() + datetime.timedelta(days=90))
 
 
-class RecordViewSet(viewsets.ReadOnlyModelViewSet):
+class RecordViewSet(viewsets.ModelViewSet):
     serializer_class = RecordSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.subdomain = None
+
+    def dispatch(self, request, *args, **kwargs):
+        self.subdomain = get_object_or_404(Subdomain, pk=kwargs['subdomain_pk'])
+        return super(RecordViewSet, self).dispatch(request, *args, **kwargs)
+
     def get_queryset(self):
         provider = records.providers.PROVIDER_CLASS()
-        subdomain = get_object_or_404(Subdomain, pk=self.kwargs['subdomain_pk'])
-        return Record.list_records(provider, subdomain)
+        return Record.list_records(provider, self.subdomain)
+
+    def perform_create(self, serializer):
+        serializer.save(subdomain=self.subdomain)
+
+    def perform_update(self, serializer):
+        serializer.save(subdomain=self.subdomain)
+
+    def perform_destroy(self, instance):
+        provider = records.providers.PROVIDER_CLASS()
+        Record.delete_record(provider, self.subdomain, instance.id)
