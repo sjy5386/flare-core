@@ -3,5 +3,11 @@
 ## Usage
 
 ```shell
-python main.py <your token>
+python main.py [-h] [--host HOST] <token>
+```
+
+### Example
+
+```shell
+python main.py "MyAuthenticationToken"
 ```
