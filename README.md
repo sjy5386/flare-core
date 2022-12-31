@@ -66,7 +66,13 @@ nano .env
 ### Run
 
 ```shell
-docker compose up -d
+docker compose up
+```
+
+### Deploy
+
+```shell
+sh deploy.sh
 ```
 
 ### Migrate database
