@@ -1,3 +1,5 @@
+from typing import Dict
+
 from django.db import models
 
 from base.settings.common import AUTH_USER_MODEL
@@ -32,6 +34,20 @@ class Contact(models.Model):
             self.organization = message
             self.state_province = message
             self.country = message
+
+    def to_whois(self) -> Dict[str, str]:
+        return {
+            'name': self.name,
+            'organization': self.organization,
+            'street': self.street,
+            'city': self.city,
+            'state_province': self.state_province,
+            'postal_code': self.postal_code,
+            'country': self.country,
+            'phone': self.phone,
+            'fax': self.fax,
+            'email': self.email,
+        }
 
     def __str__(self):
         return self.name

@@ -101,9 +101,9 @@ class Subdomain(models.Model):
             'updated_date': subdomain.updated_at,
             'creation_date': subdomain.created_at,
             'expiry_date': subdomain.expiry,
-            'registrant': subdomain.registrant,
-            'admin': subdomain.admin,
-            'tech': subdomain.tech,
+            'registrant': subdomain.registrant.to_whois(),
+            'admin': subdomain.admin.to_whois(),
+            'tech': subdomain.tech.to_whois(),
         }
 
 
