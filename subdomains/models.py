@@ -1,6 +1,6 @@
 import datetime
 import re
-from typing import List, Tuple, Dict
+from typing import List, Tuple, Dict, Optional
 
 from django.db import models
 
@@ -69,6 +69,18 @@ class Subdomain(models.Model):
             if is_available or not hide_unavailable:
                 result[(name, domain)] = is_available
         return result
+
+    @classmethod
+    def find_by_full_name(cls, full_name: str) -> Optional['Subdomain']:
+        if '.' not in full_name:
+            return None
+        i = full_name.index('.')
+        name = full_name[:i]
+        domain__name = full_name[i + 1:]
+        try:
+            return cls.objects.get(name=name, domain__name=domain__name)
+        except cls.DoesNotExist:
+            return None
 
 
 class ReservedName(models.Model):
