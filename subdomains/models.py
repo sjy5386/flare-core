@@ -91,19 +91,18 @@ class Subdomain(models.Model):
         subdomain = cls.find_by_full_name(full_name)
         if subdomain is None:
             return None
-        if subdomain.is_private:
-            subdomain.registrant.redact_data(is_registrant=True, email=subdomain.get_contact_url('registrant'))
-            subdomain.admin.redact_data(email=subdomain.get_contact_url('admin'))
-            subdomain.tech.redact_data(email=subdomain.get_contact_url('tech'))
-            subdomain.billing.redact_data(email=subdomain.get_contact_url('billing'))
         return {
             'subdomain_name': subdomain.full_name,
             'updated_date': subdomain.updated_at,
             'creation_date': subdomain.created_at,
             'expiry_date': subdomain.expiry,
-            'registrant': subdomain.registrant.to_whois(),
-            'admin': subdomain.admin.to_whois(),
-            'tech': subdomain.tech.to_whois(),
+            'registrant': subdomain.registrant.to_whois(is_private=subdomain.is_private,
+                                                        contact_url=subdomain.get_contact_url('registrant'),
+                                                        ignore_fields=['organization', 'state_province', 'country']),
+            'admin': subdomain.admin.to_whois(is_private=subdomain.is_private,
+                                              contact_url=subdomain.get_contact_url('admin')),
+            'tech': subdomain.tech.to_whois(is_private=subdomain.is_private,
+                                            contact_url=subdomain.get_contact_url('tech')),
         }
 
 

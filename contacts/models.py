@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, List
 
 from django.db import models
 
@@ -22,31 +22,20 @@ class Contact(models.Model):
     fax = models.CharField(max_length=15, blank=True, validators=[validate_phone])
     email = models.EmailField()
 
-    def redact_data(self, message: str = 'DATA REDACTED', is_registrant: bool = False, email: str = None):
-        self.name = message
-        self.street = message
-        self.city = message
-        self.postal_code = message
-        self.phone = message
-        self.fax = message
-        self.email = email if email else message
-        if not is_registrant:
-            self.organization = message
-            self.state_province = message
-            self.country = message
-
-    def to_whois(self) -> Dict[str, str]:
+    def to_whois(self, is_private: bool = False,
+                 contact_url: str = None, ignore_fields: List[str] = ()) -> Dict[str, str]:
+        data_redacted_message = 'DATA REDACTED'
         return {
-            'name': self.name,
-            'organization': self.organization,
-            'street': self.street,
-            'city': self.city,
-            'state_province': self.state_province,
-            'postal_code': self.postal_code,
-            'country': self.country,
-            'phone': self.phone,
-            'fax': self.fax,
-            'email': self.email,
+            'name': data_redacted_message if is_private and 'name' not in ignore_fields else self.name,
+            'organization': data_redacted_message if is_private and 'organization' not in ignore_fields else self.organization,
+            'street': data_redacted_message if is_private and 'street' not in ignore_fields else self.street,
+            'city': data_redacted_message if is_private and 'city' not in ignore_fields else self.city,
+            'state_province': data_redacted_message if is_private and 'state_province' not in ignore_fields else self.state_province,
+            'postal_code': data_redacted_message if is_private and 'postal_code' not in ignore_fields else self.postal_code,
+            'country': data_redacted_message if is_private and 'country' not in ignore_fields and 'country' not in ignore_fields else self.country,
+            'phone': data_redacted_message if is_private and 'phone' not in ignore_fields else self.phone,
+            'fax': data_redacted_message if is_private and 'fax' not in ignore_fields else self.fax,
+            'email': contact_url if is_private and 'email' not in ignore_fields and contact_url else data_redacted_message if is_private else self.email,
         }
 
     def __str__(self):
