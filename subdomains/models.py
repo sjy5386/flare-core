@@ -33,6 +33,10 @@ class Subdomain(models.Model):
             models.UniqueConstraint(fields=['name', 'domain'], name='unique_domain_name')
         ]
 
+    @property
+    def full_name(self) -> str:
+        return self.name + '.' + self.domain.name
+
     def has_expired(self) -> bool:
         return self.expiry < datetime.datetime.now(tz=datetime.timezone.utc)
 
@@ -48,7 +52,7 @@ class Subdomain(models.Model):
         return True
 
     def __str__(self):
-        return self.name + '.' + self.domain.name
+        return self.full_name
 
     @classmethod
     def is_available(cls, name: str, domain: Domain) -> bool:
