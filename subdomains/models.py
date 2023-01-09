@@ -1,6 +1,6 @@
 import datetime
 import re
-from typing import List, Tuple
+from typing import List, Tuple, Dict
 
 from django.db import models
 
@@ -58,13 +58,13 @@ class Subdomain(models.Model):
             ReservedName.objects.filter(name=name)) == 0
 
     @classmethod
-    def search(cls, name: str, domains: List[Domain], hide_unavailable: bool = False) -> List[Tuple[str, Domain, bool]]:
-        results = []
+    def search(cls, name: str, domains: List[Domain], hide_unavailable: bool = False) -> Dict[Tuple[str, Domain], bool]:
+        result = {}
         for domain in domains:
             is_available = cls.is_available(name, domain)
             if is_available or not hide_unavailable:
-                results.append((name, domain, is_available))
-        return results
+                result[(name, domain)] = is_available
+        return result
 
 
 class ReservedName(models.Model):
