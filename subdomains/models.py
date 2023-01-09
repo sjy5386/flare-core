@@ -1,6 +1,6 @@
 import datetime
 import re
-from typing import List, Tuple, Dict, Optional
+from typing import List, Tuple, Dict, Optional, Any
 
 from django.db import models
 
@@ -85,6 +85,26 @@ class Subdomain(models.Model):
             return cls.objects.get(name=name, domain__name=domain__name)
         except cls.DoesNotExist:
             return None
+
+    @classmethod
+    def whois(cls, full_name: str) -> Optional[Dict[str, Any]]:
+        subdomain = cls.find_by_full_name(full_name)
+        if subdomain is None:
+            return None
+        if subdomain.is_private:
+            subdomain.registrant.redact_data(is_registrant=True, email=subdomain.get_contact_url('registrant'))
+            subdomain.admin.redact_data(email=subdomain.get_contact_url('admin'))
+            subdomain.tech.redact_data(email=subdomain.get_contact_url('tech'))
+            subdomain.billing.redact_data(email=subdomain.get_contact_url('billing'))
+        return {
+            'subdomain_name': subdomain.full_name,
+            'updated_date': subdomain.updated_at,
+            'creation_date': subdomain.created_at,
+            'expiry_date': subdomain.expiry,
+            'registrant': subdomain.registrant,
+            'admin': subdomain.admin,
+            'tech': subdomain.tech,
+        }
 
 
 class ReservedName(models.Model):

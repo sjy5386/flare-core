@@ -71,14 +71,7 @@ class WhoisView(FormView, DetailView):
         }
 
     def get_object(self, queryset=None):
-        subdomain = Subdomain.find_by_full_name(self.q)
-        if subdomain is not None:
-            if subdomain.is_private:
-                subdomain.registrant.redact_data(is_registrant=True, email=subdomain.get_contact_url('registrant'))
-                subdomain.admin.redact_data(email=subdomain.get_contact_url('admin'))
-                subdomain.tech.redact_data(email=subdomain.get_contact_url('tech'))
-                subdomain.billing.redact_data(email=subdomain.get_contact_url('billing'))
-        return subdomain
+        return Subdomain.whois(self.q)
 
 
 class SubdomainContactView(FormView):
