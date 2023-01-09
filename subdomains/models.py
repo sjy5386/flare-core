@@ -55,6 +55,21 @@ class Subdomain(models.Model):
         from django.urls import reverse_lazy
         return f'{reverse_lazy("subdomains:contact")}?subdomain={self.full_name}&contact={contact}'
 
+    def to_whois(self) -> Dict[str, Any]:
+        return {
+            'subdomain_name': self.full_name,
+            'updated_date': self.updated_at,
+            'creation_date': self.created_at,
+            'expiry_date': self.expiry,
+            'registrant': self.registrant.to_whois(is_private=self.is_private,
+                                                   contact_url=self.get_contact_url('registrant'),
+                                                   ignore_fields=['organization', 'state_province', 'country']),
+            'admin': self.admin.to_whois(is_private=self.is_private,
+                                         contact_url=self.get_contact_url('admin')),
+            'tech': self.tech.to_whois(is_private=self.is_private,
+                                       contact_url=self.get_contact_url('tech')),
+        }
+
     def __str__(self):
         return self.full_name
 
@@ -91,19 +106,7 @@ class Subdomain(models.Model):
         subdomain = cls.find_by_full_name(full_name)
         if subdomain is None:
             return None
-        return {
-            'subdomain_name': subdomain.full_name,
-            'updated_date': subdomain.updated_at,
-            'creation_date': subdomain.created_at,
-            'expiry_date': subdomain.expiry,
-            'registrant': subdomain.registrant.to_whois(is_private=subdomain.is_private,
-                                                        contact_url=subdomain.get_contact_url('registrant'),
-                                                        ignore_fields=['organization', 'state_province', 'country']),
-            'admin': subdomain.admin.to_whois(is_private=subdomain.is_private,
-                                              contact_url=subdomain.get_contact_url('admin')),
-            'tech': subdomain.tech.to_whois(is_private=subdomain.is_private,
-                                            contact_url=subdomain.get_contact_url('tech')),
-        }
+        return subdomain.to_whois()
 
 
 class ReservedName(models.Model):
