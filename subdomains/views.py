@@ -74,13 +74,10 @@ class WhoisView(FormView, DetailView):
         subdomain = Subdomain.find_by_full_name(self.q)
         if subdomain is not None:
             if subdomain.is_private:
-                def make_contact_url(contact):
-                    return f'{reverse_lazy("subdomains:contact")}?subdomain={subdomain.__str__()}&contact={contact}'
-
-                subdomain.registrant.redact_data(is_registrant=True, email=make_contact_url('registrant'))
-                subdomain.admin.redact_data(email=make_contact_url('admin'))
-                subdomain.tech.redact_data(email=make_contact_url('tech'))
-                subdomain.billing.redact_data(email=make_contact_url('billing'))
+                subdomain.registrant.redact_data(is_registrant=True, email=subdomain.get_contact_url('registrant'))
+                subdomain.admin.redact_data(email=subdomain.get_contact_url('admin'))
+                subdomain.tech.redact_data(email=subdomain.get_contact_url('tech'))
+                subdomain.billing.redact_data(email=subdomain.get_contact_url('billing'))
         return subdomain
 
 

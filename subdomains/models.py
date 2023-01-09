@@ -51,6 +51,10 @@ class Subdomain(models.Model):
         self.save()
         return True
 
+    def get_contact_url(self, contact: str) -> str:
+        from django.urls import reverse_lazy
+        return f'{reverse_lazy("subdomains:contact")}?subdomain={self.full_name}&contact={contact}'
+
     def __str__(self):
         return self.full_name
 
