@@ -3,7 +3,10 @@ import datetime
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import viewsets, permissions
+from rest_framework.decorators import api_view
 from rest_framework.generics import get_object_or_404
+from rest_framework.request import Request
+from rest_framework.response import Response
 
 import records.providers
 import shorturls.providers
@@ -59,6 +62,15 @@ class SubdomainViewSet(viewsets.ModelViewSet):
 
     def perform_update(self, serializer):
         serializer.save(expiry=datetime.datetime.now() + datetime.timedelta(days=90))
+
+
+@api_view(['GET'])
+def whois(request: Request) -> Response:
+    q = request.GET.get('q', '')
+    result = Subdomain.whois(q)
+    if result is None:
+        return Response({'message': 'No match for "' + q + '".'}, status=404)
+    return Response(result)
 
 
 class RecordViewSet(viewsets.ModelViewSet):
