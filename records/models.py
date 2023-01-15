@@ -56,6 +56,8 @@ class Record(models.Model):
 
     @classmethod
     def list_records(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain) -> List['Record']:
+        if subdomain is None:
+            return []
         if provider:
             provider_records = provider.list_records(subdomain.name, subdomain.domain)
             provider_record_id_set = set(map(lambda x: x['provider_id'], provider_records))
