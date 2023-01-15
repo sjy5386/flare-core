@@ -1,5 +1,7 @@
 import datetime
 
+from drf_yasg import openapi
+from drf_yasg.views import get_schema_view
 from rest_framework import viewsets, permissions
 from rest_framework.generics import get_object_or_404
 
@@ -11,6 +13,15 @@ from records.models import Record
 from shorturls.models import ShortUrl
 from subdomains.models import Subdomain
 from .serializers import ContactSerializer, DomainSerializer, ShortUrlSerializer, SubdomainSerializer, RecordSerializer
+
+schema_view = get_schema_view(
+    openapi.Info(
+        title='Subshorts API',
+        default_version='v1',
+    ),
+    public=True,
+    permission_classes=[permissions.IsAuthenticated]
+)
 
 
 class ContactViewSet(viewsets.ModelViewSet):
