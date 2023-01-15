@@ -1,6 +1,6 @@
 import datetime
 import re
-from typing import List, Tuple
+from typing import List, Tuple, Dict, Optional, Any
 
 from django.db import models
 
@@ -33,6 +33,10 @@ class Subdomain(models.Model):
             models.UniqueConstraint(fields=['name', 'domain'], name='unique_domain_name')
         ]
 
+    @property
+    def full_name(self) -> str:
+        return self.name + '.' + self.domain.name
+
     def has_expired(self) -> bool:
         return self.expiry < datetime.datetime.now(tz=datetime.timezone.utc)
 
@@ -47,8 +51,27 @@ class Subdomain(models.Model):
         self.save()
         return True
 
+    def get_contact_url(self, contact: str) -> str:
+        from django.urls import reverse_lazy
+        return f'{reverse_lazy("subdomains:contact")}?subdomain={self.full_name}&contact={contact}'
+
+    def to_whois(self) -> Dict[str, Any]:
+        return {
+            'subdomain_name': self.full_name,
+            'updated_date': self.updated_at,
+            'creation_date': self.created_at,
+            'expiry_date': self.expiry,
+            'registrant': self.registrant.to_whois(is_private=self.is_private,
+                                                   contact_url=self.get_contact_url('registrant'),
+                                                   ignore_fields=['organization', 'state_province', 'country']),
+            'admin': self.admin.to_whois(is_private=self.is_private,
+                                         contact_url=self.get_contact_url('admin')),
+            'tech': self.tech.to_whois(is_private=self.is_private,
+                                       contact_url=self.get_contact_url('tech')),
+        }
+
     def __str__(self):
-        return self.name + '.' + self.domain.name
+        return self.full_name
 
     @classmethod
     def is_available(cls, name: str, domain: Domain) -> bool:
@@ -58,13 +81,32 @@ class Subdomain(models.Model):
             ReservedName.objects.filter(name=name)) == 0
 
     @classmethod
-    def search(cls, name: str, domains: List[Domain], hide_unavailable: bool = False) -> List[Tuple[str, Domain, bool]]:
-        results = []
+    def search(cls, name: str, domains: List[Domain], hide_unavailable: bool = False) -> Dict[Tuple[str, Domain], bool]:
+        result = {}
         for domain in domains:
             is_available = cls.is_available(name, domain)
             if is_available or not hide_unavailable:
-                results.append((name, domain, is_available))
-        return results
+                result[(name, domain)] = is_available
+        return result
+
+    @classmethod
+    def find_by_full_name(cls, full_name: str) -> Optional['Subdomain']:
+        if '.' not in full_name:
+            return None
+        i = full_name.index('.')
+        name = full_name[:i]
+        domain__name = full_name[i + 1:]
+        try:
+            return cls.objects.get(name=name, domain__name=domain__name)
+        except cls.DoesNotExist:
+            return None
+
+    @classmethod
+    def whois(cls, full_name: str) -> Optional[Dict[str, Any]]:
+        subdomain = cls.find_by_full_name(full_name)
+        if subdomain is None:
+            return None
+        return subdomain.to_whois()
 
 
 class ReservedName(models.Model):
