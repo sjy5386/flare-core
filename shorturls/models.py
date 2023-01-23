@@ -33,9 +33,6 @@ class ShortUrl(models.Model):
     def __str__(self):
         return self.name
 
-    def get_short_url(self):  # deprecated
-        return self.short_url
-
     @classmethod
     def list_short_urls(cls, provider: Optional[BaseShortUrlProvider], user: Optional[AUTH_USER_MODEL]
                         ) -> List['ShortUrl']:
