@@ -1,4 +1,5 @@
 import os
+from typing import Dict, Any
 
 import requests
 
@@ -9,7 +10,7 @@ from .base import BaseShortUrlProvider
 class FirebaseDynamicLinksShortUrlProvider(BaseShortUrlProvider):
     api_key = os.environ.get("FIREBASE_WEB_API_KEY")
 
-    def create_short_url(self, domain: Domain, long_url: str) -> str:
+    def create_short_url(self, domain: Domain, long_url: str) -> Dict[str, Any]:
         request_body = {
             'dynamicLinkInfo': {
                 'domainUriPrefix': f'https://{domain.name}',
@@ -21,4 +22,6 @@ class FirebaseDynamicLinksShortUrlProvider(BaseShortUrlProvider):
         }
         response = requests.post('https://firebasedynamiclinks.googleapis.com/v1/shortLinks',
                                  params={'key': self.api_key}, json=request_body)
-        return response.json()['shortLink'].split('/')[-1]
+        return {
+            'short': response.json()['shortLink'].split('/')[-1],
+        }
