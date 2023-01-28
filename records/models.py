@@ -67,14 +67,15 @@ class Record(models.Model):
             record_dict = {provider_id: x for provider_id, x in
                            map(lambda x: (x.provider_id, x), cls.objects.filter(subdomain_name=subdomain.name))}
             for provider_record in provider_records:
+                provider_id = provider_record.get('provider_id')
+                if provider_id in record_dict:
+                    record_dict.get(provider_id).update_by_provider_record(provider_record)
+                    continue
                 provider_record.update({
                     'subdomain_name': subdomain.name,
                     'domain': subdomain.domain,
                 })
-                if provider_record.get('provider_id') in record_dict.keys():
-                    record_dict.get(provider_record.get('provider_id')).update_by_provider_record(provider_record)
-                    continue
-                cls.objects.update_or_create(provider_id=provider_record.get('provider_id'), defaults=provider_record)
+                cls.objects.update_or_create(provider_id=provider_id, defaults=provider_record)
         return cls.objects.filter(subdomain_name=subdomain.name)
 
     @classmethod
