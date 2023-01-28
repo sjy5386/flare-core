@@ -90,9 +90,13 @@ class Record(models.Model):
         record = cls.objects.get(subdomain_name=subdomain.name, pk=id)
         if provider:
             provider_record = provider.retrieve_record(subdomain.name, subdomain.domain, record.provider_id)
+            is_updated = False
             for k, v in provider_record.items():
-                setattr(record, k, v)
-            record.save()
+                if getattr(record, k) != v:
+                    setattr(record, k, v)
+                    is_updated = True
+            if is_updated:
+                record.save()
         return record
 
     @classmethod
