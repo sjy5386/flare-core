@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Dict, Any
 
 from django.db import models
 
@@ -72,14 +72,7 @@ class Record(models.Model):
                     'domain': subdomain.domain,
                 })
                 if provider_record.get('provider_id') in record_dict.keys():
-                    record = record_dict.get(provider_record.get('provider_id'))
-                    is_updated = False
-                    for k, v in provider_record.items():
-                        if getattr(record, k) != v:
-                            setattr(record, k, v)
-                            is_updated = True
-                    if is_updated:
-                        record.save()
+                    record_dict.get(provider_record.get('provider_id')).update_by_provider_record(provider_record)
                     continue
                 cls.objects.update_or_create(provider_id=provider_record.get('provider_id'), defaults=provider_record)
         return cls.objects.filter(subdomain_name=subdomain.name)
@@ -106,13 +99,7 @@ class Record(models.Model):
             if provider_record is None:
                 record.delete()
                 return None
-            is_updated = False
-            for k, v in provider_record.items():
-                if getattr(record, k) != v:
-                    setattr(record, k, v)
-                    is_updated = True
-            if is_updated:
-                record.save()
+            record.update_by_provider_record(provider_record)
         return record
 
     @classmethod
@@ -195,3 +182,13 @@ class Record(models.Model):
         for subdomain in Subdomain.objects.all():
             cls.list_records(provider, subdomain)
         print('End synchronizing records.')
+
+    def update_by_provider_record(self, provider_record: Dict[str, Any]) -> bool:
+        is_updated = False
+        for k, v in provider_record.items():
+            if getattr(self, k) != v:
+                setattr(self, k, v)
+                is_updated = True
+        if is_updated:
+            self.save()
+        return is_updated
