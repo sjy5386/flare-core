@@ -64,11 +64,23 @@ class Record(models.Model):
             for record in cls.objects.filter(subdomain_name=subdomain.name):
                 if record.provider_id not in provider_record_id_set:
                     record.delete()
+            record_dict = {provider_id: x for provider_id, x in
+                           map(lambda x: (x.provider_id, x), cls.objects.filter(subdomain_name=subdomain.name))}
             for provider_record in provider_records:
                 provider_record.update({
                     'subdomain_name': subdomain.name,
                     'domain': subdomain.domain,
                 })
+                if provider_record.get('provider_id') in record_dict.keys():
+                    record = record_dict.get(provider_record.get('provider_id'))
+                    is_updated = False
+                    for k, v in provider_record.items():
+                        if getattr(record, k) != v:
+                            setattr(record, k, v)
+                            is_updated = True
+                    if is_updated:
+                        record.save()
+                    continue
                 cls.objects.update_or_create(provider_id=provider_record.get('provider_id'), defaults=provider_record)
         return cls.objects.filter(subdomain_name=subdomain.name)
 
