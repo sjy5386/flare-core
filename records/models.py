@@ -86,10 +86,14 @@ class Record(models.Model):
         return record
 
     @classmethod
-    def retrieve_record(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain, id: int) -> 'Record':
+    def retrieve_record(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain, id: int
+                        ) -> Optional['Record']:
         record = cls.objects.get(subdomain_name=subdomain.name, pk=id)
         if provider:
             provider_record = provider.retrieve_record(subdomain.name, subdomain.domain, record.provider_id)
+            if provider_record is None:
+                record.delete()
+                return None
             is_updated = False
             for k, v in provider_record.items():
                 if getattr(record, k) != v:
