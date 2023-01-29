@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Dict, Any
 
 from django.db import models
 
@@ -64,12 +64,18 @@ class Record(models.Model):
             for record in cls.objects.filter(subdomain_name=subdomain.name):
                 if record.provider_id not in provider_record_id_set:
                     record.delete()
+            record_dict = {provider_id: x for provider_id, x in
+                           map(lambda x: (x.provider_id, x), cls.objects.filter(subdomain_name=subdomain.name))}
             for provider_record in provider_records:
+                provider_id = provider_record.get('provider_id')
+                if provider_id in record_dict:
+                    record_dict.get(provider_id).update_by_provider_record(provider_record)
+                    continue
                 provider_record.update({
                     'subdomain_name': subdomain.name,
                     'domain': subdomain.domain,
                 })
-                cls.objects.update_or_create(provider_id=provider_record.get('provider_id'), defaults=provider_record)
+                cls.objects.update_or_create(provider_id=provider_id, defaults=provider_record)
         return cls.objects.filter(subdomain_name=subdomain.name)
 
     @classmethod
@@ -86,13 +92,15 @@ class Record(models.Model):
         return record
 
     @classmethod
-    def retrieve_record(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain, id: int) -> 'Record':
+    def retrieve_record(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain, id: int
+                        ) -> Optional['Record']:
         record = cls.objects.get(subdomain_name=subdomain.name, pk=id)
         if provider:
             provider_record = provider.retrieve_record(subdomain.name, subdomain.domain, record.provider_id)
-            for k, v in provider_record.items():
-                setattr(record, k, v)
-            record.save()
+            if provider_record is None:
+                record.delete()
+                return None
+            record.update_by_provider_record(provider_record)
         return record
 
     @classmethod
@@ -175,3 +183,13 @@ class Record(models.Model):
         for subdomain in Subdomain.objects.all():
             cls.list_records(provider, subdomain)
         print('End synchronizing records.')
+
+    def update_by_provider_record(self, provider_record: Dict[str, Any]) -> bool:
+        is_updated = False
+        for k, v in provider_record.items():
+            if getattr(self, k) != v:
+                setattr(self, k, v)
+                is_updated = True
+        if is_updated:
+            self.save()
+        return is_updated
