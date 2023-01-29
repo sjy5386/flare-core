@@ -33,9 +33,6 @@ class ShortUrl(models.Model):
     def __str__(self):
         return self.name
 
-    def get_short_url(self):  # deprecated
-        return self.short_url
-
     @classmethod
     def list_short_urls(cls, provider: Optional[BaseShortUrlProvider], user: Optional[AUTH_USER_MODEL]
                         ) -> List['ShortUrl']:
@@ -45,7 +42,7 @@ class ShortUrl(models.Model):
     def create_short_url(cls, provider: Optional[BaseShortUrlProvider], user: Optional[AUTH_USER_MODEL],
                          **kwargs) -> 'ShortUrl':
         if provider:
-            kwargs['short'] = provider.create_short_url(kwargs.get('domain'), kwargs.get('long_url'))
+            kwargs['short'] = provider.create_short_url(kwargs.get('domain'), kwargs.get('long_url'))['short']
         short_url = cls(user=user, **kwargs)
         short_url.save()
         return short_url

@@ -14,7 +14,7 @@
         <tr>
             <th scope="row">Short URL</th>
             <td>
-                <a href="{{ object.get_short_url }}">{{ object.get_short_url }}</a>
+                <a href="{{ object.short_url }}">{{ object.short_url }}</a>
                 {% bootstrap_button button_type="button" button_class="btn-outline-primary" size="sm" onclick="copy()" content="COPY" %}
             </td>
         </tr>
@@ -34,10 +34,10 @@
             integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4kNcpmBAUSHSQX0FslNhTDadL4O5SAGapGt4FodqL8My0mA=="
             crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
-        new QRCode(document.getElementById("qrcode"), "{{ object.get_short_url }}");
+        new QRCode(document.getElementById("qrcode"), "{{ object.short_url }}");
 
         function copy() {
-            navigator.clipboard.writeText("{{ object.get_short_url }}");
+            navigator.clipboard.writeText("{{ object.short_url }}");
             alert("Copied!");
         }
     </script>
