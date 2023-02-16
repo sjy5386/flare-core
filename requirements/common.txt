@@ -1,4 +1,4 @@
-Django==4.1.6
+Django==4.1.7
 django-bootstrap5==22.2
 django-cors-headers==3.13.0
 django-dotenv==1.4.2
