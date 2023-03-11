@@ -68,7 +68,6 @@ INSTALLED_APPS = [
     'dynamic_dns.apps.DynamicDnsConfig',
     'records.apps.RecordsConfig',
     'reports.apps.ReportsConfig',
-    'rules.apps.RulesConfig',
     'shorturls.apps.ShorturlsConfig',
     'subdomains.apps.SubdomainsConfig',
 ]
