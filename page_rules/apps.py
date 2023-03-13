@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class RulesConfig(AppConfig):
+class PageRulesConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'rules'
+    name = 'page_rules'
