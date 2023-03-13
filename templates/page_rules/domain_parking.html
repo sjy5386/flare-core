@@ -1,0 +1,34 @@
+{% load django_bootstrap5 %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% bootstrap_css %}
+</head>
+<body>
+<header>
+    <div class="container">
+        <h3 class="text-center">{{ domain_name }}</h3>
+    </div>
+</header>
+<main>
+    <div class="container">
+        <h1 class="text-center">{{ title }}</h1>
+        <hr>
+        <article class="text-center">
+            {% for line in content.splitlines %}
+                <p>{{ line }}</p>
+            {% endfor %}
+        </article>
+    </div>
+</main>
+<footer class="fixed-bottom mt-5">
+    <hr>
+    <div class="container">
+        <p class="text-center">Powered by <a href="https://subshorts.com">Subshorts</a>.</p>
+    </div>
+</footer>
+</body>
+</html>

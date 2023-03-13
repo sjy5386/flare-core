@@ -103,7 +103,3 @@ python manage.py createsuperuser
 2. Enter a name.
 3. Enter a long URL.
 4. Create a short URL.
-
-# Related Projects
-
-* [Subshorts Rules](https://github.com/subshorts/subshorts-rules)

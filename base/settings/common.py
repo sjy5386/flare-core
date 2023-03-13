@@ -66,9 +66,9 @@ INSTALLED_APPS = [
     'contacts.apps.ContactsConfig',
     'domains.apps.DomainsConfig',
     'dynamic_dns.apps.DynamicDnsConfig',
+    'page_rules.apps.PageRulesConfig',
     'records.apps.RecordsConfig',
     'reports.apps.ReportsConfig',
-    'rules.apps.RulesConfig',
     'shorturls.apps.ShorturlsConfig',
     'subdomains.apps.SubdomainsConfig',
 ]

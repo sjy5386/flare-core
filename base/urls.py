@@ -31,4 +31,6 @@ urlpatterns = [
     path('shorturls/', include('shorturls.urls')),
     path('subdomains/', include('subdomains.urls')),
     path('subdomains/<int:subdomain_id>/records/', include('records.urls')),
+
+    path('', include('shorturls.url_shortener.urls')),
 ]
