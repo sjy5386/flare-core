@@ -1,3 +1,6 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import WebForwarding, DomainParking
+
+admin.site.register(WebForwarding)
+admin.site.register(DomainParking)
