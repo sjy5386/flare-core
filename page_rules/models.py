@@ -16,7 +16,7 @@ class WebForwarding(models.Model):
     force_path_root = models.BooleanField('Force path root?')
 
 
-class Parking(models.Model):
+class DomainParking(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

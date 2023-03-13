@@ -3,7 +3,7 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.http import require_GET
 
-from .models import WebForwarding, Parking
+from .models import WebForwarding, DomainParking
 
 
 @require_GET
@@ -20,7 +20,7 @@ def forward_web(request: HttpRequest, web_forwarding: WebForwarding = None) -> H
 
 
 @require_GET
-def park(request: HttpRequest, parking: Parking = None) -> HttpResponse:
-    if parking is None:
-        parking = get_object_or_404(Parking, domain_name=request.META.get('HTTP_HOST'))
-    return render(request, 'page_rules/parking.html', model_to_dict(parking))
+def park_domain(request: HttpRequest, domain_parking: DomainParking = None) -> HttpResponse:
+    if domain_parking is None:
+        domain_parking = get_object_or_404(DomainParking, domain_name=request.META.get('HTTP_HOST'))
+    return render(request, 'page_rules/domain_parking.html', model_to_dict(domain_parking))
