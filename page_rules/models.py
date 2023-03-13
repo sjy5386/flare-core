@@ -1,7 +1,7 @@
 from django.db import models
 
 
-class Forwarding(models.Model):
+class WebForwarding(models.Model):
     class HttpStatusCodeRedirection(models.IntegerChoices):
         MOVED_PERMANENTLY = 301
         FOUND = 302
