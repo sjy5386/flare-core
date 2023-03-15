@@ -69,7 +69,7 @@ INSTALLED_APPS = [
     'page_rules.apps.PageRulesConfig',
     'records.apps.RecordsConfig',
     'reports.apps.ReportsConfig',
-    'shorturls.apps.ShorturlsConfig',
+    'shorturls.apps.ShortUrlsConfig',
     'subdomains.apps.SubdomainsConfig',
 ]
 
