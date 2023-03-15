@@ -1,4 +1,4 @@
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_GET
 
@@ -18,4 +18,14 @@ def qrcode(request: HttpRequest, short: str) -> HttpResponse:
     short_url = get_object_or_404(ShortUrl, domain__name=domain__name, short=short)
     return render(request, 'shorturls/url_shortener/qrcode.html', {
         'object': short_url,
+    })
+
+
+@require_GET
+def format_json(request: HttpRequest, short: str) -> HttpResponse:
+    domain__name = request.META.get('HTTP_HOST')
+    short_url = get_object_or_404(ShortUrl, domain__name=domain__name, short=short)
+    return JsonResponse({
+        'short_url': short_url.short_url,
+        'long_url': short_url.long_url,
     })
