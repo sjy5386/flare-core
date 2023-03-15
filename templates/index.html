@@ -10,7 +10,7 @@
             <h5>Contacts ({{ contacts | length }})</h5>
         </section>
         <section>
-            <h5>Short URLs ({{ shorturls | length }})</h5>
+            <h5>Short URLs ({{ short_urls | length }})</h5>
         </section>
         <section>
             <h5>Posts ({{ posts | length }})</h5>
@@ -27,7 +27,7 @@
         {% bootstrap_button button_type="submit" content="Search" %}
     </form>
     <h3>Short URLs</h3>
-    <form method="get" action="/shorturls/create">
+    <form method="get" action="{% url 'short_urls:create' %}">
         {% bootstrap_form short_url_form %}
         {% bootstrap_button button_type="submit" content="Shorten" %}
     </form>
