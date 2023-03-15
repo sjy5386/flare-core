@@ -27,7 +27,7 @@
         {% bootstrap_button button_type="submit" content="Search" %}
     </form>
     <h3>Short URLs</h3>
-    <form method="get" action="/short_urls/create">
+    <form method="get" action="{% url 'short_urls:create' %}">
         {% bootstrap_form short_url_form %}
         {% bootstrap_button button_type="submit" content="Shorten" %}
     </form>
