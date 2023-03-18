@@ -12,7 +12,6 @@ services:
     ports:
       - 8000:8000
     depends_on:
-      - db
       - cache
     extra_hosts:
       - host.docker.internal:host-gateway
