@@ -1,0 +1,6 @@
+[client]
+host = host.docker.internal
+user = subshorts
+password = dq9a6i6q4i8qAZNyu
+database = subshorts
+port = 3306
