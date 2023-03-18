@@ -1,4 +1,5 @@
 SECRET_KEY
+my.cnf
 
 */migrations/*
 !*/migrations/__init__.py
