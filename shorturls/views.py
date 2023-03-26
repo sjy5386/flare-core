@@ -21,7 +21,7 @@ class ShortUrlListView(ListView):
 class ShortUrlCreateView(FormView):
     template_name = 'objects/object_form.html'
     form_class = ShortUrlForm
-    success_url = reverse_lazy('shorturls:list')
+    success_url = reverse_lazy('short_urls:list')
     extra_context = {
         'title': 'Create a new short URL',
     }

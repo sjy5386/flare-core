@@ -28,7 +28,7 @@ urlpatterns = [
     path('domains/', include('domains.urls')),
     path('dynamic-dns/', include('dynamic_dns.urls')),
     path('reports/', include('reports.urls')),
-    path('shorturls/', include('shorturls.urls')),
+    path('short_urls/', include('shorturls.urls')),
     path('subdomains/', include('subdomains.urls')),
     path('subdomains/<int:subdomain_id>/records/', include('records.urls')),
 

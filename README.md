@@ -63,6 +63,22 @@ cp .env.sample .env
 nano .env
 ```
 
+### Connect to the database
+
+1. Copy `my.cnf.sample`.
+
+```shell
+cp my.cnf.sample my.cnf
+```
+
+2. Edit `my.cnf`.
+
+```shell
+nano my.cnf
+```
+
+[MySQLdb connection options](https://mysqlclient.readthedocs.io/user_guide.html#functions-and-attributes)
+
 ### Run
 
 ```shell

@@ -1,17 +1,4 @@
 services:
-  db:
-    image: mariadb:10.6
-    volumes:
-      - ~/docker/db/conf.d:/etc/mysql/conf.d
-      - ~/docker/db/mysql:/var/lib/mysql
-    environment:
-      MARIADB_DATABASE: subshorts
-      MARIADB_USER: subshorts
-      MARIADB_PASSWORD: dq9a6i6q4i8qAZNyu
-      MARIADB_ROOT_PASSWORD: yWV8m8tJkdWc9KutS
-    ports:
-      - 3306:3306
-
   cache:
     image: redis
     ports:
@@ -25,7 +12,6 @@ services:
     ports:
       - 8000:8000
     depends_on:
-      - db
       - cache
     extra_hosts:
       - host.docker.internal:host-gateway

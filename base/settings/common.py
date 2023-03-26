@@ -69,7 +69,7 @@ INSTALLED_APPS = [
     'page_rules.apps.PageRulesConfig',
     'records.apps.RecordsConfig',
     'reports.apps.ReportsConfig',
-    'shorturls.apps.ShorturlsConfig',
+    'shorturls.apps.ShortUrlsConfig',
     'subdomains.apps.SubdomainsConfig',
 ]
 
@@ -116,15 +116,11 @@ WSGI_APPLICATION = 'base.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'subshorts',
-        'USER': 'subshorts',
-        'PASSWORD': 'dq9a6i6q4i8qAZNyu',
-        'HOST': 'host.docker.internal',
-        'PORT': '3306',
         'OPTIONS': {
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
             'charset': 'utf8mb4',
             'use_unicode': True,
+            'read_default_file': 'my.cnf',
         },
     }
 }
