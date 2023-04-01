@@ -179,7 +179,18 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'accounts.User'
 
-CSRF_TRUSTED_ORIGINS = ('https://subshorts.com', 'https://test.subshorts.com', 'https://local.subshorts.com',)
+
+def get_csrf_trusted_origins():
+    filename = 'CSRF_TRUSTED_ORIGINS'
+    if os.path.isfile(filename):
+        f = open(filename, 'r')
+        lines = f.readlines()
+        f.close()
+        return tuple(lines)
+    return 'https://subshorts.com', 'https://test.subshorts.com', 'https://local.subshorts.com',
+
+
+CSRF_TRUSTED_ORIGINS = get_csrf_trusted_origins()
 CORS_ORIGIN_WHITELIST = CSRF_TRUSTED_ORIGINS
 
 LOGGING = {
