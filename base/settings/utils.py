@@ -25,4 +25,10 @@ def get_csrf_trusted_origins():
         lines = f.readlines()
         f.close()
         return tuple(lines)
-    return 'https://subshorts.com', 'https://test.subshorts.com', 'https://local.subshorts.com',
+    return (
+        'https://subshorts.com',
+        'https://admin.subshorts.com',
+        'https://test.subshorts.com',
+        'https://local.subshorts.com',
+        'http://localhost:8000',
+    )
