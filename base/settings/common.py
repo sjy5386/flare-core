@@ -11,31 +11,16 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 import os
 from pathlib import Path
-from django.core.management.utils import get_random_secret_key
+
+from .utils import get_secret_key, get_csrf_trusted_origins
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-def get_secret_key():
-    filename = 'SECRET_KEY'
-    if os.path.isfile(filename):
-        f = open(filename, 'r')
-        line = f.readline()
-        f.close()
-        return line
-    else:
-        random_secret_key = get_random_secret_key()
-        f = open(filename, 'w')
-        f.write(random_secret_key)
-        f.close()
-        return random_secret_key
-
-
 SECRET_KEY = get_secret_key()
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -178,17 +163,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'accounts.User'
-
-
-def get_csrf_trusted_origins():
-    filename = 'CSRF_TRUSTED_ORIGINS'
-    if os.path.isfile(filename):
-        f = open(filename, 'r')
-        lines = f.readlines()
-        f.close()
-        return tuple(lines)
-    return 'https://subshorts.com', 'https://test.subshorts.com', 'https://local.subshorts.com',
-
 
 CSRF_TRUSTED_ORIGINS = get_csrf_trusted_origins()
 CORS_ORIGIN_WHITELIST = CSRF_TRUSTED_ORIGINS
