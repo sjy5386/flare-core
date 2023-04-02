@@ -93,8 +93,6 @@ class DigitalOceanRecordProvider(BaseRecordProvider):
         return d
 
     def get_records(self, domain: Domain) -> List[Dict[str, Any]]:
-        if cache.get(domain) is None:
-            do_domain = digitalocean.Domain(token=self.token, name=domain.name)
-            do_records = do_domain.get_records()
-            cache.set(domain, list(map(self.record_to_dict, do_records)))
-        return cache.get(domain)
+        do_domain = digitalocean.Domain(token=self.token, name=domain.name)
+        do_records = do_domain.get_records()
+        return list(map(self.record_to_dict, do_records))
