@@ -129,6 +129,8 @@ class Record(models.Model):
         if provider:
             provider.update_record(subdomain.name, subdomain.domain, record.provider_id, **kwargs)
         record.save()
+        cache.delete('records:' + str(subdomain))
+        cache.set('records:' + str(record.id), record)
         return record
 
     @classmethod
