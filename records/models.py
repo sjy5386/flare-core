@@ -60,9 +60,9 @@ class Record(models.Model):
         if subdomain is None:
             return []
         cache_key = 'records:' + str(subdomain)
-        cached_data = cache.get(cache_key)
-        if cached_data is not None:
-            return cached_data
+        cache_value = cache.get(cache_key)
+        if cache_value is not None:
+            return cache_value
         if provider:
             provider_records = provider.list_records(subdomain.name, subdomain.domain)
             provider_record_id_set = set(map(lambda x: x['provider_id'], provider_records))
@@ -104,9 +104,9 @@ class Record(models.Model):
     def retrieve_record(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain, id: int
                         ) -> Optional['Record']:
         cache_key = 'records:' + str(id)
-        cached_data = cache.get(cache_key)
-        if cached_data is not None:
-            return cached_data
+        cache_value = cache.get(cache_key)
+        if cache_value is not None:
+            return cache_value
         record = cls.objects.get(subdomain_name=subdomain.name, pk=id)
         if provider:
             provider_record = provider.retrieve_record(subdomain.name, subdomain.domain, record.provider_id)
