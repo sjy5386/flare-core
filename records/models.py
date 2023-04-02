@@ -96,6 +96,8 @@ class Record(models.Model):
             provider_record = provider.create_record(subdomain.name, subdomain.domain, **kwargs)
             record.provider_id = provider_record.get('provider_id')
         record.save()
+        cache.delete('records:' + str(subdomain))
+        cache.set('records:' + str(record.id), record)
         return record
 
     @classmethod
