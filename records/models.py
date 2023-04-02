@@ -82,7 +82,7 @@ class Record(models.Model):
                 })
                 cls.objects.update_or_create(provider_id=provider_id, defaults=provider_record)
         records = cls.objects.filter(subdomain_name=subdomain.name)
-        cache.set(cache_key, records)
+        cache.set(cache_key, records, timeout=3600)
         return records
 
     @classmethod
@@ -97,7 +97,7 @@ class Record(models.Model):
             record.provider_id = provider_record.get('provider_id')
         record.save()
         cache.delete('records:' + str(subdomain))
-        cache.set('records:' + str(record.id), record)
+        cache.set('records:' + str(record.id), record, timeout=record.ttl)
         return record
 
     @classmethod
@@ -119,7 +119,7 @@ class Record(models.Model):
             cache.delete('records:' + str(subdomain))
             cache.delete('records:' + str(id))
         else:
-            cache.set(cache_key, record)
+            cache.set(cache_key, record, timeout=record.ttl)
         return record
 
     @classmethod
@@ -135,7 +135,7 @@ class Record(models.Model):
             provider.update_record(subdomain.name, subdomain.domain, record.provider_id, **kwargs)
         record.save()
         cache.delete('records:' + str(subdomain))
-        cache.set('records:' + str(record.id), record)
+        cache.set('records:' + str(record.id), record, timeout=record.ttl)
         return record
 
     @classmethod
