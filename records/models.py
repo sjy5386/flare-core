@@ -101,6 +101,10 @@ class Record(models.Model):
     @classmethod
     def retrieve_record(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain, id: int
                         ) -> Optional['Record']:
+        cache_key = 'records:' + str(id)
+        cached_data = cache.get(cache_key)
+        if cached_data is not None:
+            return cached_data
         record = cls.objects.get(subdomain_name=subdomain.name, pk=id)
         if provider:
             provider_record = provider.retrieve_record(subdomain.name, subdomain.domain, record.provider_id)
@@ -108,6 +112,7 @@ class Record(models.Model):
                 record.delete()
                 return None
             record.update_by_provider_record(provider_record)
+        cache.set(cache_key, record)
         return record
 
     @classmethod
