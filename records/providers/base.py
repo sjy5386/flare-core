@@ -19,6 +19,3 @@ class BaseRecordProvider:
 
     def delete_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> None:
         pass
-
-    def get_records(self, domain: Domain) -> List[Dict[str, Any]]:
-        pass
