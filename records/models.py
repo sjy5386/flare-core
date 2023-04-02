@@ -112,9 +112,14 @@ class Record(models.Model):
             provider_record = provider.retrieve_record(subdomain.name, subdomain.domain, record.provider_id)
             if provider_record is None:
                 record.delete()
-                return None
-            record.update_by_provider_record(provider_record)
-        cache.set(cache_key, record)
+                record = None
+            else:
+                record.update_by_provider_record(provider_record)
+        if record is None:
+            cache.delete('records:' + str(subdomain))
+            cache.delete('records:' + str(id))
+        else:
+            cache.set(cache_key, record)
         return record
 
     @classmethod
