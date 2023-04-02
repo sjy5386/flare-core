@@ -2,7 +2,6 @@ import os
 from typing import Any, Dict, List, Optional
 
 import digitalocean
-from django.core.cache import cache
 
 from domains.models import Domain
 from .base import BaseRecordProvider
@@ -30,7 +29,6 @@ class DigitalOceanRecordProvider(BaseRecordProvider):
             port=kwargs.get('port'),
         )
         kwargs['provider_id'] = str(new_record['domain_record']['id'])
-        cache.delete(domain)
         return kwargs
 
     def retrieve_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> Optional[Dict[str, Any]]:
@@ -59,7 +57,6 @@ class DigitalOceanRecordProvider(BaseRecordProvider):
                     r.weight = kwargs.get('weight')
                     r.port = kwargs.get('port')
                 r.save()
-                cache.delete(domain)
                 break
         return kwargs
 
@@ -70,7 +67,6 @@ class DigitalOceanRecordProvider(BaseRecordProvider):
         for r in do_records:
             if r.id == do_id and r.name.endswith(subdomain_name):
                 r.destroy()
-                cache.delete(domain)
                 break
 
     @staticmethod
