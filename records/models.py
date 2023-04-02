@@ -1,5 +1,6 @@
 from typing import List, Optional, Tuple, Dict, Any
 
+from django.core.cache import cache
 from django.db import models
 
 from domains.models import Domain
@@ -58,6 +59,10 @@ class Record(models.Model):
     def list_records(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain) -> List['Record']:
         if subdomain is None:
             return []
+        cache_key = 'records:' + str(subdomain)
+        cached_data = cache.get(cache_key)
+        if cached_data is not None:
+            return cached_data
         if provider:
             provider_records = provider.list_records(subdomain.name, subdomain.domain)
             provider_record_id_set = set(map(lambda x: x['provider_id'], provider_records))
@@ -76,7 +81,9 @@ class Record(models.Model):
                     'domain': subdomain.domain,
                 })
                 cls.objects.update_or_create(provider_id=provider_id, defaults=provider_record)
-        return cls.objects.filter(subdomain_name=subdomain.name)
+        records = cls.objects.filter(subdomain_name=subdomain.name)
+        cache.set(cache_key, records)
+        return records
 
     @classmethod
     def create_record(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain, **kwargs) -> 'Record':
