@@ -1,5 +1,6 @@
 from typing import List, Optional, Tuple, Dict, Any
 
+from django.core.cache import cache
 from django.db import models
 
 from domains.models import Domain
@@ -58,6 +59,10 @@ class Record(models.Model):
     def list_records(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain) -> List['Record']:
         if subdomain is None:
             return []
+        cache_key = 'records:' + str(subdomain)
+        cache_value = cache.get(cache_key)
+        if cache_value is not None:
+            return cache_value
         if provider:
             provider_records = provider.list_records(subdomain.name, subdomain.domain)
             provider_record_id_set = set(map(lambda x: x['provider_id'], provider_records))
@@ -76,7 +81,9 @@ class Record(models.Model):
                     'domain': subdomain.domain,
                 })
                 cls.objects.update_or_create(provider_id=provider_id, defaults=provider_record)
-        return cls.objects.filter(subdomain_name=subdomain.name)
+        records = cls.objects.filter(subdomain_name=subdomain.name)
+        cache.set(cache_key, records, timeout=3600)
+        return records
 
     @classmethod
     def create_record(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain, **kwargs) -> 'Record':
@@ -89,18 +96,30 @@ class Record(models.Model):
             provider_record = provider.create_record(subdomain.name, subdomain.domain, **kwargs)
             record.provider_id = provider_record.get('provider_id')
         record.save()
+        cache.delete('records:' + str(subdomain))
+        cache.set('records:' + str(record.id), record, timeout=record.ttl)
         return record
 
     @classmethod
     def retrieve_record(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain, id: int
                         ) -> Optional['Record']:
+        cache_key = 'records:' + str(id)
+        cache_value = cache.get(cache_key)
+        if cache_value is not None:
+            return cache_value
         record = cls.objects.get(subdomain_name=subdomain.name, pk=id)
         if provider:
             provider_record = provider.retrieve_record(subdomain.name, subdomain.domain, record.provider_id)
             if provider_record is None:
                 record.delete()
-                return None
-            record.update_by_provider_record(provider_record)
+                record = None
+            else:
+                record.update_by_provider_record(provider_record)
+        if record is None:
+            cache.delete('records:' + str(subdomain))
+            cache.delete('records:' + str(id))
+        else:
+            cache.set(cache_key, record, timeout=record.ttl)
         return record
 
     @classmethod
@@ -115,6 +134,8 @@ class Record(models.Model):
         if provider:
             provider.update_record(subdomain.name, subdomain.domain, record.provider_id, **kwargs)
         record.save()
+        cache.delete('records:' + str(subdomain))
+        cache.set('records:' + str(record.id), record, timeout=record.ttl)
         return record
 
     @classmethod
@@ -123,6 +144,8 @@ class Record(models.Model):
         if provider:
             provider.delete_record(subdomain.name, subdomain.domain, record.provider_id)
         record.delete()
+        cache.delete('records:' + str(subdomain))
+        cache.delete('records:' + str(record.id))
 
     @classmethod
     def export_zone(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain) -> str:
