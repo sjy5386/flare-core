@@ -21,6 +21,7 @@ def forward_web(request: HttpRequest, web_forwarding: WebForwarding = None) -> H
                     permanent=web_forwarding.http_status_code == WebForwarding.HttpStatusCodeRedirection.MOVED_PERMANENTLY)
 
 
+@cache_page(3600, key_prefix='page_rules:')
 @require_GET
 def park_domain(request: HttpRequest, domain_parking: DomainParking = None) -> HttpResponse:
     if domain_parking is None:
