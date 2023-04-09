@@ -91,7 +91,7 @@ class Record(models.Model):
     def create_record(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain, **kwargs) -> 'Record':
         if not kwargs.get('name', '').endswith(subdomain.name):
             raise RecordError('Name is invalid.')
-        if kwargs.get('type') in ['NS', 'CNAME', 'MX', 'SRV'] and not kwargs.get('target').endswith('.'):
+        if kwargs.get('type') in ('NS', 'CNAME', 'MX', 'SRV',) and not kwargs.get('target').endswith('.'):
             kwargs['target'] = kwargs.get('target') + '.'
         record = cls(subdomain_name=subdomain.name, domain=subdomain.domain, **kwargs)
         if provider:
@@ -127,7 +127,7 @@ class Record(models.Model):
 
     @classmethod
     def update_record(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain, id: int, **kwargs) -> 'Record':
-        if kwargs.get('type') in ['NS', 'CNAME', 'MX', 'SRV'] and not kwargs.get('target').endswith('.'):
+        if kwargs.get('type') in ('NS', 'CNAME', 'MX', 'SRV',) and not kwargs.get('target').endswith('.'):
             kwargs['target'] = kwargs.get('target') + '.'
         record = cls.objects.get(subdomain_name=subdomain.name, pk=id)
         for k, v in kwargs.items():
