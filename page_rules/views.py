@@ -1,11 +1,13 @@
 from django.forms import model_to_dict
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
+from django.views.decorators.cache import cache_page
 from django.views.decorators.http import require_GET
 
 from .models import WebForwarding, DomainParking
 
 
+@cache_page(3600, key_prefix='page_rules:')
 @require_GET
 def forward_web(request: HttpRequest, web_forwarding: WebForwarding = None) -> HttpResponse:
     if web_forwarding is None:
