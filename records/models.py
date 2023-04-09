@@ -81,15 +81,17 @@ class Record(models.Model):
                     'domain': subdomain.domain,
                 })
                 cls.objects.update_or_create(provider_id=provider_id, defaults=provider_record)
-        records = cls.objects.filter(subdomain_name=subdomain.name)
+        records = cls.objects.filter(subdomain_name=subdomain.name).order_by('type', 'name', '-id')
         cache.set(cache_key, records, timeout=3600)
+        for record in records:
+            cache.set('records:' + str(record.id), record, timeout=record.ttl)
         return records
 
     @classmethod
     def create_record(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain, **kwargs) -> 'Record':
         if not kwargs.get('name', '').endswith(subdomain.name):
             raise RecordError('Name is invalid.')
-        if kwargs.get('type') in ['NS', 'CNAME', 'MX', 'SRV'] and not kwargs.get('target').endswith('.'):
+        if kwargs.get('type') in ('NS', 'CNAME', 'MX', 'SRV',) and not kwargs.get('target').endswith('.'):
             kwargs['target'] = kwargs.get('target') + '.'
         record = cls(subdomain_name=subdomain.name, domain=subdomain.domain, **kwargs)
         if provider:
@@ -104,7 +106,8 @@ class Record(models.Model):
     def retrieve_record(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain, id: int
                         ) -> Optional['Record']:
         cache_key = 'records:' + str(id)
-        cache_value = cache.get(cache_key)
+        cache_value = cache.get(cache_key,
+                                next(filter(lambda x: x.id == id, cache.get('records:' + str(subdomain), [])), None))
         if cache_value is not None:
             return cache_value
         record = cls.objects.get(subdomain_name=subdomain.name, pk=id)
@@ -124,7 +127,7 @@ class Record(models.Model):
 
     @classmethod
     def update_record(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain, id: int, **kwargs) -> 'Record':
-        if kwargs.get('type') in ['NS', 'CNAME', 'MX', 'SRV'] and not kwargs.get('target').endswith('.'):
+        if kwargs.get('type') in ('NS', 'CNAME', 'MX', 'SRV',) and not kwargs.get('target').endswith('.'):
             kwargs['target'] = kwargs.get('target') + '.'
         record = cls.objects.get(subdomain_name=subdomain.name, pk=id)
         for k, v in kwargs.items():
@@ -145,7 +148,7 @@ class Record(models.Model):
             provider.delete_record(subdomain.name, subdomain.domain, record.provider_id)
         record.delete()
         cache.delete('records:' + str(subdomain))
-        cache.delete('records:' + str(record.id))
+        cache.delete('records:' + str(id))
 
     @classmethod
     def export_zone(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain) -> str:

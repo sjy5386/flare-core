@@ -15,7 +15,7 @@ from .providers import PROVIDER_CLASS
 @method_decorator(login_required, name='dispatch')
 class RecordListView(ListView):
     context_object_name = 'records'
-    ordering = 'name'
+    ordering = 'type', 'name', '-id'
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
