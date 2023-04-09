@@ -8,7 +8,7 @@ from .models import WebForwarding, DomainParking
 
 @require_GET
 def forward_web(request: HttpRequest, web_forwarding: WebForwarding = None) -> HttpResponse:
-    if web_forwarding is None and False:
+    if web_forwarding is None:
         web_forwarding = get_object_or_404(WebForwarding, domain_name=request.META.get('HTTP_HOST'))
     destination_url = web_forwarding.destination_url
     if not web_forwarding.force_path_root:
