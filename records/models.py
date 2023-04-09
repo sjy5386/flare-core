@@ -148,7 +148,7 @@ class Record(models.Model):
             provider.delete_record(subdomain.name, subdomain.domain, record.provider_id)
         record.delete()
         cache.delete('records:' + str(subdomain))
-        cache.delete('records:' + str(record.id))
+        cache.delete('records:' + str(id))
 
     @classmethod
     def export_zone(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain) -> str:
