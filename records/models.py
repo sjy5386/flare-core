@@ -83,6 +83,8 @@ class Record(models.Model):
                 cls.objects.update_or_create(provider_id=provider_id, defaults=provider_record)
         records = cls.objects.filter(subdomain_name=subdomain.name)
         cache.set(cache_key, records, timeout=3600)
+        for record in records:
+            cache.set('records:' + str(record.id), record, timeout=record.ttl)
         return records
 
     @classmethod
