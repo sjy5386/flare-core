@@ -104,7 +104,8 @@ class Record(models.Model):
     def retrieve_record(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain, id: int
                         ) -> Optional['Record']:
         cache_key = 'records:' + str(id)
-        cache_value = cache.get(cache_key)
+        cache_value = cache.get(cache_key,
+                                next(filter(lambda x: x.id == id, cache.get('records:' + str(subdomain), [])), None))
         if cache_value is not None:
             return cache_value
         record = cls.objects.get(subdomain_name=subdomain.name, pk=id)
