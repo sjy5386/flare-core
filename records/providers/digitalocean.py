@@ -16,26 +16,31 @@ class DigitalOceanRecordProvider(BaseRecordProvider):
 
     def list_records(self, subdomain_name: str, domain: Domain) -> List[Dict[str, Any]]:
         response = requests.get(self.host + f'/v2/domains/{domain.name}/records', headers=self.headers)
+        response.raise_for_status()
         return list(filter(lambda x: x.get('name').endswith(subdomain_name),
                            map(self.from_digitalocean_record, response.json().get('domain_records'))))
 
     def create_record(self, subdomain_name: str, domain: Domain, **kwargs) -> Dict[str, Any]:
         response = requests.post(self.host + f'/v2/domains/{domain.name}/records', headers=self.headers,
                                  json=self.to_digitalocean_record(kwargs))
+        response.raise_for_status()
         return self.from_digitalocean_record(response.json().get('domain_record'))
 
     def retrieve_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> Optional[Dict[str, Any]]:
         response = requests.get(self.host + f'/v2/domains/{domain.name}/records/{provider_id}', headers=self.headers)
+        response.raise_for_status()
         return self.from_digitalocean_record(response.json().get('domain_record'))
 
     def update_record(self, subdomain_name: str, domain: Domain, provider_id: str, **kwargs
                       ) -> Optional[Dict[str, Any]]:
         response = requests.put(self.host + f'/v2/domains/{domain.name}/records/{provider_id}', headers=self.headers,
                                 json=self.to_digitalocean_record(kwargs))
+        response.raise_for_status()
         return self.from_digitalocean_record(response.json().get('domain_record'))
 
     def delete_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> None:
-        requests.delete(self.host + f'/v2/domains/{domain.name}/records/{provider_id}', headers=self.headers)
+        response = requests.delete(self.host + f'/v2/domains/{domain.name}/records/{provider_id}', headers=self.headers)
+        response.raise_for_status()
 
     @staticmethod
     def from_digitalocean_record(digitalocean_record: Dict[str, Any]) -> Dict[str, Any]:
