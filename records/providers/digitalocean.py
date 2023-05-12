@@ -10,6 +10,9 @@ from .base import BaseRecordProvider
 class DigitalOceanRecordProvider(BaseRecordProvider):
     host = 'https://api.digitalocean.com'
     token = os.environ.get('DIGITALOCEAN_ACCESS_TOKEN')
+    headers = {
+        'Authorization': f'Bearer {token}',
+    }
 
     def list_records(self, subdomain_name: str, domain: Domain) -> List[Dict[str, Any]]:
         records = self.get_records(domain)
