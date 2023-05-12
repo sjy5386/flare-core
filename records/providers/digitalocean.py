@@ -17,26 +17,13 @@ class DigitalOceanRecordProvider(BaseRecordProvider):
 
     def list_records(self, subdomain_name: str, domain: Domain) -> List[Dict[str, Any]]:
         response = requests.get(self.host + f'/v2/domains/{domain.name}/records', headers=self.headers)
-        records = list(filter(lambda x: x.get('name').endswith(subdomain_name),
-                              map(self.from_digitalocean_record, response.json().get('domain_records'))))
-        return records
+        return list(filter(lambda x: x.get('name').endswith(subdomain_name),
+                           map(self.from_digitalocean_record, response.json().get('domain_records'))))
 
     def create_record(self, subdomain_name: str, domain: Domain, **kwargs) -> Dict[str, Any]:
-        from ..models import Record
-        if not kwargs.get('name', subdomain_name).endswith(subdomain_name):
-            return kwargs
-        do_domain = digitalocean.Domain(token=self.token, name=domain.name)
-        new_record = do_domain.create_new_domain_record(
-            name=Record.join_name(kwargs.get('service'), kwargs.get('protocol'), kwargs.get('name')),
-            ttl=kwargs.get('ttl'),
-            type=kwargs.get('type'),
-            data=kwargs.get('target'),
-            priority=kwargs.get('priority'),
-            weight=kwargs.get('weight'),
-            port=kwargs.get('port'),
-        )
-        kwargs['provider_id'] = str(new_record['domain_record']['id'])
-        return kwargs
+        response = requests.post(self.host + f'/v2/domains/{domain.name}/records', headers=self.headers,
+                                 json=self.to_digitalocean_record(kwargs))
+        return self.from_digitalocean_record(response.json().get('domain_record'))
 
     def retrieve_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> Optional[Dict[str, Any]]:
         response = requests.get(self.host + f'/v2/domains/{domain.name}/records/{provider_id}', headers=self.headers)
@@ -63,13 +50,7 @@ class DigitalOceanRecordProvider(BaseRecordProvider):
         return kwargs
 
     def delete_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> None:
-        do_domain = digitalocean.Domain(token=self.token, name=domain.name)
-        do_id = int(provider_id)
-        do_records = do_domain.get_records()
-        for r in do_records:
-            if r.id == do_id and r.name.endswith(subdomain_name):
-                r.destroy()
-                break
+        requests.delete(self.host + f'/v2/domains/{domain.name}/records/{provider_id}', headers=self.headers)
 
     @staticmethod
     def from_digitalocean_record(digitalocean_record: Dict[str, Any]) -> Dict[str, Any]:
@@ -86,4 +67,18 @@ class DigitalOceanRecordProvider(BaseRecordProvider):
             'priority': digitalocean_record.get('priority'),
             'weight': digitalocean_record.get('weight'),
             'port': digitalocean_record.get('port'),
+        }
+
+    @staticmethod
+    def to_digitalocean_record(record: Dict[str, Any]) -> Dict[str, Any]:
+        from ..models import Record
+        name = Record.join_name(record.get('service'), record.get('protocol'), record.get('name'))
+        return {
+            'name': name,
+            'ttl': record.get('ttl'),
+            'type': record.get('type'),
+            'data': record.get('target'),
+            'priority': record.get('priority'),
+            'weight': record.get('weight'),
+            'port': record.get('port'),
         }
