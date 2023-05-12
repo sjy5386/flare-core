@@ -1,7 +1,6 @@
 import os
 from typing import Any, Dict, List, Optional
 
-import digitalocean
 import requests
 
 from domains.models import Domain
@@ -31,23 +30,9 @@ class DigitalOceanRecordProvider(BaseRecordProvider):
 
     def update_record(self, subdomain_name: str, domain: Domain, provider_id: str, **kwargs
                       ) -> Optional[Dict[str, Any]]:
-        if not kwargs.get('name', subdomain_name).endswith(subdomain_name):
-            return kwargs
-        do_domain = digitalocean.Domain(token=self.token, name=domain.name)
-        do_id = int(provider_id)
-        do_records = do_domain.get_records()
-        for r in do_records:
-            if r.id == do_id:
-                r.ttl = kwargs.get('ttl')
-                r.data = kwargs.get('target')
-                if kwargs.get('type') in ['MX', 'SRV']:
-                    r.priority = kwargs.get('priority')
-                if kwargs.get('type') in ['SRV']:
-                    r.weight = kwargs.get('weight')
-                    r.port = kwargs.get('port')
-                r.save()
-                break
-        return kwargs
+        response = requests.put(self.host + f'/v2/domains/{domain.name}/records/{provider_id}', headers=self.headers,
+                                json=self.to_digitalocean_record(kwargs))
+        return self.from_digitalocean_record(response.json().get('domain_record'))
 
     def delete_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> None:
         requests.delete(self.host + f'/v2/domains/{domain.name}/records/{provider_id}', headers=self.headers)
