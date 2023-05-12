@@ -2,6 +2,7 @@ import os
 from typing import Any, Dict, List, Optional
 
 import digitalocean
+import requests
 
 from domains.models import Domain
 from .base import BaseRecordProvider
@@ -15,8 +16,10 @@ class DigitalOceanRecordProvider(BaseRecordProvider):
     }
 
     def list_records(self, subdomain_name: str, domain: Domain) -> List[Dict[str, Any]]:
-        records = self.get_records(domain)
-        return list(filter(lambda e: e.get('name').endswith(subdomain_name), records))
+        response = requests.get(self.host + f'/v2/domains/{domain.name}/records', headers=self.headers)
+        records = list(filter(lambda x: x.get('name').endswith(subdomain_name),
+                              map(self.from_digitalocean_record, response.json().get('domain_records'))))
+        return records
 
     def create_record(self, subdomain_name: str, domain: Domain, **kwargs) -> Dict[str, Any]:
         from ..models import Record
@@ -36,13 +39,8 @@ class DigitalOceanRecordProvider(BaseRecordProvider):
         return kwargs
 
     def retrieve_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> Optional[Dict[str, Any]]:
-        do_id = int(provider_id)
-        records = self.get_records(domain)
-        try:
-            return next(filter(lambda x: int(x.get('provider_id')) == do_id and x.get('name').endswith(subdomain_name),
-                               records))
-        except StopIteration:
-            pass
+        response = requests.get(self.host + f'/v2/domains/{domain.name}/records/{provider_id}', headers=self.headers)
+        return self.from_digitalocean_record(response.json().get('domain_record'))
 
     def update_record(self, subdomain_name: str, domain: Domain, provider_id: str, **kwargs
                       ) -> Optional[Dict[str, Any]]:
@@ -74,25 +72,18 @@ class DigitalOceanRecordProvider(BaseRecordProvider):
                 break
 
     @staticmethod
-    def record_to_dict(record) -> Dict[str, Any]:
+    def from_digitalocean_record(digitalocean_record: Dict[str, Any]) -> Dict[str, Any]:
         from ..models import Record
-        service, protocol, name = Record.split_name(record.name)
-        d = {
-            'provider_id': str(record.id),
+        service, protocol, name = Record.split_name(digitalocean_record.get('name'))
+        return {
+            'provider_id': str(digitalocean_record.get('id')),
             'name': name,
-            'ttl': record.ttl,
-            'type': record.type,
+            'ttl': digitalocean_record.get('ttl'),
+            'type': digitalocean_record.get('type'),
             'service': service,
             'protocol': protocol,
-            'target': record.data,
+            'target': digitalocean_record.get('data'),
+            'priority': digitalocean_record.get('priority'),
+            'weight': digitalocean_record.get('weight'),
+            'port': digitalocean_record.get('port'),
         }
-        if record.type in ['MX', 'SRV']:
-            d.update({'priority': record.priority})
-        if record.type in ['SRV']:
-            d.update({'weight': record.weight, 'port': record.port})
-        return d
-
-    def get_records(self, domain: Domain) -> List[Dict[str, Any]]:
-        do_domain = digitalocean.Domain(token=self.token, name=domain.name)
-        do_records = do_domain.get_records()
-        return list(map(self.record_to_dict, do_records))
