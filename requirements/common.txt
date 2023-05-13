@@ -6,7 +6,6 @@ djangorestframework==3.14.0
 djangorestframework-simplejwt==5.2.2
 drf-nested-routers==0.93.4
 drf-yasg==1.21.4
-python-digitalocean==1.17.0
 requests==2.28.1
 social-auth-app-django==5.0.0
 social-auth-core==4.3.0

@@ -1,94 +1,74 @@
 import os
 from typing import Any, Dict, List, Optional
 
-import digitalocean
+import requests
 
 from domains.models import Domain
 from .base import BaseRecordProvider
 
 
 class DigitalOceanRecordProvider(BaseRecordProvider):
+    host = 'https://api.digitalocean.com'
     token = os.environ.get('DIGITALOCEAN_ACCESS_TOKEN')
+    headers = {
+        'Authorization': f'Bearer {token}',
+    }
 
     def list_records(self, subdomain_name: str, domain: Domain) -> List[Dict[str, Any]]:
-        records = self.get_records(domain)
-        return list(filter(lambda e: e.get('name').endswith(subdomain_name), records))
+        response = requests.get(self.host + f'/v2/domains/{domain.name}/records', headers=self.headers)
+        response.raise_for_status()
+        return list(filter(lambda x: x.get('name').endswith(subdomain_name),
+                           map(self.from_digitalocean_record, response.json().get('domain_records'))))
 
     def create_record(self, subdomain_name: str, domain: Domain, **kwargs) -> Dict[str, Any]:
-        from ..models import Record
-        if not kwargs.get('name', subdomain_name).endswith(subdomain_name):
-            return kwargs
-        do_domain = digitalocean.Domain(token=self.token, name=domain.name)
-        new_record = do_domain.create_new_domain_record(
-            name=Record.join_name(kwargs.get('service'), kwargs.get('protocol'), kwargs.get('name')),
-            ttl=kwargs.get('ttl'),
-            type=kwargs.get('type'),
-            data=kwargs.get('target'),
-            priority=kwargs.get('priority'),
-            weight=kwargs.get('weight'),
-            port=kwargs.get('port'),
-        )
-        kwargs['provider_id'] = str(new_record['domain_record']['id'])
-        return kwargs
+        response = requests.post(self.host + f'/v2/domains/{domain.name}/records', headers=self.headers,
+                                 json=self.to_digitalocean_record(kwargs))
+        response.raise_for_status()
+        return self.from_digitalocean_record(response.json().get('domain_record'))
 
     def retrieve_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> Optional[Dict[str, Any]]:
-        do_id = int(provider_id)
-        records = self.get_records(domain)
-        try:
-            return next(filter(lambda x: int(x.get('provider_id')) == do_id and x.get('name').endswith(subdomain_name),
-                               records))
-        except StopIteration:
-            pass
+        response = requests.get(self.host + f'/v2/domains/{domain.name}/records/{provider_id}', headers=self.headers)
+        response.raise_for_status()
+        return self.from_digitalocean_record(response.json().get('domain_record'))
 
     def update_record(self, subdomain_name: str, domain: Domain, provider_id: str, **kwargs
                       ) -> Optional[Dict[str, Any]]:
-        if not kwargs.get('name', subdomain_name).endswith(subdomain_name):
-            return kwargs
-        do_domain = digitalocean.Domain(token=self.token, name=domain.name)
-        do_id = int(provider_id)
-        do_records = do_domain.get_records()
-        for r in do_records:
-            if r.id == do_id:
-                r.ttl = kwargs.get('ttl')
-                r.data = kwargs.get('target')
-                if kwargs.get('type') in ['MX', 'SRV']:
-                    r.priority = kwargs.get('priority')
-                if kwargs.get('type') in ['SRV']:
-                    r.weight = kwargs.get('weight')
-                    r.port = kwargs.get('port')
-                r.save()
-                break
-        return kwargs
+        response = requests.put(self.host + f'/v2/domains/{domain.name}/records/{provider_id}', headers=self.headers,
+                                json=self.to_digitalocean_record(kwargs))
+        response.raise_for_status()
+        return self.from_digitalocean_record(response.json().get('domain_record'))
 
     def delete_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> None:
-        do_domain = digitalocean.Domain(token=self.token, name=domain.name)
-        do_id = int(provider_id)
-        do_records = do_domain.get_records()
-        for r in do_records:
-            if r.id == do_id and r.name.endswith(subdomain_name):
-                r.destroy()
-                break
+        response = requests.delete(self.host + f'/v2/domains/{domain.name}/records/{provider_id}', headers=self.headers)
+        response.raise_for_status()
 
     @staticmethod
-    def record_to_dict(record) -> Dict[str, Any]:
+    def from_digitalocean_record(digitalocean_record: Dict[str, Any]) -> Dict[str, Any]:
         from ..models import Record
-        service, protocol, name = Record.split_name(record.name)
-        d = {
-            'provider_id': str(record.id),
+        service, protocol, name = Record.split_name(digitalocean_record.get('name'))
+        return {
+            'provider_id': str(digitalocean_record.get('id')),
             'name': name,
-            'ttl': record.ttl,
-            'type': record.type,
+            'ttl': digitalocean_record.get('ttl'),
+            'type': digitalocean_record.get('type'),
             'service': service,
             'protocol': protocol,
-            'target': record.data,
+            'target': digitalocean_record.get('data'),
+            'priority': digitalocean_record.get('priority'),
+            'weight': digitalocean_record.get('weight'),
+            'port': digitalocean_record.get('port'),
         }
-        if record.type in ['MX', 'SRV']:
-            d.update({'priority': record.priority})
-        if record.type in ['SRV']:
-            d.update({'weight': record.weight, 'port': record.port})
-        return d
 
-    def get_records(self, domain: Domain) -> List[Dict[str, Any]]:
-        do_domain = digitalocean.Domain(token=self.token, name=domain.name)
-        do_records = do_domain.get_records()
-        return list(map(self.record_to_dict, do_records))
+    @staticmethod
+    def to_digitalocean_record(record: Dict[str, Any]) -> Dict[str, Any]:
+        from ..models import Record
+        name = Record.join_name(record.get('service'), record.get('protocol'), record.get('name'))
+        return {
+            'name': name,
+            'ttl': record.get('ttl'),
+            'type': record.get('type'),
+            'data': record.get('target'),
+            'priority': record.get('priority'),
+            'weight': record.get('weight'),
+            'port': record.get('port'),
+        }
