@@ -23,6 +23,7 @@ class FirebaseDynamicLinksShortUrlProvider(BaseShortUrlProvider):
         }
         response = requests.post(self.host + '/v1/shortLinks',
                                  params={'key': self.api_key}, json=request_body)
+        response.raise_for_status()
         return {
             'short': response.json()['shortLink'].split('/')[-1],
         }
