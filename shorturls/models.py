@@ -1,6 +1,7 @@
 from typing import List, Optional, Tuple
 from urllib.parse import urlparse
 
+from django.core.cache import cache
 from django.db import models
 
 from base.settings.common import AUTH_USER_MODEL
@@ -50,7 +51,13 @@ class ShortUrl(models.Model):
     @classmethod
     def retrieve_short_url(cls, provider: Optional[BaseShortUrlProvider], user: Optional[AUTH_USER_MODEL],
                            id: int) -> 'ShortUrl':
-        return cls.objects.get(id=id, user=user)
+        cache_key = 'short_urls:' + str(id)
+        cache_value = cache.get(cache_key)
+        if cache_value is not None:
+            return cache_value
+        short_url = cls.objects.get(id=id, user=user)
+        cache.set(cache_key, short_url, timeout=3600)
+        return short_url
 
     @staticmethod
     def split_short_url(short_url: str) -> Tuple[str, str]:
