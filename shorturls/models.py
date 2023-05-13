@@ -37,7 +37,10 @@ class ShortUrl(models.Model):
     @classmethod
     def list_short_urls(cls, provider: Optional[BaseShortUrlProvider], user: Optional[AUTH_USER_MODEL]
                         ) -> List['ShortUrl']:
-        return cls.objects.filter(user=user)
+        short_urls = cls.objects.filter(user=user)
+        for short_url in short_urls:
+            cache.set('short_urls:' + str(short_url.id), short_url, timeout=3600)
+        return short_urls
 
     @classmethod
     def create_short_url(cls, provider: Optional[BaseShortUrlProvider], user: Optional[AUTH_USER_MODEL],
