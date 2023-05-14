@@ -4,7 +4,7 @@ from typing import Dict, Any
 import requests
 
 from domains.models import Domain
-from shorturls.providers.base import BaseShortUrlProvider
+from .base import BaseShortUrlProvider
 
 
 class BitlyShortUrlProvider(BaseShortUrlProvider):
