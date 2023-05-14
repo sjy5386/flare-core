@@ -11,6 +11,7 @@ Free **sub**domains and **short** URLs
 
 ### Short URLs
 
+* [Bitly](https://bitly.com/pages/products/link-management)
 * [Firebase Dynamic Links](https://firebase.google.com/products/dynamic-links)
 
 ## Installation
