@@ -7,9 +7,11 @@ Free **sub**domains and **short** URLs
 ### Records (Subdomains)
 
 * [DigitalOcean](https://docs.digitalocean.com/products/networking/dns/)
+* [Vultr](https://www.vultr.com/docs/introduction-to-vultr-dns/)
 
 ### Short URLs
 
+* [Bitly](https://bitly.com/pages/products/link-management)
 * [Firebase Dynamic Links](https://firebase.google.com/products/dynamic-links)
 
 ## Installation
