@@ -2,6 +2,7 @@ import os
 from typing import Optional, Dict, Any, List
 
 import requests
+from django.core.cache import cache
 
 from domains.models import Domain
 from .base import BaseRecordProvider
@@ -46,10 +47,16 @@ class LinodeRecordProvider(BaseRecordProvider):
         response.raise_for_status()
 
     def get_domain_id(self, domain_name: str) -> int:
+        cache_key = 'linode:' + domain_name
+        cache_value = cache.get(cache_key)
+        if cache_value is not None:
+            return cache_value
         response = requests.get(self.host + 'https://api.linode.com/v4/domains', headers=self.headers)
         response.raise_for_status()
-        return next(map(lambda x: x.get('id'),
-                        filter(lambda x: x.get('domain') == domain_name, response.json().get('data', []))))
+        domain_id = next(map(lambda x: x.get('id'),
+                             filter(lambda x: x.get('domain') == domain_name, response.json().get('data', []))))
+        cache.set(cache_key, domain_id, timeout=86400)
+        return domain_id
 
     @staticmethod
     def from_linode_record(linode_record: Dict[str, Any]) -> Dict[str, Any]:
