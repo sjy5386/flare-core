@@ -51,7 +51,7 @@ class LinodeRecordProvider(BaseRecordProvider):
         cache_value = cache.get(cache_key)
         if cache_value is not None:
             return cache_value
-        response = requests.get(self.host + 'https://api.linode.com/v4/domains', headers=self.headers)
+        response = requests.get(self.host + '/domains', headers=self.headers)
         response.raise_for_status()
         domain_id = next(map(lambda x: x.get('id'),
                              filter(lambda x: x.get('domain') == domain_name, response.json().get('data', []))))
