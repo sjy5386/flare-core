@@ -48,7 +48,8 @@ class LinodeRecordProvider(BaseRecordProvider):
     def get_domain_id(self, domain_name: str) -> int:
         response = requests.get(self.host + 'https://api.linode.com/v4/domains', headers=self.headers)
         response.raise_for_status()
-        return next(filter(lambda x: x.get('id') == domain_name, response.json().get('data', [])))
+        return next(map(lambda x: x.get('id'),
+                        filter(lambda x: x.get('domain') == domain_name, response.json().get('data', []))))
 
     @staticmethod
     def from_linode_record(linode_record: Dict[str, Any]) -> Dict[str, Any]:
