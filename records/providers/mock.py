@@ -39,7 +39,7 @@ class MockRecordProvider(BaseRecordProvider):
             self.records.remove(record)
 
     def get_nameservers(self, domain: Domain = None) -> List[str]:
-        pass
+        return [f'ns{x}.example.com' for x in range(1, 14)]
 
     def get_records(self, domain: Domain) -> List[Dict[str, Any]]:
         return list(filter(lambda x: x['domain'] == domain, self.records))
