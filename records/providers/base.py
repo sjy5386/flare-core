@@ -27,5 +27,5 @@ class BaseRecordProvider(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def get_nameservers(self, domain: Domain) -> List[str]:
+    def get_nameservers(self, domain: Domain = None) -> List[str]:
         pass

@@ -46,7 +46,7 @@ class LinodeRecordProvider(BaseRecordProvider):
                                    headers=self.headers)
         response.raise_for_status()
 
-    def get_nameservers(self, domain: Domain) -> List[str]:
+    def get_nameservers(self, domain: Domain = None) -> List[str]:
         return [
             'ns1.linode.com',
             'ns2.linode.com',

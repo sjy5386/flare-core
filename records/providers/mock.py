@@ -38,7 +38,7 @@ class MockRecordProvider(BaseRecordProvider):
         if record in self.records:
             self.records.remove(record)
 
-    def get_nameservers(self, domain: Domain) -> List[str]:
+    def get_nameservers(self, domain: Domain = None) -> List[str]:
         pass
 
     def get_records(self, domain: Domain) -> List[Dict[str, Any]]:
