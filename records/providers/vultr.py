@@ -43,7 +43,10 @@ class VultrRecordProvider(BaseRecordProvider):
         response.raise_for_status()
 
     def get_nameservers(self, domain: Domain) -> List[str]:
-        pass
+        return [
+            'ns1.vultr.com',
+            'ns2.vultr.com',
+        ]
 
     @staticmethod
     def from_vultr_record(vultr_record: Dict[str, Any]) -> Dict[str, Any]:
