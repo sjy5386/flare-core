@@ -43,7 +43,11 @@ class DigitalOceanRecordProvider(BaseRecordProvider):
         response.raise_for_status()
 
     def get_nameservers(self, domain: Domain) -> List[str]:
-        pass
+        return [
+            'ns1.digitalocean.com',
+            'ns2.digitalocean.com',
+            'ns3.digitalocean.com',
+        ]
 
     @staticmethod
     def from_digitalocean_record(digitalocean_record: Dict[str, Any]) -> Dict[str, Any]:
