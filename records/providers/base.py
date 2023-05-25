@@ -25,3 +25,7 @@ class BaseRecordProvider(metaclass=ABCMeta):
     @abstractmethod
     def delete_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> None:
         pass
+
+    @abstractmethod
+    def get_nameservers(self, domain: Domain) -> List[str]:
+        pass

@@ -42,6 +42,9 @@ class DigitalOceanRecordProvider(BaseRecordProvider):
         response = requests.delete(self.host + f'/v2/domains/{domain.name}/records/{provider_id}', headers=self.headers)
         response.raise_for_status()
 
+    def get_nameservers(self, domain: Domain) -> List[str]:
+        pass
+
     @staticmethod
     def from_digitalocean_record(digitalocean_record: Dict[str, Any]) -> Dict[str, Any]:
         from ..models import Record
