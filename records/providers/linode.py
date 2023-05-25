@@ -47,7 +47,13 @@ class LinodeRecordProvider(BaseRecordProvider):
         response.raise_for_status()
 
     def get_nameservers(self, domain: Domain) -> List[str]:
-        pass
+        return [
+            'ns1.linode.com',
+            'ns2.linode.com',
+            'ns3.linode.com',
+            'ns4.linode.com',
+            'ns5.linode.com',
+        ]
 
     def get_domain_id(self, domain_name: str) -> int:
         cache_key = 'linode:' + domain_name
