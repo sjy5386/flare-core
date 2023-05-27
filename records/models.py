@@ -138,7 +138,7 @@ class Record(models.Model):
             record = cls.objects.get(subdomain_name=subdomain.name, pk=id)
             for k, v in kwargs.items():
                 if k in ['name', 'type', 'service', 'protocol'] and v != getattr(record, k):
-                    raise RecordBadRequestError(f'{k} cannot be changed.')
+                    raise RecordBadRequestError(f'{k.capitalize()} cannot be changed.')
                 setattr(record, k, v)
             if provider:
                 provider.update_record(subdomain.name, subdomain.domain, record.provider_id, **kwargs)
