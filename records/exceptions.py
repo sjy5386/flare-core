@@ -4,3 +4,7 @@ class RecordError(Exception):
 
 class RecordNotFoundError(RecordError):
     pass
+
+
+class RecordProviderError(RecordError):
+    pass
