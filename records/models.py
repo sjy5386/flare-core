@@ -5,7 +5,7 @@ from django.db import models
 
 from domains.models import Domain
 from subdomains.models import Subdomain
-from .exceptions import RecordError
+from .exceptions import RecordBadRequestError
 from .providers.base import BaseRecordProvider
 
 
@@ -90,7 +90,7 @@ class Record(models.Model):
     @classmethod
     def create_record(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain, **kwargs) -> 'Record':
         if not kwargs.get('name', '').endswith(subdomain.name):
-            raise RecordError('Name is invalid.')
+            raise RecordBadRequestError('Name is invalid.')
         if kwargs.get('type') in ('NS', 'CNAME', 'MX', 'SRV',) and not kwargs.get('target').endswith('.'):
             kwargs['target'] = kwargs.get('target') + '.'
         record = cls(subdomain_name=subdomain.name, domain=subdomain.domain, **kwargs)
@@ -127,12 +127,14 @@ class Record(models.Model):
 
     @classmethod
     def update_record(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain, id: int, **kwargs) -> 'Record':
+        if not kwargs.get('name', '').endswith(subdomain.name):
+            raise RecordBadRequestError('Name is invalid.')
         if kwargs.get('type') in ('NS', 'CNAME', 'MX', 'SRV',) and not kwargs.get('target').endswith('.'):
             kwargs['target'] = kwargs.get('target') + '.'
         record = cls.objects.get(subdomain_name=subdomain.name, pk=id)
         for k, v in kwargs.items():
-            if k in ['name', 'type', 'service', 'protocol']:
-                continue
+            if k in ['name', 'type', 'service', 'protocol'] and v != getattr(record, k):
+                raise RecordBadRequestError(f'{k} cannot be changed.')
             setattr(record, k, v)
         if provider:
             provider.update_record(subdomain.name, subdomain.domain, record.provider_id, **kwargs)
