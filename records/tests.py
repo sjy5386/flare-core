@@ -45,6 +45,10 @@ class RecordTest(TestCase):
             target='127.0.0.1',
         )
 
+    def test_list_records(self):
+        result = Record.list_records(None, self.subdomain)
+        self.assertIn(self.record, result)
+
     def test_split_name(self):
         result = Record.split_name('example.com')
         self.assertEqual(result, (None, None, 'example.com'))
