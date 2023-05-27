@@ -71,7 +71,6 @@ class RecordTest(TestCase):
 
     def test_update_record(self):
         kwargs = {
-            'name': 'test',
             'ttl': 300,
             'target': '1.1.1.1',
         }
