@@ -34,8 +34,7 @@ class LinodeRecordProvider(BaseRecordProvider):
         response.raise_for_status()
         return self.from_linode_record(response.json())
 
-    def update_record(self, subdomain_name: str, domain: Domain, provider_id: str, **kwargs
-                      ) -> Optional[Dict[str, Any]]:
+    def update_record(self, subdomain_name: str, domain: Domain, provider_id: str, **kwargs) -> Dict[str, Any]:
         response = requests.put(self.host + f'/v4/domains/{self.get_domain_id(domain.name)}/records/{provider_id}',
                                 headers=self.headers, json=self.to_linode_record(kwargs))
         response.raise_for_status()

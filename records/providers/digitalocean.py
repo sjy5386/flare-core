@@ -31,8 +31,7 @@ class DigitalOceanRecordProvider(BaseRecordProvider):
         response.raise_for_status()
         return self.from_digitalocean_record(response.json().get('domain_record'))
 
-    def update_record(self, subdomain_name: str, domain: Domain, provider_id: str, **kwargs
-                      ) -> Optional[Dict[str, Any]]:
+    def update_record(self, subdomain_name: str, domain: Domain, provider_id: str, **kwargs) -> Dict[str, Any]:
         response = requests.put(self.host + f'/v2/domains/{domain.name}/records/{provider_id}', headers=self.headers,
                                 json=self.to_digitalocean_record(kwargs))
         response.raise_for_status()

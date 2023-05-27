@@ -31,8 +31,7 @@ class VultrRecordProvider(BaseRecordProvider):
         response.raise_for_status()
         return self.from_vultr_record(response.json().get('record'))
 
-    def update_record(self, subdomain_name: str, domain: Domain, provider_id: str, **kwargs
-                      ) -> Optional[Dict[str, Any]]:
+    def update_record(self, subdomain_name: str, domain: Domain, provider_id: str, **kwargs) -> Dict[str, Any]:
         response = requests.patch(self.host + f'/v2/domains/{domain.name}/records/{provider_id}', headers=self.headers,
                                   json=self.to_vultr_record(kwargs))
         response.raise_for_status()

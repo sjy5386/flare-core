@@ -27,8 +27,7 @@ class MockRecordProvider(BaseRecordProvider):
         except StopIteration:
             pass
 
-    def update_record(self, subdomain_name: str, domain: Domain, provider_id: str, **kwargs
-                      ) -> Optional[Dict[str, Any]]:
+    def update_record(self, subdomain_name: str, domain: Domain, provider_id: str, **kwargs) -> Dict[str, Any]:
         record = self.retrieve_record(subdomain_name, domain, provider_id)
         record.update(kwargs)
         return record
