@@ -69,6 +69,16 @@ class RecordTest(TestCase):
         result = Record.retrieve_record(None, self.subdomain, self.record.id)
         self.assertEqual(result, self.record)
 
+    def test_update_record(self):
+        kwargs = {
+            'name': 'test',
+            'ttl': 300,
+            'target': '1.1.1.1',
+        }
+        result = Record.update_record(None, self.subdomain, self.record.id, **kwargs)
+        for k, v in kwargs.items():
+            self.assertEqual(getattr(result, k), v)
+
     def test_split_name(self):
         result = Record.split_name('example.com')
         self.assertEqual(result, (None, None, 'example.com'))
