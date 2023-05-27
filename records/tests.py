@@ -1,9 +1,50 @@
+import datetime
+
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 
+from contacts.models import Contact
+from domains.models import Domain
+from subdomains.models import Subdomain
 from .models import Record
 
 
 class RecordTest(TestCase):
+    def setUp(self) -> None:
+        self.user = get_user_model().objects.create_user(
+            username='alice', password='test', email='alice@example.com',
+            first_name='Alice', last_name='Test',
+        )
+        self.domain = Domain.objects.create(name='example.com')
+        self.contact = Contact.objects.create(
+            user=self.user,
+            name='test',
+            street='test',
+            city='test',
+            state_province='test',
+            postal_code='0',
+            country='US',
+            phone='+1.1234567890',
+            email='test@example.com',
+        )
+        self.subdomain = Subdomain.objects.create(
+            user=self.user,
+            name='test',
+            domain=self.domain,
+            expiry=datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(days=90),
+            registrant=self.contact,
+            admin=self.contact,
+            tech=self.contact,
+            billing=self.contact,
+        )
+        self.record = Record.objects.create(
+            subdomain_name='test',
+            domain=self.domain,
+            name='test',
+            type='A',
+            target='127.0.0.1',
+        )
+
     def test_split_name(self):
         result = Record.split_name('example.com')
         self.assertEqual(result, (None, None, 'example.com'))
