@@ -49,6 +49,22 @@ class RecordTest(TestCase):
         result = Record.list_records(None, self.subdomain)
         self.assertIn(self.record, result)
 
+    def test_create_record(self):
+        kwargs = {
+            'name': 'test',
+            'ttl': 3600,
+            'type': 'AAAA',
+            'service': None,
+            'protocol': None,
+            'priority': None,
+            'weight': None,
+            'port': None,
+            'target': '::1',
+        }
+        result = Record.create_record(None, self.subdomain, **kwargs)
+        for k, v in kwargs.items():
+            self.assertEqual(getattr(result, k), v)
+
     def test_split_name(self):
         result = Record.split_name('example.com')
         self.assertEqual(result, (None, None, 'example.com'))
