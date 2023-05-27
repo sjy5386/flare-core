@@ -9,6 +9,10 @@ from subdomains.models import Subdomain
 from .models import Record
 
 
+def get_mock_records(count: int = 1, **kwargs) -> list[Record]:
+    return [Record.objects.create(**kwargs) for _ in range(count)]
+
+
 class RecordTest(TestCase):
     def setUp(self) -> None:
         self.user = get_user_model().objects.create_user(
@@ -37,13 +41,13 @@ class RecordTest(TestCase):
             tech=self.contact,
             billing=self.contact,
         )
-        self.record = Record.objects.create(
+        self.record = get_mock_records(
             subdomain_name='test',
             domain=self.domain,
             name='test',
             type='A',
             target='127.0.0.1',
-        )
+        )[0]
 
     def test_list_records(self):
         result = Record.list_records(None, self.subdomain)
