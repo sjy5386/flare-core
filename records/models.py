@@ -169,21 +169,7 @@ class Record(models.Model):
     def import_zone(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain, zone: str) -> None:
         lines = list(filter(lambda x: x[0] != ';', map(lambda x: x.strip(), zone.splitlines())))
         for line in lines:
-            r = line.split()
-            service, protocol, name = cls.split_name(r[0])
-            priority, weight, port, target = cls.split_data(r[-1])
-            kwargs = {
-                'name': name,
-                'ttl': int(r[1]) if r[1] != 'IN' else int(r[2]),
-                'type': r[3],
-                'service': service,
-                'protocol': protocol,
-                'priority': priority,
-                'weight': weight,
-                'port': port,
-                'target': target,
-            }
-            cls.create_record(provider, subdomain, **kwargs)
+            cls.create_record(provider, subdomain, **cls.parse_record(line))
 
     @staticmethod
     def split_name(full_name: str) -> Tuple[Optional[str], Optional[str], str]:
@@ -213,6 +199,23 @@ class Record(models.Model):
     @staticmethod
     def join_data(priority: Optional[int], weight: Optional[int], port: Optional[int], target: str) -> str:
         return ' '.join(map(str, filter(lambda x: x is not None, [priority, weight, port, target])))
+
+    @classmethod
+    def parse_record(cls, raw_record: str) -> Dict[str, Any]:
+        r = raw_record.split()
+        service, protocol, name = cls.split_name(r[0])
+        priority, weight, port, target = cls.split_data(r[-1])
+        return {
+            'name': name,
+            'ttl': int(r[1]) if r[1] != 'IN' else int(r[2]),
+            'type': r[3],
+            'service': service,
+            'protocol': protocol,
+            'priority': priority,
+            'weight': weight,
+            'port': port,
+            'target': target,
+        }
 
     @classmethod
     def synchronize_records(cls, provider: BaseRecordProvider) -> None:
