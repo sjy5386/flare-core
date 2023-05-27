@@ -2,9 +2,11 @@ import os
 from typing import Any, Dict, List, Optional
 
 import requests
+from requests import HTTPError
 
 from domains.models import Domain
 from .base import BaseRecordProvider
+from ..exceptions import RecordProviderError
 
 
 class DigitalOceanRecordProvider(BaseRecordProvider):
@@ -16,30 +18,45 @@ class DigitalOceanRecordProvider(BaseRecordProvider):
 
     def list_records(self, subdomain_name: str, domain: Domain) -> List[Dict[str, Any]]:
         response = requests.get(self.host + f'/v2/domains/{domain.name}/records', headers=self.headers)
-        response.raise_for_status()
+        try:
+            response.raise_for_status()
+        except HTTPError:
+            raise RecordProviderError(response.json())
         return list(filter(lambda x: x.get('name').endswith(subdomain_name),
                            map(self.from_digitalocean_record, response.json().get('domain_records'))))
 
     def create_record(self, subdomain_name: str, domain: Domain, **kwargs) -> Dict[str, Any]:
         response = requests.post(self.host + f'/v2/domains/{domain.name}/records', headers=self.headers,
                                  json=self.to_digitalocean_record(kwargs))
-        response.raise_for_status()
+        try:
+            response.raise_for_status()
+        except HTTPError:
+            raise RecordProviderError(response.json())
         return self.from_digitalocean_record(response.json().get('domain_record'))
 
     def retrieve_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> Optional[Dict[str, Any]]:
         response = requests.get(self.host + f'/v2/domains/{domain.name}/records/{provider_id}', headers=self.headers)
-        response.raise_for_status()
+        try:
+            response.raise_for_status()
+        except HTTPError:
+            raise RecordProviderError(response.json())
         return self.from_digitalocean_record(response.json().get('domain_record'))
 
     def update_record(self, subdomain_name: str, domain: Domain, provider_id: str, **kwargs) -> Dict[str, Any]:
         response = requests.put(self.host + f'/v2/domains/{domain.name}/records/{provider_id}', headers=self.headers,
                                 json=self.to_digitalocean_record(kwargs))
-        response.raise_for_status()
+        try:
+            response.raise_for_status()
+        except HTTPError:
+            raise RecordProviderError(response.json())
         return self.from_digitalocean_record(response.json().get('domain_record'))
 
     def delete_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> None:
         response = requests.delete(self.host + f'/v2/domains/{domain.name}/records/{provider_id}', headers=self.headers)
-        response.raise_for_status()
+        try:
+            response.raise_for_status()
+        except HTTPError:
+            raise RecordProviderError(response.json())
 
     def get_nameservers(self, domain: Domain = None) -> List[str]:
         return [

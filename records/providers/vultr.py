@@ -2,9 +2,11 @@ import os
 from typing import Optional, Dict, Any, List
 
 import requests
+from requests import HTTPError
 
 from domains.models import Domain
 from .base import BaseRecordProvider
+from ..exceptions import RecordProviderError
 
 
 class VultrRecordProvider(BaseRecordProvider):
@@ -16,30 +18,45 @@ class VultrRecordProvider(BaseRecordProvider):
 
     def list_records(self, subdomain_name: str, domain: Domain) -> List[Dict[str, Any]]:
         response = requests.get(self.host + f'/v2/domains/{domain.name}/records', headers=self.headers)
-        response.raise_for_status()
+        try:
+            response.raise_for_status()
+        except HTTPError:
+            raise RecordProviderError(response.json())
         return list(filter(lambda x: x.get('name').endswith(subdomain_name + '.' + domain.name),
                            map(self.from_vultr_record, response.json().get('records'))))
 
     def create_record(self, subdomain_name: str, domain: Domain, **kwargs) -> Dict[str, Any]:
         response = requests.post(self.host + f'/v2/domains/{domain.name}/records', headers=self.headers,
                                  json=self.to_vultr_record(kwargs))
-        response.raise_for_status()
+        try:
+            response.raise_for_status()
+        except HTTPError:
+            raise RecordProviderError(response.json())
         return self.from_vultr_record(response.json().get('record'))
 
     def retrieve_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> Optional[Dict[str, Any]]:
         response = requests.get(self.host + f'/v2/domains/{domain.name}/records/{provider_id}', headers=self.headers)
-        response.raise_for_status()
+        try:
+            response.raise_for_status()
+        except HTTPError:
+            raise RecordProviderError(response.json())
         return self.from_vultr_record(response.json().get('record'))
 
     def update_record(self, subdomain_name: str, domain: Domain, provider_id: str, **kwargs) -> Dict[str, Any]:
         response = requests.patch(self.host + f'/v2/domains/{domain.name}/records/{provider_id}', headers=self.headers,
                                   json=self.to_vultr_record(kwargs))
-        response.raise_for_status()
+        try:
+            response.raise_for_status()
+        except HTTPError:
+            raise RecordProviderError(response.json())
         return kwargs
 
     def delete_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> None:
         response = requests.delete(self.host + f'/v2/domains/{domain.name}/records/{provider_id}', headers=self.headers)
-        response.raise_for_status()
+        try:
+            response.raise_for_status()
+        except HTTPError:
+            raise RecordProviderError(response.json())
 
     def get_nameservers(self, domain: Domain = None) -> List[str]:
         return [
