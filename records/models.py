@@ -130,7 +130,7 @@ class Record(models.Model):
 
     @classmethod
     def update_record(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain, id: int, **kwargs) -> 'Record':
-        if not kwargs.get('name', '').endswith(subdomain.name):
+        if 'name' in kwargs.keys() and not kwargs.get('name', '').endswith(subdomain.name):
             raise RecordBadRequestError('Name is invalid.')
         if kwargs.get('type') in ('NS', 'CNAME', 'MX', 'SRV',) and not kwargs.get('target').endswith('.'):
             kwargs['target'] = kwargs.get('target') + '.'
