@@ -31,3 +31,17 @@ class RecordTest(TestCase):
         self.assertEqual(result, '10 example.com')
         result = Record.join_data(10, 100, 1, 'example.com')
         self.assertEqual(result, '10 100 1 example.com')
+
+    def test_parse_record(self):
+        result = Record.parse_record('example 3600 IN A 127.0.0.1')
+        self.assertDictEqual(result, {
+            'name': 'example',
+            'ttl': 3600,
+            'type': 'A',
+            'service': None,
+            'protocol': None,
+            'priority': None,
+            'weight': None,
+            'port': None,
+            'target': '127.0.0.1',
+        })
