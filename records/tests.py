@@ -1,11 +1,11 @@
 import datetime
 
-from django.contrib.auth import get_user_model
 from django.test import TestCase
 
-from contacts.models import Contact
-from domains.models import Domain
-from subdomains.models import Subdomain
+from accounts.tests import get_mock_users
+from contacts.tests import get_mock_contacts
+from domains.tests import get_mock_domains
+from subdomains.tests import get_mock_subdomains
 from .models import Record
 
 
@@ -15,12 +15,12 @@ def get_mock_records(count: int = 1, **kwargs) -> list[Record]:
 
 class RecordTest(TestCase):
     def setUp(self) -> None:
-        self.user = get_user_model().objects.create_user(
+        self.user = get_mock_users(
             username='alice', password='test', email='alice@example.com',
             first_name='Alice', last_name='Test',
-        )
-        self.domain = Domain.objects.create(name='example.com')
-        self.contact = Contact.objects.create(
+        )[0]
+        self.domain = get_mock_domains(name='example.com')[0]
+        self.contact = get_mock_contacts(
             user=self.user,
             name='test',
             street='test',
@@ -30,8 +30,8 @@ class RecordTest(TestCase):
             country='US',
             phone='+1.1234567890',
             email='test@example.com',
-        )
-        self.subdomain = Subdomain.objects.create(
+        )[0]
+        self.subdomain = get_mock_subdomains(
             user=self.user,
             name='test',
             domain=self.domain,
@@ -40,7 +40,7 @@ class RecordTest(TestCase):
             admin=self.contact,
             tech=self.contact,
             billing=self.contact,
-        )
+        )[0]
         self.record = get_mock_records(
             subdomain_name='test',
             domain=self.domain,
