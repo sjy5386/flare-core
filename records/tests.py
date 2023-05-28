@@ -5,7 +5,7 @@ from django.test import TestCase
 from accounts.tests import get_mock_users
 from contacts.tests import get_mock_contacts
 from domains.tests import get_mock_domains
-from subdomains.models import Subdomain
+from subdomains.tests import get_mock_subdomains
 from .models import Record
 
 
@@ -31,7 +31,7 @@ class RecordTest(TestCase):
             phone='+1.1234567890',
             email='test@example.com',
         )[0]
-        self.subdomain = Subdomain.objects.create(
+        self.subdomain = get_mock_subdomains(
             user=self.user,
             name='test',
             domain=self.domain,
@@ -40,7 +40,7 @@ class RecordTest(TestCase):
             admin=self.contact,
             tech=self.contact,
             billing=self.contact,
-        )
+        )[0]
         self.record = get_mock_records(
             subdomain_name='test',
             domain=self.domain,
