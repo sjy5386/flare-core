@@ -3,7 +3,7 @@ import datetime
 from django.test import TestCase
 
 from accounts.tests import get_mock_users
-from contacts.models import Contact
+from contacts.tests import get_mock_contacts
 from domains.tests import get_mock_domains
 from subdomains.models import Subdomain
 from .models import Record
@@ -20,7 +20,7 @@ class RecordTest(TestCase):
             first_name='Alice', last_name='Test',
         )[0]
         self.domain = get_mock_domains(name='example.com')[0]
-        self.contact = Contact.objects.create(
+        self.contact = get_mock_contacts(
             user=self.user,
             name='test',
             street='test',
@@ -30,7 +30,7 @@ class RecordTest(TestCase):
             country='US',
             phone='+1.1234567890',
             email='test@example.com',
-        )
+        )[0]
         self.subdomain = Subdomain.objects.create(
             user=self.user,
             name='test',
