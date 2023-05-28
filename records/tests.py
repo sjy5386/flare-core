@@ -4,7 +4,7 @@ from django.test import TestCase
 
 from accounts.tests import get_mock_users
 from contacts.models import Contact
-from domains.models import Domain
+from domains.tests import get_mock_domains
 from subdomains.models import Subdomain
 from .models import Record
 
@@ -19,7 +19,7 @@ class RecordTest(TestCase):
             username='alice', password='test', email='alice@example.com',
             first_name='Alice', last_name='Test',
         )[0]
-        self.domain = Domain.objects.create(name='example.com')
+        self.domain = get_mock_domains(name='example.com')[0]
         self.contact = Contact.objects.create(
             user=self.user,
             name='test',
