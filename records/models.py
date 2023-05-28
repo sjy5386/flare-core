@@ -5,7 +5,7 @@ from django.db import models
 
 from domains.models import Domain
 from subdomains.models import Subdomain
-from .exceptions import RecordError
+from .exceptions import RecordBadRequestError, RecordNotFoundError
 from .providers.base import BaseRecordProvider
 
 
@@ -90,7 +90,7 @@ class Record(models.Model):
     @classmethod
     def create_record(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain, **kwargs) -> 'Record':
         if not kwargs.get('name', '').endswith(subdomain.name):
-            raise RecordError('Name is invalid.')
+            raise RecordBadRequestError('Name is invalid.')
         if kwargs.get('type') in ('NS', 'CNAME', 'MX', 'SRV',) and not kwargs.get('target').endswith('.'):
             kwargs['target'] = kwargs.get('target') + '.'
         record = cls(subdomain_name=subdomain.name, domain=subdomain.domain, **kwargs)
@@ -110,45 +110,56 @@ class Record(models.Model):
                                 next(filter(lambda x: x.id == id, cache.get('records:' + str(subdomain), [])), None))
         if cache_value is not None:
             return cache_value
-        record = cls.objects.get(subdomain_name=subdomain.name, pk=id)
-        if provider:
-            provider_record = provider.retrieve_record(subdomain.name, subdomain.domain, record.provider_id)
-            if provider_record is None:
-                record.delete()
-                record = None
+        try:
+            record = cls.objects.get(subdomain_name=subdomain.name, pk=id)
+            if provider:
+                provider_record = provider.retrieve_record(subdomain.name, subdomain.domain, record.provider_id)
+                if provider_record is None:
+                    record.delete()
+                    record = None
+                else:
+                    record.update_by_provider_record(provider_record)
+            if record is None:
+                cache.delete('records:' + str(subdomain))
+                cache.delete('records:' + str(id))
             else:
-                record.update_by_provider_record(provider_record)
-        if record is None:
-            cache.delete('records:' + str(subdomain))
-            cache.delete('records:' + str(id))
-        else:
-            cache.set(cache_key, record, timeout=record.ttl)
-        return record
+                cache.set(cache_key, record, timeout=record.ttl)
+            return record
+        except cls.DoesNotExist:
+            return None
 
     @classmethod
     def update_record(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain, id: int, **kwargs) -> 'Record':
+        if 'name' in kwargs.keys() and not kwargs.get('name', '').endswith(subdomain.name):
+            raise RecordBadRequestError('Name is invalid.')
         if kwargs.get('type') in ('NS', 'CNAME', 'MX', 'SRV',) and not kwargs.get('target').endswith('.'):
             kwargs['target'] = kwargs.get('target') + '.'
-        record = cls.objects.get(subdomain_name=subdomain.name, pk=id)
-        for k, v in kwargs.items():
-            if k in ['name', 'type', 'service', 'protocol']:
-                continue
-            setattr(record, k, v)
-        if provider:
-            provider.update_record(subdomain.name, subdomain.domain, record.provider_id, **kwargs)
-        record.save()
-        cache.delete('records:' + str(subdomain))
-        cache.set('records:' + str(record.id), record, timeout=record.ttl)
-        return record
+        try:
+            record = cls.objects.get(subdomain_name=subdomain.name, pk=id)
+            for k, v in kwargs.items():
+                if k in ['name', 'type', 'service', 'protocol'] and v != getattr(record, k):
+                    raise RecordBadRequestError(f'{k.capitalize()} cannot be changed.')
+                setattr(record, k, v)
+            if provider:
+                provider.update_record(subdomain.name, subdomain.domain, record.provider_id, **kwargs)
+            record.save()
+            cache.delete('records:' + str(subdomain))
+            cache.set('records:' + str(record.id), record, timeout=record.ttl)
+            return record
+        except cls.DoesNotExist:
+            raise RecordNotFoundError()
 
     @classmethod
     def delete_record(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain, id: int) -> None:
-        record = cls.objects.get(subdomain_name=subdomain.name, pk=id)
-        if provider:
-            provider.delete_record(subdomain.name, subdomain.domain, record.provider_id)
-        record.delete()
-        cache.delete('records:' + str(subdomain))
-        cache.delete('records:' + str(id))
+        try:
+            record = cls.objects.get(subdomain_name=subdomain.name, pk=id)
+            if provider:
+                provider.delete_record(subdomain.name, subdomain.domain, record.provider_id)
+            record.delete()
+            cache.delete('records:' + str(subdomain))
+            cache.delete('records:' + str(id))
+        except cls.DoesNotExist:
+            raise RecordNotFoundError()
 
     @classmethod
     def export_zone(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain) -> str:
@@ -158,21 +169,7 @@ class Record(models.Model):
     def import_zone(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain, zone: str) -> None:
         lines = list(filter(lambda x: x[0] != ';', map(lambda x: x.strip(), zone.splitlines())))
         for line in lines:
-            r = line.split()
-            service, protocol, name = cls.split_name(r[0])
-            priority, weight, port, target = cls.split_data(r[-1])
-            kwargs = {
-                'name': name,
-                'ttl': int(r[1]) if r[1] != 'IN' else int(r[2]),
-                'type': r[3],
-                'service': service,
-                'protocol': protocol,
-                'priority': priority,
-                'weight': weight,
-                'port': port,
-                'target': target,
-            }
-            cls.create_record(provider, subdomain, **kwargs)
+            cls.create_record(provider, subdomain, **cls.parse_record(line))
 
     @staticmethod
     def split_name(full_name: str) -> Tuple[Optional[str], Optional[str], str]:
@@ -202,6 +199,23 @@ class Record(models.Model):
     @staticmethod
     def join_data(priority: Optional[int], weight: Optional[int], port: Optional[int], target: str) -> str:
         return ' '.join(map(str, filter(lambda x: x is not None, [priority, weight, port, target])))
+
+    @classmethod
+    def parse_record(cls, raw_record: str) -> Dict[str, Any]:
+        r = raw_record.split()
+        service, protocol, name = cls.split_name(r[0])
+        priority, weight, port, target = cls.split_data(r[-1])
+        return {
+            'name': name,
+            'ttl': int(r[1]) if r[1] != 'IN' else int(r[2]),
+            'type': r[3],
+            'service': service,
+            'protocol': protocol,
+            'priority': priority,
+            'weight': weight,
+            'port': port,
+            'target': target,
+        }
 
     @classmethod
     def synchronize_records(cls, provider: BaseRecordProvider) -> None:

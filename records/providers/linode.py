@@ -3,9 +3,11 @@ from typing import Optional, Dict, Any, List
 
 import requests
 from django.core.cache import cache
+from requests import HTTPError
 
 from domains.models import Domain
 from .base import BaseRecordProvider
+from ..exceptions import RecordProviderError
 
 
 class LinodeRecordProvider(BaseRecordProvider):
@@ -18,33 +20,56 @@ class LinodeRecordProvider(BaseRecordProvider):
     def list_records(self, subdomain_name: str, domain: Domain) -> List[Dict[str, Any]]:
         response = requests.get(self.host + f'/v4/domains/{self.get_domain_id(domain.name)}/records',
                                 headers=self.headers)
-        response.raise_for_status()
+        try:
+            response.raise_for_status()
+        except HTTPError:
+            raise RecordProviderError(response.json())
         return list(filter(lambda x: x.get('name').endswith(subdomain_name),
                            map(self.from_linode_record, response.json().get('data'))))
 
     def create_record(self, subdomain_name: str, domain: Domain, **kwargs) -> Dict[str, Any]:
         response = requests.post(self.host + f'/v4/domains/{self.get_domain_id(domain.name)}/records',
                                  headers=self.headers, json=self.to_linode_record(kwargs))
-        response.raise_for_status()
+        try:
+            response.raise_for_status()
+        except HTTPError:
+            raise RecordProviderError(response.json())
         return self.from_linode_record(response.json())
 
     def retrieve_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> Optional[Dict[str, Any]]:
         response = requests.get(self.host + f'/v4/domains/{self.get_domain_id(domain.name)}/records/{provider_id}',
                                 headers=self.headers)
-        response.raise_for_status()
+        try:
+            response.raise_for_status()
+        except HTTPError:
+            raise RecordProviderError(response.json())
         return self.from_linode_record(response.json())
 
-    def update_record(self, subdomain_name: str, domain: Domain, provider_id: str, **kwargs
-                      ) -> Optional[Dict[str, Any]]:
+    def update_record(self, subdomain_name: str, domain: Domain, provider_id: str, **kwargs) -> Dict[str, Any]:
         response = requests.put(self.host + f'/v4/domains/{self.get_domain_id(domain.name)}/records/{provider_id}',
                                 headers=self.headers, json=self.to_linode_record(kwargs))
-        response.raise_for_status()
+        try:
+            response.raise_for_status()
+        except HTTPError:
+            raise RecordProviderError(response.json())
         return self.from_linode_record(response.json())
 
     def delete_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> None:
         response = requests.delete(self.host + f'/v4/domains/{self.get_domain_id(domain.name)}/records/{provider_id}',
                                    headers=self.headers)
-        response.raise_for_status()
+        try:
+            response.raise_for_status()
+        except HTTPError:
+            raise RecordProviderError(response.json())
+
+    def get_nameservers(self, domain: Domain = None) -> List[str]:
+        return [
+            'ns1.linode.com',
+            'ns2.linode.com',
+            'ns3.linode.com',
+            'ns4.linode.com',
+            'ns5.linode.com',
+        ]
 
     def get_domain_id(self, domain_name: str) -> int:
         cache_key = 'linode:' + domain_name

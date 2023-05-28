@@ -1,9 +1,90 @@
+import datetime
+
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 
+from contacts.models import Contact
+from domains.models import Domain
+from subdomains.models import Subdomain
 from .models import Record
 
 
+def get_mock_records(count: int = 1, **kwargs) -> list[Record]:
+    return [Record.objects.create(**kwargs) for _ in range(count)]
+
+
 class RecordTest(TestCase):
+    def setUp(self) -> None:
+        self.user = get_user_model().objects.create_user(
+            username='alice', password='test', email='alice@example.com',
+            first_name='Alice', last_name='Test',
+        )
+        self.domain = Domain.objects.create(name='example.com')
+        self.contact = Contact.objects.create(
+            user=self.user,
+            name='test',
+            street='test',
+            city='test',
+            state_province='test',
+            postal_code='0',
+            country='US',
+            phone='+1.1234567890',
+            email='test@example.com',
+        )
+        self.subdomain = Subdomain.objects.create(
+            user=self.user,
+            name='test',
+            domain=self.domain,
+            expiry=datetime.datetime.now(tz=datetime.timezone.utc) + datetime.timedelta(days=90),
+            registrant=self.contact,
+            admin=self.contact,
+            tech=self.contact,
+            billing=self.contact,
+        )
+        self.record = get_mock_records(
+            subdomain_name='test',
+            domain=self.domain,
+            name='test',
+            type='A',
+            target='127.0.0.1',
+        )[0]
+
+    def test_list_records(self):
+        result = Record.list_records(None, self.subdomain)
+        self.assertIn(self.record, result)
+
+    def test_create_record(self):
+        kwargs = {
+            'name': 'test',
+            'ttl': 3600,
+            'type': 'AAAA',
+            'service': None,
+            'protocol': None,
+            'priority': None,
+            'weight': None,
+            'port': None,
+            'target': '::1',
+        }
+        result = Record.create_record(None, self.subdomain, **kwargs)
+        for k, v in kwargs.items():
+            self.assertEqual(getattr(result, k), v)
+
+    def test_retrieve_record(self):
+        result = Record.retrieve_record(None, self.subdomain, self.record.id)
+        self.assertEqual(result, self.record)
+
+    def test_update_record(self):
+        kwargs = {
+            'ttl': 300,
+            'target': '1.1.1.1',
+        }
+        result = Record.update_record(None, self.subdomain, self.record.id, **kwargs)
+        for k, v in kwargs.items():
+            self.assertEqual(getattr(result, k), v)
+
+    def test_delete_record(self):
+        Record.delete_record(None, self.subdomain, self.record.id)
+
     def test_split_name(self):
         result = Record.split_name('example.com')
         self.assertEqual(result, (None, None, 'example.com'))
@@ -31,3 +112,17 @@ class RecordTest(TestCase):
         self.assertEqual(result, '10 example.com')
         result = Record.join_data(10, 100, 1, 'example.com')
         self.assertEqual(result, '10 100 1 example.com')
+
+    def test_parse_record(self):
+        result = Record.parse_record('example 3600 IN A 127.0.0.1')
+        self.assertDictEqual(result, {
+            'name': 'example',
+            'ttl': 3600,
+            'type': 'A',
+            'service': None,
+            'protocol': None,
+            'priority': None,
+            'weight': None,
+            'port': None,
+            'target': '127.0.0.1',
+        })
