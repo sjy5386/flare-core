@@ -1,8 +1,8 @@
 import datetime
 
-from django.contrib.auth import get_user_model
 from django.test import TestCase
 
+from accounts.tests import get_mock_users
 from contacts.models import Contact
 from domains.models import Domain
 from subdomains.models import Subdomain
@@ -15,10 +15,10 @@ def get_mock_records(count: int = 1, **kwargs) -> list[Record]:
 
 class RecordTest(TestCase):
     def setUp(self) -> None:
-        self.user = get_user_model().objects.create_user(
+        self.user = get_mock_users(
             username='alice', password='test', email='alice@example.com',
             first_name='Alice', last_name='Test',
-        )
+        )[0]
         self.domain = Domain.objects.create(name='example.com')
         self.contact = Contact.objects.create(
             user=self.user,
