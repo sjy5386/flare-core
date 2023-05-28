@@ -27,8 +27,7 @@ class MockRecordProvider(BaseRecordProvider):
         except StopIteration:
             pass
 
-    def update_record(self, subdomain_name: str, domain: Domain, provider_id: str, **kwargs
-                      ) -> Optional[Dict[str, Any]]:
+    def update_record(self, subdomain_name: str, domain: Domain, provider_id: str, **kwargs) -> Dict[str, Any]:
         record = self.retrieve_record(subdomain_name, domain, provider_id)
         record.update(kwargs)
         return record
@@ -37,6 +36,9 @@ class MockRecordProvider(BaseRecordProvider):
         record = self.retrieve_record(subdomain_name, domain, provider_id)
         if record in self.records:
             self.records.remove(record)
+
+    def get_nameservers(self, domain: Domain = None) -> List[str]:
+        return [f'ns{x}.example.com' for x in range(1, 14)]
 
     def get_records(self, domain: Domain) -> List[Dict[str, Any]]:
         return list(filter(lambda x: x['domain'] == domain, self.records))

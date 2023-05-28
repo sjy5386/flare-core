@@ -18,10 +18,13 @@ class BaseRecordProvider(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def update_record(self, subdomain_name: str, domain: Domain, provider_id: str, **kwargs
-                      ) -> Optional[Dict[str, Any]]:
+    def update_record(self, subdomain_name: str, domain: Domain, provider_id: str, **kwargs) -> Dict[str, Any]:
         pass
 
     @abstractmethod
     def delete_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> None:
+        pass
+
+    @abstractmethod
+    def get_nameservers(self, domain: Domain = None) -> List[str]:
         pass

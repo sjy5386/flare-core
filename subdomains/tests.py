@@ -1,7 +1,12 @@
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
-from subdomains.validators import validate_domain_name
+from .models import Subdomain
+from .validators import validate_domain_name
+
+
+def get_mock_subdomains(count: int = 1, **kwargs) -> list[Subdomain]:
+    return [Subdomain.objects.create(**kwargs) for _ in range(count)]
 
 
 class SubdomainTest(TestCase):
