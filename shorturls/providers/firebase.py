@@ -5,6 +5,7 @@ import requests
 
 from domains.models import Domain
 from .base import BaseShortUrlProvider
+from ..exceptions import ShortUrlProviderError
 
 
 class FirebaseDynamicLinksShortUrlProvider(BaseShortUrlProvider):
@@ -23,7 +24,10 @@ class FirebaseDynamicLinksShortUrlProvider(BaseShortUrlProvider):
         }
         response = requests.post(self.host + '/v1/shortLinks',
                                  params={'key': self.api_key}, json=request_body)
-        response.raise_for_status()
+        try:
+            response.raise_for_status()
+        except requests.HTTPError:
+            raise ShortUrlProviderError(response.json())
         return {
             'short': response.json()['shortLink'].split('/')[-1],
         }
