@@ -37,6 +37,10 @@ class ShortUrlTest(TestCase):
         for k, v in kwargs.items():
             self.assertEqual(getattr(result, k), v)
 
+    def test_retrieve_short_url(self):
+        result = ShortUrl.retrieve_short_url(None, self.user, self.short_url.id)
+        self.assertEqual(result, self.short_url)
+
     def test_split_short_url(self):
         result = ShortUrl.split_short_url('https://example.com/index')
         self.assertEqual(result, ('example.com', 'index'))
