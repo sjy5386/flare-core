@@ -6,7 +6,7 @@ from django.db import models
 
 from base.settings.common import AUTH_USER_MODEL
 from domains.models import Domain
-from .exceptions import ShortUrlNotFoundError
+from .exceptions import ShortUrlBadRequestError, ShortUrlNotFoundError
 from .providers.base import BaseShortUrlProvider
 from .validators import validate_filter_long_url
 
@@ -46,6 +46,9 @@ class ShortUrl(models.Model):
     @classmethod
     def create_short_url(cls, provider: Optional[BaseShortUrlProvider], user: Optional[AUTH_USER_MODEL],
                          **kwargs) -> 'ShortUrl':
+        for k in ('domain', 'long_url'):
+            if k not in kwargs.keys():
+                raise ShortUrlBadRequestError('Empty ' + k + '.')
         if provider:
             kwargs['short'] = provider.create_short_url(kwargs.get('domain'), kwargs.get('long_url'))['short']
         short_url = cls(user=user, **kwargs)
