@@ -1,9 +1,18 @@
 from django.test import TestCase
 
+from accounts.tests import get_mock_users
+from domains.tests import get_mock_domains
 from .models import ShortUrl, Filter
 
 
 class ShortUrlTest(TestCase):
+    def setUp(self) -> None:
+        self.user = get_mock_users(
+            username='bob', password='test', email='bob@example.com',
+            first_name='Bob', last_name='Test',
+        )[0]
+        self.domain = get_mock_domains(name='example.com')[0]
+
     def test_split_short_url(self):
         result = ShortUrl.split_short_url('https://example.com/index')
         self.assertEqual(result, ('example.com', 'index'))
