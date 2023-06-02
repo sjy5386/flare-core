@@ -16,6 +16,13 @@ class ShortUrlTest(TestCase):
             first_name='Bob', last_name='Test',
         )[0]
         self.domain = get_mock_domains(name='example.com')[0]
+        self.short_url = get_mock_short_urls(
+            user=self.user,
+            domain=self.domain,
+            name='Test',
+            short='example',
+            long_url='https://example.com/',
+        )[0]
 
     def test_split_short_url(self):
         result = ShortUrl.split_short_url('https://example.com/index')
