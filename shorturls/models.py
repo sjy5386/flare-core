@@ -53,6 +53,7 @@ class ShortUrl(models.Model):
             kwargs['short'] = provider.create_short_url(kwargs.get('domain'), kwargs.get('long_url'))['short']
         short_url = cls(user=user, **kwargs)
         short_url.save()
+        cache.set('short_urls:' + str(short_url.id), short_url, timeout=3600)
         return short_url
 
     @classmethod
