@@ -6,6 +6,7 @@ from django.db import models
 
 from base.settings.common import AUTH_USER_MODEL
 from domains.models import Domain
+from .exceptions import ShortUrlBadRequestError, ShortUrlNotFoundError
 from .providers.base import BaseShortUrlProvider
 from .validators import validate_filter_long_url
 
@@ -45,10 +46,14 @@ class ShortUrl(models.Model):
     @classmethod
     def create_short_url(cls, provider: Optional[BaseShortUrlProvider], user: Optional[AUTH_USER_MODEL],
                          **kwargs) -> 'ShortUrl':
+        for k in ('domain', 'long_url'):
+            if k not in kwargs.keys():
+                raise ShortUrlBadRequestError('Empty ' + k + '.')
         if provider:
             kwargs['short'] = provider.create_short_url(kwargs.get('domain'), kwargs.get('long_url'))['short']
         short_url = cls(user=user, **kwargs)
         short_url.save()
+        cache.set('short_urls:' + str(short_url.id), short_url, timeout=3600)
         return short_url
 
     @classmethod
@@ -58,9 +63,12 @@ class ShortUrl(models.Model):
         cache_value = cache.get(cache_key)
         if cache_value is not None:
             return cache_value
-        short_url = cls.objects.get(id=id, user=user)
-        cache.set(cache_key, short_url, timeout=3600)
-        return short_url
+        try:
+            short_url = cls.objects.get(id=id, user=user)
+            cache.set(cache_key, short_url, timeout=3600)
+            return short_url
+        except cls.DoesNotExist:
+            raise ShortUrlNotFoundError()
 
     @staticmethod
     def split_short_url(short_url: str) -> Tuple[str, str]:

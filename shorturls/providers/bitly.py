@@ -5,6 +5,7 @@ import requests
 
 from domains.models import Domain
 from .base import BaseShortUrlProvider
+from ..exceptions import ShortUrlProviderError
 
 
 class BitlyShortUrlProvider(BaseShortUrlProvider):
@@ -19,7 +20,10 @@ class BitlyShortUrlProvider(BaseShortUrlProvider):
             'long_url': long_url,
             'domain': domain.name,
         })
-        response.raise_for_status()
+        try:
+            response.raise_for_status()
+        except requests.HTTPError:
+            raise ShortUrlProviderError(response.json())
         return {
             'short': response.json().get('link').split('/')[-1]
         }
