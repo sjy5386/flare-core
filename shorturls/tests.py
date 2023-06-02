@@ -28,6 +28,15 @@ class ShortUrlTest(TestCase):
         result = ShortUrl.list_short_urls(None, self.user)
         self.assertIn(self.short_url, result)
 
+    def test_create_short_url(self):
+        kwargs = {
+            'domain': self.domain,
+            'long_url': 'https://example.net/',
+        }
+        result = ShortUrl.create_short_url(None, self.user, **kwargs)
+        for k, v in kwargs.items():
+            self.assertEqual(getattr(result, k), v)
+
     def test_split_short_url(self):
         result = ShortUrl.split_short_url('https://example.com/index')
         self.assertEqual(result, ('example.com', 'index'))
