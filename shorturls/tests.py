@@ -5,6 +5,10 @@ from domains.tests import get_mock_domains
 from .models import ShortUrl, Filter
 
 
+def get_mock_short_urls(count: int = 1, **kwargs) -> list[ShortUrl]:
+    return [ShortUrl.objects.create(**kwargs) for _ in range(count)]
+
+
 class ShortUrlTest(TestCase):
     def setUp(self) -> None:
         self.user = get_mock_users(
