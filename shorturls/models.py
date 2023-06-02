@@ -6,6 +6,7 @@ from django.db import models
 
 from base.settings.common import AUTH_USER_MODEL
 from domains.models import Domain
+from .exceptions import ShortUrlNotFoundError
 from .providers.base import BaseShortUrlProvider
 from .validators import validate_filter_long_url
 
@@ -58,9 +59,12 @@ class ShortUrl(models.Model):
         cache_value = cache.get(cache_key)
         if cache_value is not None:
             return cache_value
-        short_url = cls.objects.get(id=id, user=user)
-        cache.set(cache_key, short_url, timeout=3600)
-        return short_url
+        try:
+            short_url = cls.objects.get(id=id, user=user)
+            cache.set(cache_key, short_url, timeout=3600)
+            return short_url
+        except cls.DoesNotExist:
+            raise ShortUrlNotFoundError()
 
     @staticmethod
     def split_short_url(short_url: str) -> Tuple[str, str]:
