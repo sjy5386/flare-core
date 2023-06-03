@@ -77,7 +77,10 @@ class RecordCreateView(FormView):
 
 @method_decorator(login_required, name='dispatch')
 class RecordDetailView(DetailView):
-    template_name = 'records/record_detail.html'
+    template_name = 'objects/object_detail.html'
+    extra_context = {
+        'title': 'Record detail',
+    }
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -89,7 +92,19 @@ class RecordDetailView(DetailView):
 
     def get_object(self, queryset=None):
         provider = PROVIDER_CLASS()
-        return Record.retrieve_record(provider, self.subdomain, self.kwargs['id'])
+        obj = Record.retrieve_record(provider, self.subdomain, self.kwargs['id'])
+        return {
+            'ID': obj.id,
+            'Service': obj.service,
+            'Protocol': obj.protocol,
+            'Name': obj.name,
+            'TTL': obj.ttl,
+            'Type': obj.type,
+            'Priority': obj.priority,
+            'Weight': obj.weight,
+            'Port': obj.port,
+            'Target': obj.target,
+        }
 
     def get_context_data(self, **kwargs):
         context = super(RecordDetailView, self).get_context_data(**kwargs)

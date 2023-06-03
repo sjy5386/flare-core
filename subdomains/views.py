@@ -155,8 +155,26 @@ class SubdomainCreateView(CreateView):
 
 @method_decorator(login_required, name='dispatch')
 class SubdomainDetailView(DetailView):
+    template_name = 'objects/object_detail.html'
+    extra_context = {
+        'title': 'Subdomain detail',
+    }
+
     def get_object(self, queryset=None):
-        return get_object_or_404(Subdomain, id=self.kwargs['id'], user=self.request.user)
+        obj = get_object_or_404(Subdomain, id=self.kwargs['id'], user=self.request.user)
+        return {
+            'ID': obj.id,
+            'Name': obj.full_name,
+            'Creation Date': obj.created_at,
+            'Updated Date': obj.updated_at,
+            'Expiry Date': obj.expiry,
+            'Status': '',
+            'Registrant': obj.registrant,
+            'Admin': obj.admin,
+            'Tech': obj.tech,
+            'Billing': obj.billing,
+            'Is Private': obj.is_private,
+        }
 
 
 @method_decorator(login_required, name='dispatch')
