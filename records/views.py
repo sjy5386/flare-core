@@ -1,5 +1,5 @@
 from django.contrib.auth.decorators import login_required
-from django.forms import Form
+from django.forms import Form, model_to_dict
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils.decorators import method_decorator
@@ -77,7 +77,10 @@ class RecordCreateView(FormView):
 
 @method_decorator(login_required, name='dispatch')
 class RecordDetailView(DetailView):
-    template_name = 'records/record_detail.html'
+    template_name = 'objects/object_detail.html'
+    extra_context = {
+        'title': 'Record detail',
+    }
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -89,7 +92,8 @@ class RecordDetailView(DetailView):
 
     def get_object(self, queryset=None):
         provider = PROVIDER_CLASS()
-        return Record.retrieve_record(provider, self.subdomain, self.kwargs['id'])
+        return model_to_dict(Record.retrieve_record(provider, self.subdomain, self.kwargs['id']), fields=(
+            'id', 'name', 'ttl', 'type', 'service', 'protocol', 'priority', 'weight', 'port', 'target',))
 
     def get_context_data(self, **kwargs):
         context = super(RecordDetailView, self).get_context_data(**kwargs)
