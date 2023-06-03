@@ -1,5 +1,4 @@
 from django.contrib.auth.decorators import login_required
-from django.forms import model_to_dict
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
@@ -39,8 +38,20 @@ class ContactDetailView(DetailView):
     }
 
     def get_object(self, queryset=None):
-        return model_to_dict(get_object_or_404(Contact, id=self.kwargs['id'], user=self.request.user),
-                             exclude=('user',))
+        obj = get_object_or_404(Contact, id=self.kwargs['id'], user=self.request.user)
+        return {
+            "ID": obj.id,
+            'Name': obj.name,
+            'Organization': obj.organization,
+            'Street': obj.street,
+            'City': obj.city,
+            'State/Province': obj.state_province,
+            'Postal Code': obj.postal_code,
+            'Country': obj.country,
+            'Phone': obj.phone,
+            'Fax': obj.fax,
+            'Email': obj.email,
+        }
 
 
 @method_decorator(login_required, name='dispatch')

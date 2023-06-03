@@ -3,7 +3,6 @@ import datetime
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.mail import EmailMessage
-from django.forms import model_to_dict
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy, reverse
 from django.utils.decorators import method_decorator
@@ -162,8 +161,20 @@ class SubdomainDetailView(DetailView):
     }
 
     def get_object(self, queryset=None):
-        return model_to_dict(get_object_or_404(Subdomain, id=self.kwargs['id'], user=self.request.user),
-                             exclude=('user', 'name', 'domain', 'records',))
+        obj = get_object_or_404(Subdomain, id=self.kwargs['id'], user=self.request.user)
+        return {
+            'ID': obj.id,
+            'Name': obj.full_name,
+            'Creation Date': obj.created_at,
+            'Updated Date': obj.updated_at,
+            'Expiry Date': obj.expiry,
+            'Status': '',
+            'Registrant': obj.registrant,
+            'Admin': obj.admin,
+            'Tech': obj.tech,
+            'Billing': obj.billing,
+            'Is Private': obj.is_private,
+        }
 
 
 @method_decorator(login_required, name='dispatch')
