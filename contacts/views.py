@@ -32,8 +32,26 @@ class ContactCreateView(CreateView):
 
 @method_decorator(login_required, name='dispatch')
 class ContactDetailView(DetailView):
+    template_name = 'objects/object_detail.html'
+    extra_context = {
+        'title': 'Contact detail',
+    }
+
     def get_object(self, queryset=None):
-        return get_object_or_404(Contact, id=self.kwargs['id'], user=self.request.user)
+        obj = get_object_or_404(Contact, id=self.kwargs['id'], user=self.request.user)
+        return {
+            "ID": obj.id,
+            'Name': obj.name,
+            'Organization': obj.organization,
+            'Street': obj.street,
+            'City': obj.city,
+            'State/Province': obj.state_province,
+            'Postal Code': obj.postal_code,
+            'Country': obj.country,
+            'Phone': obj.phone,
+            'Fax': obj.fax,
+            'Email': obj.email,
+        }
 
 
 @method_decorator(login_required, name='dispatch')
