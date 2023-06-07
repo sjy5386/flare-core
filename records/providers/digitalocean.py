@@ -2,7 +2,6 @@ import os
 from typing import Any, Dict, List, Optional
 
 import requests
-from requests import HTTPError
 
 from domains.models import Domain
 from .base import BaseRecordProvider
@@ -20,7 +19,7 @@ class DigitalOceanRecordProvider(BaseRecordProvider):
         response = requests.get(self.host + f'/v2/domains/{domain.name}/records', headers=self.headers)
         try:
             response.raise_for_status()
-        except HTTPError:
+        except requests.HTTPError:
             raise RecordProviderError(response.json())
         return list(filter(lambda x: x.get('name').endswith(subdomain_name),
                            map(self.from_digitalocean_record, response.json().get('domain_records'))))
@@ -30,7 +29,7 @@ class DigitalOceanRecordProvider(BaseRecordProvider):
                                  json=self.to_digitalocean_record(kwargs))
         try:
             response.raise_for_status()
-        except HTTPError:
+        except requests.HTTPError:
             raise RecordProviderError(response.json())
         return self.from_digitalocean_record(response.json().get('domain_record'))
 
@@ -38,7 +37,7 @@ class DigitalOceanRecordProvider(BaseRecordProvider):
         response = requests.get(self.host + f'/v2/domains/{domain.name}/records/{provider_id}', headers=self.headers)
         try:
             response.raise_for_status()
-        except HTTPError:
+        except requests.HTTPError:
             raise RecordProviderError(response.json())
         return self.from_digitalocean_record(response.json().get('domain_record'))
 
@@ -47,7 +46,7 @@ class DigitalOceanRecordProvider(BaseRecordProvider):
                                 json=self.to_digitalocean_record(kwargs))
         try:
             response.raise_for_status()
-        except HTTPError:
+        except requests.HTTPError:
             raise RecordProviderError(response.json())
         return self.from_digitalocean_record(response.json().get('domain_record'))
 
@@ -55,7 +54,7 @@ class DigitalOceanRecordProvider(BaseRecordProvider):
         response = requests.delete(self.host + f'/v2/domains/{domain.name}/records/{provider_id}', headers=self.headers)
         try:
             response.raise_for_status()
-        except HTTPError:
+        except requests.HTTPError:
             raise RecordProviderError(response.json())
 
     def get_nameservers(self, domain: Domain = None) -> List[str]:

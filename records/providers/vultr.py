@@ -2,7 +2,6 @@ import os
 from typing import Optional, Dict, Any, List
 
 import requests
-from requests import HTTPError
 
 from domains.models import Domain
 from .base import BaseRecordProvider
@@ -20,7 +19,7 @@ class VultrRecordProvider(BaseRecordProvider):
         response = requests.get(self.host + f'/v2/domains/{domain.name}/records', headers=self.headers)
         try:
             response.raise_for_status()
-        except HTTPError:
+        except requests.HTTPError:
             raise RecordProviderError(response.json())
         return list(filter(lambda x: x.get('name').endswith(subdomain_name + '.' + domain.name),
                            map(self.from_vultr_record, response.json().get('records'))))
@@ -30,7 +29,7 @@ class VultrRecordProvider(BaseRecordProvider):
                                  json=self.to_vultr_record(kwargs))
         try:
             response.raise_for_status()
-        except HTTPError:
+        except requests.HTTPError:
             raise RecordProviderError(response.json())
         return self.from_vultr_record(response.json().get('record'))
 
@@ -38,7 +37,7 @@ class VultrRecordProvider(BaseRecordProvider):
         response = requests.get(self.host + f'/v2/domains/{domain.name}/records/{provider_id}', headers=self.headers)
         try:
             response.raise_for_status()
-        except HTTPError:
+        except requests.HTTPError:
             raise RecordProviderError(response.json())
         return self.from_vultr_record(response.json().get('record'))
 
@@ -47,7 +46,7 @@ class VultrRecordProvider(BaseRecordProvider):
                                   json=self.to_vultr_record(kwargs))
         try:
             response.raise_for_status()
-        except HTTPError:
+        except requests.HTTPError:
             raise RecordProviderError(response.json())
         return kwargs
 
@@ -55,7 +54,7 @@ class VultrRecordProvider(BaseRecordProvider):
         response = requests.delete(self.host + f'/v2/domains/{domain.name}/records/{provider_id}', headers=self.headers)
         try:
             response.raise_for_status()
-        except HTTPError:
+        except requests.HTTPError:
             raise RecordProviderError(response.json())
 
     def get_nameservers(self, domain: Domain = None) -> List[str]:

@@ -3,7 +3,6 @@ from typing import Optional, Dict, Any, List
 
 import requests
 from django.core.cache import cache
-from requests import HTTPError
 
 from domains.models import Domain
 from .base import BaseRecordProvider
@@ -22,7 +21,7 @@ class LinodeRecordProvider(BaseRecordProvider):
                                 headers=self.headers)
         try:
             response.raise_for_status()
-        except HTTPError:
+        except requests.HTTPError:
             raise RecordProviderError(response.json())
         return list(filter(lambda x: x.get('name').endswith(subdomain_name),
                            map(self.from_linode_record, response.json().get('data'))))
@@ -32,7 +31,7 @@ class LinodeRecordProvider(BaseRecordProvider):
                                  headers=self.headers, json=self.to_linode_record(kwargs))
         try:
             response.raise_for_status()
-        except HTTPError:
+        except requests.HTTPError:
             raise RecordProviderError(response.json())
         return self.from_linode_record(response.json())
 
@@ -41,7 +40,7 @@ class LinodeRecordProvider(BaseRecordProvider):
                                 headers=self.headers)
         try:
             response.raise_for_status()
-        except HTTPError:
+        except requests.HTTPError:
             raise RecordProviderError(response.json())
         return self.from_linode_record(response.json())
 
@@ -50,7 +49,7 @@ class LinodeRecordProvider(BaseRecordProvider):
                                 headers=self.headers, json=self.to_linode_record(kwargs))
         try:
             response.raise_for_status()
-        except HTTPError:
+        except requests.HTTPError:
             raise RecordProviderError(response.json())
         return self.from_linode_record(response.json())
 
@@ -59,7 +58,7 @@ class LinodeRecordProvider(BaseRecordProvider):
                                    headers=self.headers)
         try:
             response.raise_for_status()
-        except HTTPError:
+        except requests.HTTPError:
             raise RecordProviderError(response.json())
 
     def get_nameservers(self, domain: Domain = None) -> List[str]:
