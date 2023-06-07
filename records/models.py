@@ -1,5 +1,5 @@
 import logging
-from typing import List, Optional, Tuple, Dict, Any
+from typing import Any
 
 from django.core.cache import cache
 from django.db import models
@@ -57,7 +57,7 @@ class Record(models.Model):
         return f'{self.full_name} {self.ttl} IN {self.type} {self.data}'
 
     @classmethod
-    def list_records(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain) -> List['Record']:
+    def list_records(cls, provider: BaseRecordProvider | None, subdomain: Subdomain) -> list['Record']:
         if subdomain is None:
             return []
         cache_key = 'records:' + str(subdomain)
@@ -92,7 +92,7 @@ class Record(models.Model):
         return records
 
     @classmethod
-    def create_record(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain, **kwargs) -> 'Record':
+    def create_record(cls, provider: BaseRecordProvider | None, subdomain: Subdomain, **kwargs) -> 'Record':
         if not kwargs.get('name', '').endswith(subdomain.name):
             raise RecordBadRequestError('Name is invalid.')
         if kwargs.get('type') in ('NS', 'CNAME', 'MX', 'SRV',) and not kwargs.get('target').endswith('.'):
@@ -110,7 +110,7 @@ class Record(models.Model):
         return record
 
     @classmethod
-    def retrieve_record(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain, id: int) -> 'Record':
+    def retrieve_record(cls, provider: BaseRecordProvider | None, subdomain: Subdomain, id: int) -> 'Record':
         cache_key = 'records:' + str(id)
         cache_value = cache.get(cache_key,
                                 next(filter(lambda x: x.id == id, cache.get('records:' + str(subdomain), [])), None))
@@ -138,7 +138,7 @@ class Record(models.Model):
             raise RecordNotFoundError()
 
     @classmethod
-    def update_record(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain, id: int, **kwargs) -> 'Record':
+    def update_record(cls, provider: BaseRecordProvider | None, subdomain: Subdomain, id: int, **kwargs) -> 'Record':
         if 'name' in kwargs.keys() and not kwargs.get('name', '').endswith(subdomain.name):
             raise RecordBadRequestError('Name is invalid.')
         if kwargs.get('type') in ('NS', 'CNAME', 'MX', 'SRV',) and not kwargs.get('target').endswith('.'):
@@ -162,7 +162,7 @@ class Record(models.Model):
             raise RecordNotFoundError()
 
     @classmethod
-    def delete_record(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain, id: int) -> None:
+    def delete_record(cls, provider: BaseRecordProvider | None, subdomain: Subdomain, id: int) -> None:
         try:
             record = cls.objects.get(subdomain_name=subdomain.name, pk=id)
             if provider:
@@ -177,17 +177,17 @@ class Record(models.Model):
             raise RecordNotFoundError()
 
     @classmethod
-    def export_zone(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain) -> str:
+    def export_zone(cls, provider: BaseRecordProvider | None, subdomain: Subdomain) -> str:
         return '\n'.join(map(str, cls.list_records(provider, subdomain)))
 
     @classmethod
-    def import_zone(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain, zone: str) -> None:
+    def import_zone(cls, provider: BaseRecordProvider | None, subdomain: Subdomain, zone: str) -> None:
         lines = list(filter(lambda x: x[0] != ';', map(lambda x: x.strip(), zone.splitlines())))
         for line in lines:
             cls.create_record(provider, subdomain, **cls.parse_record(line))
 
     @staticmethod
-    def split_name(full_name: str) -> Tuple[Optional[str], Optional[str], str]:
+    def split_name(full_name: str) -> tuple[str | None, str | None, str]:
         names = full_name.split('.')
         service = names.pop(0) if len(names) >= 3 and names[0].startswith('_') else None
         protocol = names.pop(0) if len(names) >= 2 and names[0].startswith('_') else None
@@ -195,7 +195,7 @@ class Record(models.Model):
         return service, protocol, name
 
     @staticmethod
-    def join_name(service: Optional[str], protocol: Optional[str], name: str) -> str:
+    def join_name(service: str | None, protocol: str | None, name: str) -> str:
         if service is not None and not service.startswith('_'):
             service = '_' + service
         if protocol is not None and not protocol.startswith('_'):
@@ -203,7 +203,7 @@ class Record(models.Model):
         return '.'.join(filter(lambda x: x is not None, [service, protocol, name]))
 
     @staticmethod
-    def split_data(data: str) -> Tuple[Optional[int], Optional[int], Optional[int], str]:
+    def split_data(data: str) -> tuple[int | None, int | None, int | None, str]:
         values = data.split()
         priority = int(values[0]) if len(values) > 1 else None
         weight = int(values[1]) if len(values) == 4 else None
@@ -212,11 +212,11 @@ class Record(models.Model):
         return priority, weight, port, target
 
     @staticmethod
-    def join_data(priority: Optional[int], weight: Optional[int], port: Optional[int], target: str) -> str:
+    def join_data(priority: int | None, weight: int | None, port: int | None, target: str) -> str:
         return ' '.join(map(str, filter(lambda x: x is not None, [priority, weight, port, target])))
 
     @classmethod
-    def parse_record(cls, raw_record: str) -> Dict[str, Any]:
+    def parse_record(cls, raw_record: str) -> dict[str, Any]:
         r = raw_record.split()
         service, protocol, name = cls.split_name(r[0])
         priority, weight, port, target = cls.split_data(r[-1])
@@ -239,7 +239,7 @@ class Record(models.Model):
             cls.list_records(provider, subdomain)
         logging.info('End synchronizing records.')
 
-    def update_by_provider_record(self, provider_record: Dict[str, Any]) -> bool:
+    def update_by_provider_record(self, provider_record: dict[str, Any]) -> bool:
         is_updated = False
         for k, v in provider_record.items():
             if getattr(self, k) != v:

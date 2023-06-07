@@ -1,5 +1,5 @@
 import os
-from typing import Optional, Dict, Any, List
+from typing import Any
 
 import requests
 from django.core.cache import cache
@@ -16,7 +16,7 @@ class LinodeRecordProvider(BaseRecordProvider):
         'Authorization': f'Bearer {token}',
     }
 
-    def list_records(self, subdomain_name: str, domain: Domain) -> List[Dict[str, Any]]:
+    def list_records(self, subdomain_name: str, domain: Domain) -> list[dict[str, Any]]:
         response = requests.get(self.host + f'/v4/domains/{self.get_domain_id(domain.name)}/records',
                                 headers=self.headers, params={
                 'page_size': 500,
@@ -28,7 +28,7 @@ class LinodeRecordProvider(BaseRecordProvider):
         return list(filter(lambda x: x.get('name').endswith(subdomain_name),
                            map(self.from_linode_record, response.json().get('data'))))
 
-    def create_record(self, subdomain_name: str, domain: Domain, **kwargs) -> Dict[str, Any]:
+    def create_record(self, subdomain_name: str, domain: Domain, **kwargs) -> dict[str, Any]:
         response = requests.post(self.host + f'/v4/domains/{self.get_domain_id(domain.name)}/records',
                                  headers=self.headers, json=self.to_linode_record(kwargs))
         try:
@@ -37,7 +37,7 @@ class LinodeRecordProvider(BaseRecordProvider):
             raise RecordProviderError(response.json())
         return self.from_linode_record(response.json())
 
-    def retrieve_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> Optional[Dict[str, Any]]:
+    def retrieve_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> dict[str, Any] | None:
         response = requests.get(self.host + f'/v4/domains/{self.get_domain_id(domain.name)}/records/{provider_id}',
                                 headers=self.headers)
         try:
@@ -46,7 +46,7 @@ class LinodeRecordProvider(BaseRecordProvider):
             raise RecordProviderError(response.json())
         return self.from_linode_record(response.json())
 
-    def update_record(self, subdomain_name: str, domain: Domain, provider_id: str, **kwargs) -> Dict[str, Any]:
+    def update_record(self, subdomain_name: str, domain: Domain, provider_id: str, **kwargs) -> dict[str, Any]:
         response = requests.put(self.host + f'/v4/domains/{self.get_domain_id(domain.name)}/records/{provider_id}',
                                 headers=self.headers, json=self.to_linode_record(kwargs))
         try:
@@ -63,7 +63,7 @@ class LinodeRecordProvider(BaseRecordProvider):
         except requests.HTTPError:
             raise RecordProviderError(response.json())
 
-    def get_nameservers(self, domain: Domain = None) -> List[str]:
+    def get_nameservers(self, domain: Domain = None) -> list[str]:
         return [
             'ns1.linode.com',
             'ns2.linode.com',
@@ -88,7 +88,7 @@ class LinodeRecordProvider(BaseRecordProvider):
         return domain_id
 
     @staticmethod
-    def from_linode_record(linode_record: Dict[str, Any]) -> Dict[str, Any]:
+    def from_linode_record(linode_record: dict[str, Any]) -> dict[str, Any]:
         return {
             'provider_id': str(linode_record.get('id')),
             'name': linode_record.get('name'),
@@ -103,7 +103,7 @@ class LinodeRecordProvider(BaseRecordProvider):
         }
 
     @staticmethod
-    def to_linode_record(record: Dict[str, Any]) -> Dict[str, Any]:
+    def to_linode_record(record: dict[str, Any]) -> dict[str, Any]:
         return {
             'name': record.get('name'),
             'ttl_sec': record.get('ttl'),
