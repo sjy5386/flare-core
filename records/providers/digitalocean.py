@@ -16,7 +16,11 @@ class DigitalOceanRecordProvider(BaseRecordProvider):
     }
 
     def list_records(self, subdomain_name: str, domain: Domain) -> List[Dict[str, Any]]:
-        response = requests.get(self.host + f'/v2/domains/{domain.name}/records', headers=self.headers)
+        response = requests.get(self.host + f'/v2/domains/{domain.name}/records', headers=self.headers,
+                                params={
+                                    'name': subdomain_name + '.' + domain.name,
+                                    'per_page': 200,
+                                })
         try:
             response.raise_for_status()
         except requests.HTTPError:

@@ -16,7 +16,10 @@ class VultrRecordProvider(BaseRecordProvider):
     }
 
     def list_records(self, subdomain_name: str, domain: Domain) -> List[Dict[str, Any]]:
-        response = requests.get(self.host + f'/v2/domains/{domain.name}/records', headers=self.headers)
+        response = requests.get(self.host + f'/v2/domains/{domain.name}/records', headers=self.headers,
+                                params={
+                                    'per_page': 500,
+                                })
         try:
             response.raise_for_status()
         except requests.HTTPError:

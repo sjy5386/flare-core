@@ -18,7 +18,9 @@ class LinodeRecordProvider(BaseRecordProvider):
 
     def list_records(self, subdomain_name: str, domain: Domain) -> List[Dict[str, Any]]:
         response = requests.get(self.host + f'/v4/domains/{self.get_domain_id(domain.name)}/records',
-                                headers=self.headers)
+                                headers=self.headers, params={
+                'page_size': 500,
+            })
         try:
             response.raise_for_status()
         except requests.HTTPError:
