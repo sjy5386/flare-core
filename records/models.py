@@ -1,3 +1,4 @@
+import logging
 from typing import List, Optional, Tuple, Dict, Any
 
 from django.core.cache import cache
@@ -5,7 +6,7 @@ from django.db import models
 
 from domains.models import Domain
 from subdomains.models import Subdomain
-from .exceptions import RecordBadRequestError, RecordNotFoundError
+from .exceptions import RecordBadRequestError, RecordNotFoundError, RecordProviderError
 from .providers.base import BaseRecordProvider
 
 
@@ -64,23 +65,26 @@ class Record(models.Model):
         if cache_value is not None:
             return cache_value
         if provider:
-            provider_records = provider.list_records(subdomain.name, subdomain.domain)
-            provider_record_id_set = set(map(lambda x: x['provider_id'], provider_records))
-            for record in cls.objects.filter(subdomain_name=subdomain.name):
-                if record.provider_id not in provider_record_id_set:
-                    record.delete()
-            record_dict = {provider_id: x for provider_id, x in
-                           map(lambda x: (x.provider_id, x), cls.objects.filter(subdomain_name=subdomain.name))}
-            for provider_record in provider_records:
-                provider_id = provider_record.get('provider_id')
-                if provider_id in record_dict:
-                    record_dict.get(provider_id).update_by_provider_record(provider_record)
-                    continue
-                provider_record.update({
-                    'subdomain_name': subdomain.name,
-                    'domain': subdomain.domain,
-                })
-                cls.objects.update_or_create(provider_id=provider_id, defaults=provider_record)
+            try:
+                provider_records = provider.list_records(subdomain.name, subdomain.domain)
+                provider_record_id_set = set(map(lambda x: x['provider_id'], provider_records))
+                for record in cls.objects.filter(subdomain_name=subdomain.name):
+                    if record.provider_id not in provider_record_id_set:
+                        record.delete()
+                record_dict = {provider_id: x for provider_id, x in
+                               map(lambda x: (x.provider_id, x), cls.objects.filter(subdomain_name=subdomain.name))}
+                for provider_record in provider_records:
+                    provider_id = provider_record.get('provider_id')
+                    if provider_id in record_dict:
+                        record_dict.get(provider_id).update_by_provider_record(provider_record)
+                        continue
+                    provider_record.update({
+                        'subdomain_name': subdomain.name,
+                        'domain': subdomain.domain,
+                    })
+                    cls.objects.update_or_create(provider_id=provider_id, defaults=provider_record)
+            except RecordProviderError as e:
+                logging.error(e)
         records = cls.objects.filter(subdomain_name=subdomain.name).order_by('type', 'name', '-id')
         cache.set(cache_key, records, timeout=3600)
         for record in records:
@@ -95,8 +99,11 @@ class Record(models.Model):
             kwargs['target'] = kwargs.get('target') + '.'
         record = cls(subdomain_name=subdomain.name, domain=subdomain.domain, **kwargs)
         if provider:
-            provider_record = provider.create_record(subdomain.name, subdomain.domain, **kwargs)
-            record.provider_id = provider_record.get('provider_id')
+            try:
+                provider_record = provider.create_record(subdomain.name, subdomain.domain, **kwargs)
+                record.provider_id = provider_record.get('provider_id')
+            except RecordProviderError as e:
+                logging.error(e)
         record.save()
         cache.delete('records:' + str(subdomain))
         cache.set('records:' + str(record.id), record, timeout=record.ttl)
@@ -112,12 +119,15 @@ class Record(models.Model):
         try:
             record = cls.objects.get(subdomain_name=subdomain.name, pk=id)
             if provider:
-                provider_record = provider.retrieve_record(subdomain.name, subdomain.domain, record.provider_id)
-                if provider_record is None:
-                    record.delete()
-                    record = None
-                else:
-                    record.update_by_provider_record(provider_record)
+                try:
+                    provider_record = provider.retrieve_record(subdomain.name, subdomain.domain, record.provider_id)
+                    if provider_record is None:
+                        record.delete()
+                        record = None
+                    else:
+                        record.update_by_provider_record(provider_record)
+                except RecordProviderError as e:
+                    logging.error(e)
             if record is None:
                 cache.delete('records:' + str(subdomain))
                 cache.delete('records:' + str(id))
@@ -140,7 +150,10 @@ class Record(models.Model):
                     raise RecordBadRequestError(f'{k.capitalize()} cannot be changed.')
                 setattr(record, k, v)
             if provider:
-                provider.update_record(subdomain.name, subdomain.domain, record.provider_id, **kwargs)
+                try:
+                    provider.update_record(subdomain.name, subdomain.domain, record.provider_id, **kwargs)
+                except RecordProviderError as e:
+                    logging.error(e)
             record.save()
             cache.delete('records:' + str(subdomain))
             cache.set('records:' + str(record.id), record, timeout=record.ttl)
@@ -153,7 +166,10 @@ class Record(models.Model):
         try:
             record = cls.objects.get(subdomain_name=subdomain.name, pk=id)
             if provider:
-                provider.delete_record(subdomain.name, subdomain.domain, record.provider_id)
+                try:
+                    provider.delete_record(subdomain.name, subdomain.domain, record.provider_id)
+                except RecordProviderError as e:
+                    logging.error(e)
             record.delete()
             cache.delete('records:' + str(subdomain))
             cache.delete('records:' + str(id))
