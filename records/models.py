@@ -103,8 +103,7 @@ class Record(models.Model):
         return record
 
     @classmethod
-    def retrieve_record(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain, id: int
-                        ) -> Optional['Record']:
+    def retrieve_record(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain, id: int) -> 'Record':
         cache_key = 'records:' + str(id)
         cache_value = cache.get(cache_key,
                                 next(filter(lambda x: x.id == id, cache.get('records:' + str(subdomain), [])), None))
@@ -126,7 +125,7 @@ class Record(models.Model):
                 cache.set(cache_key, record, timeout=record.ttl)
             return record
         except cls.DoesNotExist:
-            return None
+            raise RecordNotFoundError()
 
     @classmethod
     def update_record(cls, provider: Optional[BaseRecordProvider], subdomain: Subdomain, id: int, **kwargs) -> 'Record':
