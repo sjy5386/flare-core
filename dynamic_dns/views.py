@@ -9,7 +9,7 @@ from django.views.generic import ListView, FormView, DeleteView
 
 from base.views import get_remote_ip_address
 from records.models import Record
-from records.providers import PROVIDER_CLASS
+from records.providers import get_record_provider
 from subdomains.models import Subdomain
 from .forms import AuthenticationTokenForm
 from .models import AuthenticationToken
@@ -36,7 +36,7 @@ def dynamic_dns(request: HttpRequest, token: str) -> HttpResponse:
         if remote_ip_address == record.target:
             return HttpResponse(False)
         subdomain = get_object_or_404(Subdomain, name=record.subdomain_name, domain=record.domain)
-        Record.update_record(PROVIDER_CLASS(), subdomain, record.id, target=remote_ip_address)
+        Record.update_record(get_record_provider(subdomain.domain), subdomain, record.id, target=remote_ip_address)
         return HttpResponse(remote_ip_address == record.target)
     else:
         return HttpResponse(status=405)

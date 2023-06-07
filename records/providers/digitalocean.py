@@ -1,8 +1,7 @@
 import os
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import requests
-from requests import HTTPError
 
 from domains.models import Domain
 from .base import BaseRecordProvider
@@ -16,38 +15,42 @@ class DigitalOceanRecordProvider(BaseRecordProvider):
         'Authorization': f'Bearer {token}',
     }
 
-    def list_records(self, subdomain_name: str, domain: Domain) -> List[Dict[str, Any]]:
-        response = requests.get(self.host + f'/v2/domains/{domain.name}/records', headers=self.headers)
+    def list_records(self, subdomain_name: str, domain: Domain) -> list[dict[str, Any]]:
+        response = requests.get(self.host + f'/v2/domains/{domain.name}/records', headers=self.headers,
+                                params={
+                                    'name': subdomain_name + '.' + domain.name,
+                                    'per_page': 200,
+                                })
         try:
             response.raise_for_status()
-        except HTTPError:
+        except requests.HTTPError:
             raise RecordProviderError(response.json())
         return list(filter(lambda x: x.get('name').endswith(subdomain_name),
                            map(self.from_digitalocean_record, response.json().get('domain_records'))))
 
-    def create_record(self, subdomain_name: str, domain: Domain, **kwargs) -> Dict[str, Any]:
+    def create_record(self, subdomain_name: str, domain: Domain, **kwargs) -> dict[str, Any]:
         response = requests.post(self.host + f'/v2/domains/{domain.name}/records', headers=self.headers,
                                  json=self.to_digitalocean_record(kwargs))
         try:
             response.raise_for_status()
-        except HTTPError:
+        except requests.HTTPError:
             raise RecordProviderError(response.json())
         return self.from_digitalocean_record(response.json().get('domain_record'))
 
-    def retrieve_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> Optional[Dict[str, Any]]:
+    def retrieve_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> dict[str, Any] | None:
         response = requests.get(self.host + f'/v2/domains/{domain.name}/records/{provider_id}', headers=self.headers)
         try:
             response.raise_for_status()
-        except HTTPError:
+        except requests.HTTPError:
             raise RecordProviderError(response.json())
         return self.from_digitalocean_record(response.json().get('domain_record'))
 
-    def update_record(self, subdomain_name: str, domain: Domain, provider_id: str, **kwargs) -> Dict[str, Any]:
+    def update_record(self, subdomain_name: str, domain: Domain, provider_id: str, **kwargs) -> dict[str, Any]:
         response = requests.put(self.host + f'/v2/domains/{domain.name}/records/{provider_id}', headers=self.headers,
                                 json=self.to_digitalocean_record(kwargs))
         try:
             response.raise_for_status()
-        except HTTPError:
+        except requests.HTTPError:
             raise RecordProviderError(response.json())
         return self.from_digitalocean_record(response.json().get('domain_record'))
 
@@ -55,10 +58,10 @@ class DigitalOceanRecordProvider(BaseRecordProvider):
         response = requests.delete(self.host + f'/v2/domains/{domain.name}/records/{provider_id}', headers=self.headers)
         try:
             response.raise_for_status()
-        except HTTPError:
+        except requests.HTTPError:
             raise RecordProviderError(response.json())
 
-    def get_nameservers(self, domain: Domain = None) -> List[str]:
+    def get_nameservers(self, domain: Domain = None) -> list[str]:
         return [
             'ns1.digitalocean.com',
             'ns2.digitalocean.com',
@@ -66,7 +69,7 @@ class DigitalOceanRecordProvider(BaseRecordProvider):
         ]
 
     @staticmethod
-    def from_digitalocean_record(digitalocean_record: Dict[str, Any]) -> Dict[str, Any]:
+    def from_digitalocean_record(digitalocean_record: dict[str, Any]) -> dict[str, Any]:
         from ..models import Record
         service, protocol, name = Record.split_name(digitalocean_record.get('name'))
         return {
@@ -83,7 +86,7 @@ class DigitalOceanRecordProvider(BaseRecordProvider):
         }
 
     @staticmethod
-    def to_digitalocean_record(record: Dict[str, Any]) -> Dict[str, Any]:
+    def to_digitalocean_record(record: dict[str, Any]) -> dict[str, Any]:
         from ..models import Record
         name = Record.join_name(record.get('service'), record.get('protocol'), record.get('name'))
         return {

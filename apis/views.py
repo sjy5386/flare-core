@@ -4,6 +4,7 @@ from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import viewsets, permissions
 from rest_framework.decorators import api_view
+from rest_framework.exceptions import NotFound
 from rest_framework.generics import get_object_or_404
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -12,6 +13,7 @@ import records.providers
 import shorturls.providers
 from contacts.models import Contact
 from domains.models import Domain
+from records.exceptions import RecordNotFoundError
 from records.models import Record
 from shorturls.models import ShortUrl
 from subdomains.models import Subdomain
@@ -86,8 +88,11 @@ class RecordViewSet(viewsets.ModelViewSet):
         return super(RecordViewSet, self).dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
-        provider = records.providers.PROVIDER_CLASS()
-        return Record.list_records(provider, self.subdomain)
+        provider = records.providers.get_record_provider(self.subdomain.domain)
+        try:
+            return Record.list_records(provider, self.subdomain)
+        except RecordNotFoundError as e:
+            raise NotFound(e)
 
     def perform_create(self, serializer):
         serializer.save(subdomain=self.subdomain)
@@ -96,5 +101,5 @@ class RecordViewSet(viewsets.ModelViewSet):
         serializer.save(subdomain=self.subdomain)
 
     def perform_destroy(self, instance):
-        provider = records.providers.PROVIDER_CLASS()
+        provider = records.providers.get_record_provider(self.subdomain.domain)
         Record.delete_record(provider, self.subdomain, instance.id)
