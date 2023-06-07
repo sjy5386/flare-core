@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.forms import Form
+from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils.decorators import method_decorator
@@ -7,6 +8,7 @@ from django.views.generic import ListView, FormView, DetailView
 
 from base.views import get_remote_ip_address
 from subdomains.models import Subdomain
+from .exceptions import RecordNotFoundError
 from .forms import ZoneImportForm, RecordForm
 from .models import Record
 from .providers import PROVIDER_CLASS
@@ -92,19 +94,22 @@ class RecordDetailView(DetailView):
 
     def get_object(self, queryset=None):
         provider = PROVIDER_CLASS()
-        obj = Record.retrieve_record(provider, self.subdomain, self.kwargs['id'])
-        return {
-            'ID': obj.id,
-            'Service': obj.service,
-            'Protocol': obj.protocol,
-            'Name': obj.name,
-            'TTL': obj.ttl,
-            'Type': obj.type,
-            'Priority': obj.priority,
-            'Weight': obj.weight,
-            'Port': obj.port,
-            'Target': obj.target,
-        }
+        try:
+            obj = Record.retrieve_record(provider, self.subdomain, self.kwargs['id'])
+            return {
+                'ID': obj.id,
+                'Service': obj.service,
+                'Protocol': obj.protocol,
+                'Name': obj.name,
+                'TTL': obj.ttl,
+                'Type': obj.type,
+                'Priority': obj.priority,
+                'Weight': obj.weight,
+                'Port': obj.port,
+                'Target': obj.target,
+            }
+        except RecordNotFoundError as e:
+            raise Http404(e)
 
     def get_context_data(self, **kwargs):
         context = super(RecordDetailView, self).get_context_data(**kwargs)
