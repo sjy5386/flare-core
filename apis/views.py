@@ -88,7 +88,7 @@ class RecordViewSet(viewsets.ModelViewSet):
         return super(RecordViewSet, self).dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
-        provider = records.providers.PROVIDER_CLASS()
+        provider = records.providers.get_record_provider(self.subdomain.domain)
         try:
             return Record.list_records(provider, self.subdomain)
         except RecordNotFoundError as e:
@@ -101,5 +101,5 @@ class RecordViewSet(viewsets.ModelViewSet):
         serializer.save(subdomain=self.subdomain)
 
     def perform_destroy(self, instance):
-        provider = records.providers.PROVIDER_CLASS()
+        provider = records.providers.get_record_provider(self.subdomain.domain)
         Record.delete_record(provider, self.subdomain, instance.id)
