@@ -234,10 +234,10 @@ class Record(models.Model):
 
     @classmethod
     def synchronize_records(cls, provider: BaseRecordProvider) -> None:
-        print('Start synchronizing records.')
+        logging.info('Start synchronizing records.')
         for subdomain in Subdomain.objects.all():
             cls.list_records(provider, subdomain)
-        print('End synchronizing records.')
+        logging.info('End synchronizing records.')
 
     def update_by_provider_record(self, provider_record: Dict[str, Any]) -> bool:
         is_updated = False
