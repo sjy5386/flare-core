@@ -1,9 +1,4 @@
 services:
-  cache:
-    image: redis
-    ports:
-      - 6379:6379
-
   app:
     image: python:3.11
     volumes:
@@ -11,8 +6,6 @@ services:
     working_dir: /app
     ports:
       - 8000:8000
-    depends_on:
-      - cache
     extra_hosts:
       - host.docker.internal:host-gateway
     entrypoint: [ "/bin/bash", "./docker/app.sh" ]
