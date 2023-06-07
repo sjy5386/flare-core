@@ -76,7 +76,10 @@ class LinodeRecordProvider(BaseRecordProvider):
         if cache_value is not None:
             return cache_value
         response = requests.get(self.host + '/domains', headers=self.headers)
-        response.raise_for_status()
+        try:
+            response.raise_for_status()
+        except requests.HTTPError:
+            raise RecordProviderError(response.json())
         domain_id = next(map(lambda x: x.get('id'),
                              filter(lambda x: x.get('domain') == domain_name, response.json().get('data', []))))
         cache.set(cache_key, domain_id, timeout=86400)
