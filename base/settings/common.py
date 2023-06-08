@@ -190,7 +190,7 @@ LOGGING = {
             'level': 'INFO',
             'filters': (),
             'class': 'logging.StreamHandler',
-            'formatter': 'simple'
+            'formatter': 'standard',
         },
         'mail_admins': {
             'level': 'ERROR',
