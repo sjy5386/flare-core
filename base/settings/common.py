@@ -184,28 +184,22 @@ LOGGING = {
         },
     },
     'filters': {
-        'require_debug_false': {
-            '()': 'django.utils.log.RequireDebugFalse',
-        },
-        'require_debug_true': {
-            '()': 'django.utils.log.RequireDebugTrue',
-        },
     },
     'handlers': {
         'console': {
             'level': 'INFO',
-            'filters': ['require_debug_true'],
+            'filters': (),
             'class': 'logging.StreamHandler',
-            'formatter': 'simple'
+            'formatter': 'standard',
         },
         'mail_admins': {
             'level': 'ERROR',
             'class': 'django.utils.log.AdminEmailHandler',
-            'filters': ['require_debug_false']
+            'filters': (),
         },
         'file': {
             'level': 'INFO',
-            'filters': ['require_debug_false'],
+            'filters': (),
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': BASE_DIR / 'logs/latest.log',
             'maxBytes': 1024 * 1024 * 5,
