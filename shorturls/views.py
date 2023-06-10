@@ -1,8 +1,10 @@
 from django.contrib.auth.decorators import login_required
+from django.http import Http404
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import ListView, FormView, DetailView
 
+from .exceptions import ShortUrlNotFoundError
 from .forms import ShortUrlForm
 from .models import ShortUrl
 from .providers import PROVIDER_CLASS
@@ -43,4 +45,7 @@ class ShortUrlDetailView(DetailView):
 
     def get_object(self, queryset=None):
         provider = PROVIDER_CLASS()
-        return ShortUrl.retrieve_short_url(provider, self.request.user, self.kwargs['id'])
+        try:
+            return ShortUrl.retrieve_short_url(provider, self.request.user, self.kwargs['id'])
+        except ShortUrlNotFoundError as e:
+            raise Http404(e)
