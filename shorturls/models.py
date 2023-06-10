@@ -1,3 +1,4 @@
+import logging
 from urllib.parse import urlparse
 
 from django.core.cache import cache
@@ -5,7 +6,7 @@ from django.db import models
 
 from base.settings.common import AUTH_USER_MODEL
 from domains.models import Domain
-from .exceptions import ShortUrlBadRequestError, ShortUrlNotFoundError
+from .exceptions import ShortUrlBadRequestError, ShortUrlNotFoundError, ShortUrlProviderError
 from .providers.base import BaseShortUrlProvider
 from .validators import validate_filter_long_url
 
@@ -48,7 +49,10 @@ class ShortUrl(models.Model):
             if k not in kwargs.keys():
                 raise ShortUrlBadRequestError('Empty ' + k + '.')
         if provider:
-            kwargs['short'] = provider.create_short_url(kwargs.get('domain'), kwargs.get('long_url'))['short']
+            try:
+                kwargs['short'] = provider.create_short_url(kwargs.get('domain'), kwargs.get('long_url'))['short']
+            except ShortUrlProviderError as e:
+                logging.error(e)
         short_url = cls(user=user, **kwargs)
         short_url.save()
         cache.set('short_urls:' + str(short_url.id), short_url, timeout=3600)
