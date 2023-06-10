@@ -49,6 +49,13 @@ class ShortUrlTest(TestCase):
         result = ShortUrl.join_short_url('example.com', 'index')
         self.assertEqual(result, 'https://example.com/index')
 
+    def test_create_short_by_seq(self):
+        self.assertEqual(ShortUrl.create_short_by_seq(1), 'MDAx')
+        self.assertEqual(ShortUrl.create_short_by_seq(20), 'MDIw')
+        self.assertEqual(ShortUrl.create_short_by_seq(300), 'MzAw')
+        self.assertEqual(ShortUrl.create_short_by_seq(4000), 'NDAwMA')
+        self.assertEqual(ShortUrl.create_short_by_seq(1234567890), 'MTIzNDU2Nzg5MA')
+
 
 class FilterTest(TestCase):
     def test_filter(self):
