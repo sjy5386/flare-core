@@ -1,4 +1,3 @@
-from typing import List, Optional, Tuple
 from urllib.parse import urlparse
 
 from django.core.cache import cache
@@ -29,22 +28,21 @@ class ShortUrl(models.Model):
         ]
 
     @property
-    def short_url(self):
+    def short_url(self) -> str:
         return self.join_short_url(self.domain.name, self.short)
 
     def __str__(self):
         return self.name
 
     @classmethod
-    def list_short_urls(cls, provider: Optional[BaseShortUrlProvider], user: Optional[AUTH_USER_MODEL]
-                        ) -> List['ShortUrl']:
+    def list_short_urls(cls, provider: BaseShortUrlProvider | None, user: AUTH_USER_MODEL | None) -> list['ShortUrl']:
         short_urls = cls.objects.filter(user=user)
         for short_url in short_urls:
             cache.set('short_urls:' + str(short_url.id), short_url, timeout=3600)
         return short_urls
 
     @classmethod
-    def create_short_url(cls, provider: Optional[BaseShortUrlProvider], user: Optional[AUTH_USER_MODEL],
+    def create_short_url(cls, provider: BaseShortUrlProvider | None, user: AUTH_USER_MODEL | None,
                          **kwargs) -> 'ShortUrl':
         for k in ('domain', 'long_url'):
             if k not in kwargs.keys():
@@ -57,7 +55,7 @@ class ShortUrl(models.Model):
         return short_url
 
     @classmethod
-    def retrieve_short_url(cls, provider: Optional[BaseShortUrlProvider], user: Optional[AUTH_USER_MODEL],
+    def retrieve_short_url(cls, provider: BaseShortUrlProvider | None, user: AUTH_USER_MODEL | None,
                            id: int) -> 'ShortUrl':
         cache_key = 'short_urls:' + str(id)
         cache_value = cache.get(cache_key)
@@ -71,7 +69,7 @@ class ShortUrl(models.Model):
             raise ShortUrlNotFoundError()
 
     @staticmethod
-    def split_short_url(short_url: str) -> Tuple[str, str]:
+    def split_short_url(short_url: str) -> tuple[str, str]:
         parsed_url = urlparse(short_url)
         return parsed_url.netloc, parsed_url.path[1:]
 

@@ -1,5 +1,5 @@
 import os
-from typing import Dict, Any
+from typing import Any
 
 import requests
 
@@ -15,7 +15,7 @@ class BitlyShortUrlProvider(BaseShortUrlProvider):
         'Authorization': f'Bearer {token}',
     }
 
-    def create_short_url(self, domain: Domain, long_url: str) -> Dict[str, Any]:
+    def create_short_url(self, domain: Domain, long_url: str) -> dict[str, Any]:
         response = requests.post(self.host + '/v4/shorten', headers=self.headers, json={
             'long_url': long_url,
             'domain': domain.name,
