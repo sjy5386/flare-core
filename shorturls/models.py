@@ -1,4 +1,5 @@
 import logging
+from typing import Optional
 from urllib.parse import urlparse
 
 from django.core.cache import cache
@@ -36,14 +37,15 @@ class ShortUrl(models.Model):
         return self.name
 
     @classmethod
-    def list_short_urls(cls, provider: BaseShortUrlProvider | None, user: AUTH_USER_MODEL | None) -> list['ShortUrl']:
+    def list_short_urls(cls, provider: BaseShortUrlProvider | None, user: Optional[AUTH_USER_MODEL]
+                        ) -> list['ShortUrl']:
         short_urls = cls.objects.filter(user=user)
         for short_url in short_urls:
             cache.set('short_urls:' + str(short_url.id), short_url, timeout=3600)
         return short_urls
 
     @classmethod
-    def create_short_url(cls, provider: BaseShortUrlProvider | None, user: AUTH_USER_MODEL | None,
+    def create_short_url(cls, provider: BaseShortUrlProvider | None, user: Optional[AUTH_USER_MODEL],
                          **kwargs) -> 'ShortUrl':
         for k in ('domain', 'long_url'):
             if k not in kwargs.keys():
@@ -59,7 +61,7 @@ class ShortUrl(models.Model):
         return short_url
 
     @classmethod
-    def retrieve_short_url(cls, provider: BaseShortUrlProvider | None, user: AUTH_USER_MODEL | None,
+    def retrieve_short_url(cls, provider: BaseShortUrlProvider | None, user: Optional[AUTH_USER_MODEL],
                            id: int) -> 'ShortUrl':
         cache_key = 'short_urls:' + str(id)
         cache_value = cache.get(cache_key)
