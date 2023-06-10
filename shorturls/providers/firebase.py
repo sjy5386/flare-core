@@ -28,6 +28,7 @@ class FirebaseDynamicLinksShortUrlProvider(BaseShortUrlProvider):
             response.raise_for_status()
         except requests.HTTPError:
             raise ShortUrlProviderError(response.json())
+        from shorturls.models import ShortUrl
         return {
-            'short': response.json()['shortLink'].split('/')[-1],
+            'short': ShortUrl.split_short_url(response.json()['shortLink'])[-1],
         }
