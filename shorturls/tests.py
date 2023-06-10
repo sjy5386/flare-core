@@ -56,6 +56,9 @@ class ShortUrlTest(TestCase):
         self.assertEqual(ShortUrl.create_short_by_seq(4000), 'NDAwMA')
         self.assertEqual(ShortUrl.create_short_by_seq(1234567890), 'MTIzNDU2Nzg5MA')
 
+    def test_create_short_by_random(self):
+        self.assertEqual(len({ShortUrl.create_short_by_random() for _ in (range(100))}), 100)
+
 
 class FilterTest(TestCase):
     def test_filter(self):
