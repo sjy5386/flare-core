@@ -91,6 +91,8 @@ class ShortUrl(models.Model):
 
     @staticmethod
     def create_short_by_random(n: int = 13) -> str:
+        if n < 13:
+            logging.warning(f'{n} is too small.')
         return secrets.token_urlsafe(n)
 
 
