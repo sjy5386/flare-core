@@ -12,6 +12,9 @@ class FirebaseDynamicLinksShortUrlProvider(BaseShortUrlProvider):
     host = 'https://firebasedynamiclinks.googleapis.com'
     api_key = os.environ.get("FIREBASE_WEB_API_KEY")
 
+    def list_short_urls(self, domain: Domain) -> list[dict[str, Any]]:
+        raise ShortUrlProviderError()
+
     def create_short_url(self, domain: Domain, long_url: str) -> dict[str, Any]:
         request_body = {
             'dynamicLinkInfo': {
