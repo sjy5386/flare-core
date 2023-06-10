@@ -1,3 +1,4 @@
+import base64
 import logging
 from typing import Optional
 from urllib.parse import urlparse
@@ -82,6 +83,10 @@ class ShortUrl(models.Model):
     @staticmethod
     def join_short_url(domain_name: str, short: str) -> str:
         return f'https://{domain_name}/{short}'
+
+    @staticmethod
+    def create_short_by_seq(seq: int) -> str:
+        return base64.urlsafe_b64encode(('%03d' % seq).encode()).decode().replace('=', '')
 
 
 class Filter(models.Model):
