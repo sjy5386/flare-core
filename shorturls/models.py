@@ -1,5 +1,6 @@
 import base64
 import logging
+import secrets
 from typing import Optional
 from urllib.parse import urlparse
 
@@ -87,6 +88,10 @@ class ShortUrl(models.Model):
     @staticmethod
     def create_short_by_seq(seq: int) -> str:
         return base64.urlsafe_b64encode(('%03d' % seq).encode()).decode().replace('=', '')
+
+    @staticmethod
+    def create_short_by_random(n: int = 13) -> str:
+        return secrets.token_urlsafe(n)
 
 
 class Filter(models.Model):
