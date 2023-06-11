@@ -46,4 +46,4 @@ class FirebaseDynamicLinksShortUrlProvider(BaseShortUrlProvider):
         raise ShortUrlProviderError()
 
     def get_hostname(self, domain: Domain) -> str:
-        pass
+        return 'web.app'
