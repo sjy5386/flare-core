@@ -42,4 +42,4 @@ class BitlyShortUrlProvider(BaseShortUrlProvider):
         raise ShortUrlProviderError()
 
     def get_hostname(self, domain: Domain) -> str:
-        pass
+        return 'cname.bitly.com'
