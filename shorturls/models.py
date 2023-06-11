@@ -76,6 +76,11 @@ class ShortUrl(models.Model):
             return cache_value
         try:
             short_url = cls.objects.get(id=id, user=user)
+            if provider:
+                try:
+                    pass
+                except ShortUrlProviderError as e:
+                    logging.error(e)
             cache.set(cache_key, short_url, timeout=3600)
             return short_url
         except cls.DoesNotExist:
