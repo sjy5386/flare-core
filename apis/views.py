@@ -46,7 +46,7 @@ class ShortUrlViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        provider = shorturls.providers.PROVIDER_CLASS()
+        provider = shorturls.providers.get_short_url_provider(None)
         return ShortUrl.list_short_urls(provider, self.request.user)
 
 
