@@ -15,11 +15,11 @@ class FirebaseDynamicLinksShortUrlProvider(BaseShortUrlProvider):
     def list_short_urls(self, domain: Domain) -> list[dict[str, Any]]:
         raise ShortUrlProviderError()
 
-    def create_short_url(self, domain: Domain, long_url: str) -> dict[str, Any]:
+    def create_short_url(self, domain: Domain, **kwargs) -> dict[str, Any]:
         request_body = {
             'dynamicLinkInfo': {
                 'domainUriPrefix': f'https://{domain.name}',
-                'link': long_url
+                'link': kwargs.get('long_url'),
             },
             'suffix': {
                 'option': 'SHORT'

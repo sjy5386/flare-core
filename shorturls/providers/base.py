@@ -10,7 +10,7 @@ class BaseShortUrlProvider(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def create_short_url(self, domain: Domain, long_url: str) -> dict[str, Any]:
+    def create_short_url(self, domain: Domain, **kwargs) -> dict[str, Any]:
         pass
 
     @abstractmethod

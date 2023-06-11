@@ -59,7 +59,7 @@ class ShortUrl(models.Model):
                 raise ShortUrlBadRequestError('Empty ' + k + '.')
         if provider:
             try:
-                kwargs['short'] = provider.create_short_url(kwargs.get('domain'), kwargs.get('long_url'))['short']
+                kwargs['short'] = provider.create_short_url(kwargs.get('domain'), **kwargs)['short']
             except ShortUrlProviderError as e:
                 logging.error(e)
         short_url = cls(user=user, **kwargs)

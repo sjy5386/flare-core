@@ -18,9 +18,9 @@ class BitlyShortUrlProvider(BaseShortUrlProvider):
     def list_short_urls(self, domain: Domain) -> list[dict[str, Any]]:
         raise ShortUrlProviderError()
 
-    def create_short_url(self, domain: Domain, long_url: str) -> dict[str, Any]:
+    def create_short_url(self, domain: Domain, **kwargs) -> dict[str, Any]:
         response = requests.post(self.host + '/v4/shorten', headers=self.headers, json={
-            'long_url': long_url,
+            'long_url': kwargs.get('long_url'),
             'domain': domain.name,
         })
         try:
