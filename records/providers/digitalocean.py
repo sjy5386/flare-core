@@ -18,7 +18,6 @@ class DigitalOceanRecordProvider(BaseRecordProvider):
     def list_records(self, subdomain_name: str, domain: Domain) -> list[dict[str, Any]]:
         response = requests.get(self.host + f'/v2/domains/{domain.name}/records', headers=self.headers,
                                 params={
-                                    'name': subdomain_name + '.' + domain.name,
                                     'per_page': 200,
                                 })
         try:
