@@ -28,4 +28,4 @@ class MockShortUrlProvider(BaseShortUrlProvider):
         pass
 
     def get_hostname(self, domain: Domain) -> str:
-        pass
+        return 'example.com'
