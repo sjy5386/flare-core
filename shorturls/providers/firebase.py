@@ -1,5 +1,5 @@
 import os
-from typing import Dict, Any
+from typing import Any
 
 import requests
 
@@ -12,11 +12,14 @@ class FirebaseDynamicLinksShortUrlProvider(BaseShortUrlProvider):
     host = 'https://firebasedynamiclinks.googleapis.com'
     api_key = os.environ.get("FIREBASE_WEB_API_KEY")
 
-    def create_short_url(self, domain: Domain, long_url: str) -> Dict[str, Any]:
+    def list_short_urls(self, domain: Domain) -> list[dict[str, Any]]:
+        raise ShortUrlProviderError()
+
+    def create_short_url(self, domain: Domain, **kwargs) -> dict[str, Any]:
         request_body = {
             'dynamicLinkInfo': {
                 'domainUriPrefix': f'https://{domain.name}',
-                'link': long_url
+                'link': kwargs.get('long_url'),
             },
             'suffix': {
                 'option': 'SHORT'
@@ -28,6 +31,19 @@ class FirebaseDynamicLinksShortUrlProvider(BaseShortUrlProvider):
             response.raise_for_status()
         except requests.HTTPError:
             raise ShortUrlProviderError(response.json())
+        from shorturls.models import ShortUrl
         return {
-            'short': response.json()['shortLink'].split('/')[-1],
+            'short': ShortUrl.split_short_url(response.json()['shortLink'])[-1],
         }
+
+    def retrieve_short_url(self, domain: Domain, short: str) -> dict[str, Any] | None:
+        raise ShortUrlProviderError()
+
+    def update_short_url(self, domain: Domain, short: str, **kwargs) -> dict[str, Any]:
+        raise ShortUrlProviderError()
+
+    def delete_short_url(self, domain: Domain, short: str) -> None:
+        raise ShortUrlProviderError()
+
+    def get_hostname(self, domain: Domain) -> str:
+        return 'web.app'

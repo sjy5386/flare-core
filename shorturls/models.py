@@ -1,4 +1,7 @@
-from typing import List, Optional, Tuple
+import base64
+import logging
+import secrets
+from typing import Optional
 from urllib.parse import urlparse
 
 from django.core.cache import cache
@@ -6,7 +9,7 @@ from django.db import models
 
 from base.settings.common import AUTH_USER_MODEL
 from domains.models import Domain
-from .exceptions import ShortUrlBadRequestError, ShortUrlNotFoundError
+from .exceptions import ShortUrlBadRequestError, ShortUrlNotFoundError, ShortUrlProviderError
 from .providers.base import BaseShortUrlProvider
 from .validators import validate_filter_long_url
 
@@ -29,35 +32,43 @@ class ShortUrl(models.Model):
         ]
 
     @property
-    def short_url(self):
+    def short_url(self) -> str:
         return self.join_short_url(self.domain.name, self.short)
 
     def __str__(self):
         return self.name
 
     @classmethod
-    def list_short_urls(cls, provider: Optional[BaseShortUrlProvider], user: Optional[AUTH_USER_MODEL]
-                        ) -> List['ShortUrl']:
+    def list_short_urls(cls, provider: BaseShortUrlProvider | None, user: Optional[AUTH_USER_MODEL]
+                        ) -> list['ShortUrl']:
+        if provider:
+            try:
+                pass
+            except ShortUrlProviderError as e:
+                logging.error(e)
         short_urls = cls.objects.filter(user=user)
         for short_url in short_urls:
             cache.set('short_urls:' + str(short_url.id), short_url, timeout=3600)
         return short_urls
 
     @classmethod
-    def create_short_url(cls, provider: Optional[BaseShortUrlProvider], user: Optional[AUTH_USER_MODEL],
+    def create_short_url(cls, provider: BaseShortUrlProvider | None, user: Optional[AUTH_USER_MODEL],
                          **kwargs) -> 'ShortUrl':
         for k in ('domain', 'long_url'):
             if k not in kwargs.keys():
                 raise ShortUrlBadRequestError('Empty ' + k + '.')
         if provider:
-            kwargs['short'] = provider.create_short_url(kwargs.get('domain'), kwargs.get('long_url'))['short']
+            try:
+                kwargs['short'] = provider.create_short_url(kwargs.get('domain'), **kwargs)['short']
+            except ShortUrlProviderError as e:
+                logging.error(e)
         short_url = cls(user=user, **kwargs)
         short_url.save()
         cache.set('short_urls:' + str(short_url.id), short_url, timeout=3600)
         return short_url
 
     @classmethod
-    def retrieve_short_url(cls, provider: Optional[BaseShortUrlProvider], user: Optional[AUTH_USER_MODEL],
+    def retrieve_short_url(cls, provider: BaseShortUrlProvider | None, user: Optional[AUTH_USER_MODEL],
                            id: int) -> 'ShortUrl':
         cache_key = 'short_urls:' + str(id)
         cache_value = cache.get(cache_key)
@@ -65,19 +76,34 @@ class ShortUrl(models.Model):
             return cache_value
         try:
             short_url = cls.objects.get(id=id, user=user)
+            if provider:
+                try:
+                    pass
+                except ShortUrlProviderError as e:
+                    logging.error(e)
             cache.set(cache_key, short_url, timeout=3600)
             return short_url
         except cls.DoesNotExist:
             raise ShortUrlNotFoundError()
 
     @staticmethod
-    def split_short_url(short_url: str) -> Tuple[str, str]:
+    def split_short_url(short_url: str) -> tuple[str, str]:
         parsed_url = urlparse(short_url)
         return parsed_url.netloc, parsed_url.path[1:]
 
     @staticmethod
     def join_short_url(domain_name: str, short: str) -> str:
         return f'https://{domain_name}/{short}'
+
+    @staticmethod
+    def create_short_by_seq(seq: int) -> str:
+        return base64.urlsafe_b64encode(('%03d' % seq).encode()).decode().replace('=', '')
+
+    @staticmethod
+    def create_short_by_random(n: int = 13) -> str:
+        if n < 13:
+            logging.warning(f'{n} is too small.')
+        return secrets.token_urlsafe(n)
 
 
 class Filter(models.Model):

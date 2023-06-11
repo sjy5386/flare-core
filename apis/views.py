@@ -4,7 +4,6 @@ from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import viewsets, permissions
 from rest_framework.decorators import api_view
-from rest_framework.exceptions import NotFound
 from rest_framework.generics import get_object_or_404
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -13,7 +12,6 @@ import records.providers
 import shorturls.providers
 from contacts.models import Contact
 from domains.models import Domain
-from records.exceptions import RecordNotFoundError
 from records.models import Record
 from shorturls.models import ShortUrl
 from subdomains.models import Subdomain
@@ -48,7 +46,7 @@ class ShortUrlViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        provider = shorturls.providers.PROVIDER_CLASS()
+        provider = shorturls.providers.get_short_url_provider(None)
         return ShortUrl.list_short_urls(provider, self.request.user)
 
 
@@ -89,10 +87,7 @@ class RecordViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         provider = records.providers.get_record_provider(self.subdomain.domain)
-        try:
-            return Record.list_records(provider, self.subdomain)
-        except RecordNotFoundError as e:
-            raise NotFound(e)
+        return Record.list_records(provider, self.subdomain)
 
     def perform_create(self, serializer):
         serializer.save(subdomain=self.subdomain)

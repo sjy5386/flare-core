@@ -1,11 +1,13 @@
 from django.contrib.auth.decorators import login_required
+from django.http import Http404
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import ListView, FormView, DetailView
 
+from .exceptions import ShortUrlNotFoundError
 from .forms import ShortUrlForm
 from .models import ShortUrl
-from .providers import PROVIDER_CLASS
+from .providers import get_short_url_provider
 
 
 @method_decorator(login_required, name='dispatch')
@@ -13,7 +15,7 @@ class ShortUrlListView(ListView):
     ordering = '-id'
 
     def get_queryset(self):
-        provider = PROVIDER_CLASS()
+        provider = get_short_url_provider(None)
         return ShortUrl.list_short_urls(provider, self.request.user).order_by(self.get_ordering())
 
 
@@ -32,7 +34,7 @@ class ShortUrlCreateView(FormView):
         }
 
     def form_valid(self, form):
-        provider = PROVIDER_CLASS()
+        provider = get_short_url_provider(form.cleaned_data.get('domain'))
         ShortUrl.create_short_url(provider, self.request.user, **form.cleaned_data)
         return super(ShortUrlCreateView, self).form_valid(form)
 
@@ -42,5 +44,8 @@ class ShortUrlDetailView(DetailView):
     template_name = 'shorturls/shorturl_detail.html'
 
     def get_object(self, queryset=None):
-        provider = PROVIDER_CLASS()
-        return ShortUrl.retrieve_short_url(provider, self.request.user, self.kwargs['id'])
+        provider = get_short_url_provider(None)
+        try:
+            return ShortUrl.retrieve_short_url(provider, self.request.user, self.kwargs['id'])
+        except ShortUrlNotFoundError as e:
+            raise Http404(e)
