@@ -26,3 +26,6 @@ class MockShortUrlProvider(BaseShortUrlProvider):
 
     def delete_short_url(self, domain: Domain, short: str) -> None:
         pass
+
+    def get_hostname(self, domain: Domain) -> str:
+        pass

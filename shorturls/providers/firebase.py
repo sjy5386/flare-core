@@ -44,3 +44,6 @@ class FirebaseDynamicLinksShortUrlProvider(BaseShortUrlProvider):
 
     def delete_short_url(self, domain: Domain, short: str) -> None:
         raise ShortUrlProviderError()
+
+    def get_hostname(self, domain: Domain) -> str:
+        pass

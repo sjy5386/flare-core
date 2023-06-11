@@ -24,3 +24,7 @@ class BaseShortUrlProvider(metaclass=ABCMeta):
     @abstractmethod
     def delete_short_url(self, domain: Domain, short: str) -> None:
         pass
+
+    @abstractmethod
+    def get_hostname(self, domain: Domain) -> str:
+        pass
