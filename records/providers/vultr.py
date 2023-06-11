@@ -1,8 +1,7 @@
 import os
-from typing import Optional, Dict, Any, List
+from typing import Any
 
 import requests
-from requests import HTTPError
 
 from domains.models import Domain
 from .base import BaseRecordProvider
@@ -16,38 +15,41 @@ class VultrRecordProvider(BaseRecordProvider):
         'Authorization': f'Bearer {api_key}',
     }
 
-    def list_records(self, subdomain_name: str, domain: Domain) -> List[Dict[str, Any]]:
-        response = requests.get(self.host + f'/v2/domains/{domain.name}/records', headers=self.headers)
+    def list_records(self, subdomain_name: str, domain: Domain) -> list[dict[str, Any]]:
+        response = requests.get(self.host + f'/v2/domains/{domain.name}/records', headers=self.headers,
+                                params={
+                                    'per_page': 500,
+                                })
         try:
             response.raise_for_status()
-        except HTTPError:
+        except requests.HTTPError:
             raise RecordProviderError(response.json())
         return list(filter(lambda x: x.get('name').endswith(subdomain_name + '.' + domain.name),
                            map(self.from_vultr_record, response.json().get('records'))))
 
-    def create_record(self, subdomain_name: str, domain: Domain, **kwargs) -> Dict[str, Any]:
+    def create_record(self, subdomain_name: str, domain: Domain, **kwargs) -> dict[str, Any]:
         response = requests.post(self.host + f'/v2/domains/{domain.name}/records', headers=self.headers,
                                  json=self.to_vultr_record(kwargs))
         try:
             response.raise_for_status()
-        except HTTPError:
+        except requests.HTTPError:
             raise RecordProviderError(response.json())
         return self.from_vultr_record(response.json().get('record'))
 
-    def retrieve_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> Optional[Dict[str, Any]]:
+    def retrieve_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> dict[str, Any] | None:
         response = requests.get(self.host + f'/v2/domains/{domain.name}/records/{provider_id}', headers=self.headers)
         try:
             response.raise_for_status()
-        except HTTPError:
+        except requests.HTTPError:
             raise RecordProviderError(response.json())
         return self.from_vultr_record(response.json().get('record'))
 
-    def update_record(self, subdomain_name: str, domain: Domain, provider_id: str, **kwargs) -> Dict[str, Any]:
+    def update_record(self, subdomain_name: str, domain: Domain, provider_id: str, **kwargs) -> dict[str, Any]:
         response = requests.patch(self.host + f'/v2/domains/{domain.name}/records/{provider_id}', headers=self.headers,
                                   json=self.to_vultr_record(kwargs))
         try:
             response.raise_for_status()
-        except HTTPError:
+        except requests.HTTPError:
             raise RecordProviderError(response.json())
         return kwargs
 
@@ -55,17 +57,17 @@ class VultrRecordProvider(BaseRecordProvider):
         response = requests.delete(self.host + f'/v2/domains/{domain.name}/records/{provider_id}', headers=self.headers)
         try:
             response.raise_for_status()
-        except HTTPError:
+        except requests.HTTPError:
             raise RecordProviderError(response.json())
 
-    def get_nameservers(self, domain: Domain = None) -> List[str]:
+    def get_nameservers(self, domain: Domain = None) -> list[str]:
         return [
             'ns1.vultr.com',
             'ns2.vultr.com',
         ]
 
     @staticmethod
-    def from_vultr_record(vultr_record: Dict[str, Any]) -> Dict[str, Any]:
+    def from_vultr_record(vultr_record: dict[str, Any]) -> dict[str, Any]:
         from ..models import Record
         service, protocol, name = Record.split_name(vultr_record.get('name'))
         priority, weight, port, target = Record.split_data('priority ' + vultr_record.get('data'))
@@ -83,7 +85,7 @@ class VultrRecordProvider(BaseRecordProvider):
         }
 
     @staticmethod
-    def to_vultr_record(record: Dict[str, Any]) -> Dict[str, Any]:
+    def to_vultr_record(record: dict[str, Any]) -> dict[str, Any]:
         from ..models import Record
         name = Record.join_name(record.get('service'), record.get('protocol'), record.get('name'))
         data = Record.join_data(None, record.get('weight'), record.get('port'), record.get('target'))

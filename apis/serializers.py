@@ -78,9 +78,9 @@ class RecordSerializer(serializers.ModelSerializer):
         read_only_fields = ['created_at', 'updated_at']
 
     def create(self, validated_data):
-        provider = records.providers.PROVIDER_CLASS()
+        provider = records.providers.get_record_provider(validated_data.get('subdomain').domain)
         return Record.create_record(provider, **validated_data)
 
     def update(self, instance, validated_data):
-        provider = records.providers.PROVIDER_CLASS()
+        provider = records.providers.get_record_provider(validated_data.get('subdomain').domain)
         return Record.update_record(provider, id=instance.id, **validated_data)

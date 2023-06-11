@@ -46,7 +46,7 @@ class ShortUrlViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        provider = shorturls.providers.PROVIDER_CLASS()
+        provider = shorturls.providers.get_short_url_provider(None)
         return ShortUrl.list_short_urls(provider, self.request.user)
 
 
@@ -86,7 +86,7 @@ class RecordViewSet(viewsets.ModelViewSet):
         return super(RecordViewSet, self).dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
-        provider = records.providers.PROVIDER_CLASS()
+        provider = records.providers.get_record_provider(self.subdomain.domain)
         return Record.list_records(provider, self.subdomain)
 
     def perform_create(self, serializer):
@@ -96,5 +96,5 @@ class RecordViewSet(viewsets.ModelViewSet):
         serializer.save(subdomain=self.subdomain)
 
     def perform_destroy(self, instance):
-        provider = records.providers.PROVIDER_CLASS()
+        provider = records.providers.get_record_provider(self.subdomain.domain)
         Record.delete_record(provider, self.subdomain, instance.id)

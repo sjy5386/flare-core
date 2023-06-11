@@ -1,5 +1,5 @@
 import os
-from typing import Dict, Any
+from typing import Any
 
 import requests
 
@@ -15,15 +15,31 @@ class BitlyShortUrlProvider(BaseShortUrlProvider):
         'Authorization': f'Bearer {token}',
     }
 
-    def create_short_url(self, domain: Domain, long_url: str) -> Dict[str, Any]:
+    def list_short_urls(self, domain: Domain) -> list[dict[str, Any]]:
+        raise ShortUrlProviderError()
+
+    def create_short_url(self, domain: Domain, **kwargs) -> dict[str, Any]:
         response = requests.post(self.host + '/v4/shorten', headers=self.headers, json={
-            'long_url': long_url,
+            'long_url': kwargs.get('long_url'),
             'domain': domain.name,
         })
         try:
             response.raise_for_status()
         except requests.HTTPError:
             raise ShortUrlProviderError(response.json())
+        from shorturls.models import ShortUrl
         return {
-            'short': response.json().get('link').split('/')[-1]
+            'short': ShortUrl.split_short_url(response.json().get('link'))[-1],
         }
+
+    def retrieve_short_url(self, domain: Domain, short: str) -> dict[str, Any] | None:
+        raise ShortUrlProviderError()
+
+    def update_short_url(self, domain: Domain, short: str, **kwargs) -> dict[str, Any]:
+        raise ShortUrlProviderError()
+
+    def delete_short_url(self, domain: Domain, short: str) -> None:
+        raise ShortUrlProviderError()
+
+    def get_hostname(self, domain: Domain) -> str:
+        return 'cname.bitly.com'
