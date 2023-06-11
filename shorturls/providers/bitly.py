@@ -31,3 +31,6 @@ class BitlyShortUrlProvider(BaseShortUrlProvider):
         return {
             'short': ShortUrl.split_short_url(response.json().get('link'))[-1],
         }
+
+    def retrieve_short_url(self, domain: Domain, short: str) -> dict[str, Any] | None:
+        raise ShortUrlProviderError()

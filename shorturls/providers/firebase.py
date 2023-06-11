@@ -35,3 +35,6 @@ class FirebaseDynamicLinksShortUrlProvider(BaseShortUrlProvider):
         return {
             'short': ShortUrl.split_short_url(response.json()['shortLink'])[-1],
         }
+
+    def retrieve_short_url(self, domain: Domain, short: str) -> dict[str, Any] | None:
+        raise ShortUrlProviderError()

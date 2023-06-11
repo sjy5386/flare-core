@@ -14,3 +14,8 @@ class MockShortUrlProvider(BaseShortUrlProvider):
         return {
             'short': base64.urlsafe_b64encode(long_url.encode()).decode()[:random.randint(4, 8)],
         }
+
+    def retrieve_short_url(self, domain: Domain, short: str) -> dict[str, Any] | None:
+        return {
+            'short': short,
+        }
