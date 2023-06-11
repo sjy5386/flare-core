@@ -22,3 +22,6 @@ class MockShortUrlProvider(BaseShortUrlProvider):
 
     def update_short_url(self, domain: Domain, short: str, **kwargs) -> dict[str, Any]:
         return kwargs
+
+    def delete_short_url(self, domain: Domain, short: str) -> None:
+        pass

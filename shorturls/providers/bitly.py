@@ -37,3 +37,6 @@ class BitlyShortUrlProvider(BaseShortUrlProvider):
 
     def update_short_url(self, domain: Domain, short: str, **kwargs) -> dict[str, Any]:
         raise ShortUrlProviderError()
+
+    def delete_short_url(self, domain: Domain, short: str) -> None:
+        raise ShortUrlProviderError()

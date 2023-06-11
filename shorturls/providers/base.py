@@ -20,3 +20,7 @@ class BaseShortUrlProvider(metaclass=ABCMeta):
     @abstractmethod
     def update_short_url(self, domain: Domain, short: str, **kwargs) -> dict[str, Any]:
         pass
+
+    @abstractmethod
+    def delete_short_url(self, domain: Domain, short: str) -> None:
+        pass
