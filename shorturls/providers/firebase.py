@@ -38,3 +38,6 @@ class FirebaseDynamicLinksShortUrlProvider(BaseShortUrlProvider):
 
     def retrieve_short_url(self, domain: Domain, short: str) -> dict[str, Any] | None:
         raise ShortUrlProviderError()
+
+    def update_short_url(self, domain: Domain, short: str, **kwargs) -> dict[str, Any]:
+        raise ShortUrlProviderError()

@@ -19,3 +19,6 @@ class MockShortUrlProvider(BaseShortUrlProvider):
         return {
             'short': short,
         }
+
+    def update_short_url(self, domain: Domain, short: str, **kwargs) -> dict[str, Any]:
+        return kwargs
