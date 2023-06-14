@@ -1,6 +1,6 @@
 import argparse
 
-from dynamic_dns.client.client import DynamicDnsClient
+from dynamic_dns_client.client import DynamicDnsClient
 
 
 def main(args: argparse.Namespace) -> None:
