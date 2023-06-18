@@ -1,7 +1,6 @@
 from django.http import HttpRequest
 from django.shortcuts import render
 
-from boards.models import Post, Comment
 from contacts.models import Contact
 from shorturls.forms import ShortUrlLiteForm
 from shorturls.models import ShortUrl
@@ -19,8 +18,6 @@ def index(request: HttpRequest):
             'subdomains': Subdomain.objects.filter(user=request.user),
             'contacts': Contact.objects.filter(user=request.user),
             'shorturls': ShortUrl.objects.filter(user=request.user),
-            'posts': Post.objects.filter(user=request.user),
-            'comments': Comment.objects.filter(user=request.user),
         })
     return render(request, 'index.html', context)
 
