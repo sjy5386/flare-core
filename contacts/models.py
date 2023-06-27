@@ -25,19 +25,26 @@ class Contact(models.Model):
         def is_private_field(k: str) -> bool:
             return is_private and k not in public_fields
 
-        data_redacted_message = 'DATA REDACTED'
-        return {
-            'name': data_redacted_message if is_private_field('name') else self.name,
-            'organization': data_redacted_message if is_private_field('organization') else self.organization,
-            'street': data_redacted_message if is_private_field('street') else self.street,
-            'city': data_redacted_message if is_private_field('city') else self.city,
-            'state_province': data_redacted_message if is_private_field('state_province') else self.state_province,
-            'postal_code': data_redacted_message if is_private_field('postal_code') else self.postal_code,
-            'country': data_redacted_message if is_private_field('country') else self.country,
-            'phone': data_redacted_message if is_private_field('phone') else self.phone,
-            'fax': data_redacted_message if is_private_field('fax') else self.fax,
-            'email': contact_url if is_private_field('email') and contact_url else data_redacted_message if is_private else self.email,
-        }
+        def redact_data(whois: dict[str, str], message: str = 'DATA REDACTED') -> dict[str, str]:
+            for k in whois.keys():
+                if is_private_field(k):
+                    whois[k] = message
+                    if k == 'email' and contact_url is not None:
+                        whois[k] = contact_url
+            return whois
+
+        return redact_data({
+            'name': self.name,
+            'organization': self.organization,
+            'street': self.street,
+            'city': self.city,
+            'state_province': self.state_province,
+            'postal_code': self.postal_code,
+            'country': self.country,
+            'phone': self.phone,
+            'fax': self.fax,
+            'email': self.email,
+        })
 
     def __str__(self):
         return self.name
