@@ -21,7 +21,7 @@ class Contact(models.Model):
     email = models.EmailField()
 
     def to_whois(self, is_private: bool = False,
-                 contact_url: str = '', public_fields: list[str] = ()) -> dict[str, str]:
+                 contact_url: str | None = None, public_fields: list[str] = ()) -> dict[str, str]:
         def is_private_field(k: str) -> bool:
             return is_private and k not in public_fields
 
