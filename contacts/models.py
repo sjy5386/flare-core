@@ -22,18 +22,21 @@ class Contact(models.Model):
 
     def to_whois(self, is_private: bool = False,
                  contact_url: str = '', public_fields: list[str] = ()) -> dict[str, str]:
+        def is_private_field(k: str) -> bool:
+            return is_private and k not in public_fields
+
         data_redacted_message = 'DATA REDACTED'
         return {
-            'name': data_redacted_message if is_private and 'name' not in public_fields else self.name,
-            'organization': data_redacted_message if is_private and 'organization' not in public_fields else self.organization,
-            'street': data_redacted_message if is_private and 'street' not in public_fields else self.street,
-            'city': data_redacted_message if is_private and 'city' not in public_fields else self.city,
-            'state_province': data_redacted_message if is_private and 'state_province' not in public_fields else self.state_province,
-            'postal_code': data_redacted_message if is_private and 'postal_code' not in public_fields else self.postal_code,
-            'country': data_redacted_message if is_private and 'country' not in public_fields and 'country' not in public_fields else self.country,
-            'phone': data_redacted_message if is_private and 'phone' not in public_fields else self.phone,
-            'fax': data_redacted_message if is_private and 'fax' not in public_fields else self.fax,
-            'email': contact_url if is_private and 'email' not in public_fields and contact_url else data_redacted_message if is_private else self.email,
+            'name': data_redacted_message if is_private_field('name') else self.name,
+            'organization': data_redacted_message if is_private_field('organization') else self.organization,
+            'street': data_redacted_message if is_private_field('street') else self.street,
+            'city': data_redacted_message if is_private_field('city') else self.city,
+            'state_province': data_redacted_message if is_private_field('state_province') else self.state_province,
+            'postal_code': data_redacted_message if is_private_field('postal_code') else self.postal_code,
+            'country': data_redacted_message if is_private_field('country') else self.country,
+            'phone': data_redacted_message if is_private_field('phone') else self.phone,
+            'fax': data_redacted_message if is_private_field('fax') else self.fax,
+            'email': contact_url if is_private_field('email') and contact_url else data_redacted_message if is_private else self.email,
         }
 
     def __str__(self):
