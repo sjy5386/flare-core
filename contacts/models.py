@@ -1,5 +1,3 @@
-from typing import Dict, List
-
 from django.db import models
 
 from base.settings.common import AUTH_USER_MODEL
@@ -23,7 +21,7 @@ class Contact(models.Model):
     email = models.EmailField()
 
     def to_whois(self, is_private: bool = False,
-                 contact_url: str = None, ignore_fields: List[str] = ()) -> Dict[str, str]:
+                 contact_url: str = None, ignore_fields: list[str] = ()) -> dict[str, str]:
         data_redacted_message = 'DATA REDACTED'
         return {
             'name': data_redacted_message if is_private and 'name' not in ignore_fields else self.name,
