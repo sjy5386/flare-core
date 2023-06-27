@@ -63,7 +63,7 @@ class Subdomain(models.Model):
             'expiry_date': self.expiry,
             'registrant': self.registrant.to_whois(is_private=self.is_private,
                                                    contact_url=self.get_contact_url('registrant'),
-                                                   ignore_fields=['organization', 'state_province', 'country']),
+                                                   public_fields=['organization', 'state_province', 'country']),
             'admin': self.admin.to_whois(is_private=self.is_private,
                                          contact_url=self.get_contact_url('admin')),
             'tech': self.tech.to_whois(is_private=self.is_private,
