@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 import os
 from pathlib import Path
 
+from corsheaders.defaults import default_methods
+
 from .utils import get_secret_key, get_csrf_trusted_origins
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -165,6 +167,10 @@ AUTH_USER_MODEL = 'accounts.User'
 
 CSRF_TRUSTED_ORIGINS = get_csrf_trusted_origins()
 CORS_ORIGIN_WHITELIST = CSRF_TRUSTED_ORIGINS
+
+CORS_ALLOW_METHODS = (
+    *default_methods,
+)
 
 LOGGING = {
     'version': 1,
