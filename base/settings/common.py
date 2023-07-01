@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 import os
 from pathlib import Path
 
-from corsheaders.defaults import default_methods
+from corsheaders.defaults import default_methods, default_headers
 
 from .utils import get_secret_key, get_csrf_trusted_origins
 
@@ -170,6 +170,10 @@ CORS_ORIGIN_WHITELIST = CSRF_TRUSTED_ORIGINS
 
 CORS_ALLOW_METHODS = (
     *default_methods,
+)
+
+CORS_ALLOW_HEADERS = (
+    *default_headers,
 )
 
 LOGGING = {
