@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 import os
 from pathlib import Path
 
+from corsheaders.defaults import default_methods, default_headers
+
 from .utils import get_secret_key, get_csrf_trusted_origins
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -58,6 +60,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
@@ -166,6 +169,14 @@ AUTH_USER_MODEL = 'accounts.User'
 CSRF_TRUSTED_ORIGINS = get_csrf_trusted_origins()
 CORS_ORIGIN_WHITELIST = CSRF_TRUSTED_ORIGINS
 
+CORS_ALLOW_METHODS = (
+    *default_methods,
+)
+
+CORS_ALLOW_HEADERS = (
+    *default_headers,
+)
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -244,6 +255,8 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 20,
 }
 
 DEFAULT_FROM_EMAIL = 'no-reply@subshorts.com'
