@@ -262,6 +262,7 @@ REST_FRAMEWORK = {
 }
 
 SITE_NAME = os.environ.get('SITE_NAME', 'Subshorts')
+SITE_DOMAIN_NAME = os.environ.get('SITE_DOMAIN_NAME', 'subshorts.com')
 
 DEFAULT_FROM_EMAIL = 'no-reply@subshorts.com'
 EMAIL_HOST = 'email-smtp.us-east-1.amazonaws.com'
