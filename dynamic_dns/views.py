@@ -7,7 +7,7 @@ from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import ListView, FormView, DeleteView
 
-from base.views import get_remote_ip_address
+from base.templates import context_processors
 from records.models import Record
 from records.providers import get_record_provider
 from subdomains.models import Subdomain
@@ -25,7 +25,7 @@ def dynamic_dns(request: HttpRequest, token: str) -> HttpResponse:
     if request.method == 'GET':
         return HttpResponse(record.target)
     elif request.method == 'POST':
-        remote_ip_address = get_remote_ip_address(request)
+        remote_ip_address = context_processors.remote_ip_address(request).get('remote_ip_address')
         try:
             ip_address = ipaddress.ip_address(remote_ip_address)
             if not ((type(ip_address) == ipaddress.IPv4Address) and (record.type == 'A')) or not (

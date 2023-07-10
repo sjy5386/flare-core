@@ -6,7 +6,6 @@ from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import ListView, FormView, DetailView
 
-from base.views import get_remote_ip_address
 from subdomains.models import Subdomain
 from .exceptions import RecordNotFoundError
 from .forms import ZoneImportForm, RecordForm
@@ -59,7 +58,6 @@ class RecordCreateView(FormView):
         context = super(RecordCreateView, self).get_context_data(**kwargs)
         context.update({
             'subdomain': self.subdomain,
-            'ip_address': get_remote_ip_address(self.request),
         })
         return context
 
@@ -139,7 +137,6 @@ class RecordUpdateView(FormView):
         context.update({
             'subdomain': self.subdomain,
             'record': self.record,
-            'ip_address': get_remote_ip_address(self.request),
         })
         return context
 
