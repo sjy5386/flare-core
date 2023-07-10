@@ -20,10 +20,3 @@ def index(request: HttpRequest):
             'shorturls': ShortUrl.objects.filter(user=request.user),
         })
     return render(request, 'index.html', context)
-
-
-def get_remote_ip_address(request: HttpRequest):
-    if 'HTTP_X_FORWARDED_FOR' in request.META:
-        return request.META['HTTP_X_FORWARDED_FOR'].split(', ')[0]
-    else:
-        return request.META['REMOTE_ADDR']
