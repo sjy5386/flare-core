@@ -259,6 +259,8 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 20,
 }
 
+SITE_NAME = os.environ.get('SITE_NAME', 'Subshorts')
+
 DEFAULT_FROM_EMAIL = 'no-reply@subshorts.com'
 EMAIL_HOST = 'email-smtp.us-east-1.amazonaws.com'
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
