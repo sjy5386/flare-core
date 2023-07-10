@@ -92,6 +92,7 @@ TEMPLATES = [
                 'social_django.context_processors.login_redirect',
 
                 'base.templates.context_processors.site_name',
+                'base.templates.context_processors.remote_ip_address',
             ],
         },
     },
