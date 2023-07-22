@@ -90,6 +90,9 @@ TEMPLATES = [
 
                 'social_django.context_processors.backends',
                 'social_django.context_processors.login_redirect',
+
+                'base.templates.context_processors.site_name',
+                'base.templates.context_processors.remote_ip_address',
             ],
         },
     },
@@ -258,6 +261,9 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 20,
 }
+
+SITE_NAME = os.environ.get('SITE_NAME', 'Subshorts')
+SITE_DOMAIN_NAME = os.environ.get('SITE_DOMAIN_NAME', 'subshorts.com')
 
 DEFAULT_FROM_EMAIL = 'no-reply@subshorts.com'
 EMAIL_HOST = 'email-smtp.us-east-1.amazonaws.com'

@@ -10,6 +10,7 @@ from rest_framework.response import Response
 
 import records.providers
 import shorturls.providers
+from base.settings.common import SITE_NAME
 from contacts.models import Contact
 from domains.models import Domain
 from records.models import Record
@@ -19,7 +20,7 @@ from .serializers import ContactSerializer, DomainSerializer, ShortUrlSerializer
 
 schema_view = get_schema_view(
     openapi.Info(
-        title='Subshorts API',
+        title=f'{SITE_NAME} API',
         default_version='v1',
     ),
     public=True,
