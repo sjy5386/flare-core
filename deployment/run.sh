@@ -1,7 +1,6 @@
 #!/bin/bash
 
 bash ./deployment/build.sh
-
-python manage.py test
+bash ./deployment/test.sh
 
 gunicorn --bind=0.0.0.0:8000 base.wsgi
