@@ -1,8 +1,6 @@
 #!/bin/bash
 
-pip install -r requirements.txt
-
-python manage.py collectstatic
+bash ./deployment/build.sh
 
 python manage.py test
 
