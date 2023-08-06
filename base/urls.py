@@ -30,6 +30,7 @@ urlpatterns = [
     path('short_urls/', include('shorturls.urls')),
     path('subdomains/', include('subdomains.urls')),
     path('subdomains/<int:subdomain_id>/records/', include('records.urls')),
+    path('what-is-my-ip-address/', views.what_is_my_ip_address, name='what_is_my_ip_address'),
 
     path('', include('shorturls.url_shortener.urls')),
 ]
