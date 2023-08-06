@@ -9,7 +9,8 @@ from subdomains.forms import SubdomainSearchLiteForm
 from subdomains.models import Subdomain
 
 
-def index(request: HttpRequest):
+@require_GET
+def index(request: HttpRequest) -> HttpResponse:
     context = {
         'subdomain_form': SubdomainSearchLiteForm(),
         'short_url_form': ShortUrlLiteForm(),
