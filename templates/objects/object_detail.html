@@ -1,4 +1,5 @@
 {% extends 'common/base.html' %}
+{% load django_bootstrap5 %}
 {% block content %}
     <h3>{{ title }}</h3>
     <table class="table">
@@ -9,4 +10,7 @@
             </tr>
         {% endfor %}
     </table>
+    {% bootstrap_button content="OK" button_type="link" button_class="btn-primary" href=".." %}
+    {% bootstrap_button content="Update" button_type="link" button_class="btn-secondary" href="./update" %}
+    {% bootstrap_button content="Delete" button_type="link" button_class="btn-danger" href="./delete" %}
 {% endblock %}

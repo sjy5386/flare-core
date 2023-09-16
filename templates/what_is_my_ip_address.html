@@ -2,4 +2,8 @@
 {% block content %}
     <h3>What is my IP address?</h3>
     <p>My IP address is <strong>{{ remote_ip_address }}</strong>.</p>
+    <ul>
+        <li><a href="https://iplookup.flagfox.net/?ip={{ remote_ip_address }}" target="_blank">Lookup</a></li>
+        <li><a href="https://speed.cloudflare.com" target="_blank">Internet Speed Test</a></li>
+    </ul>
 {% endblock %}
