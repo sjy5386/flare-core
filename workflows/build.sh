@@ -5,6 +5,6 @@ pip install -r requirements.txt
 
 if [ -d ./out/static ]
 then
-  rm -rf ./out/static
+  rm -rf ./out/static/*
 fi
 python manage.py collectstatic
