@@ -4,7 +4,7 @@ my.cnf
 
 */migrations/*
 !*/migrations/__init__.py
-static/
+out/
 logs/
 
 # Created by https://www.toptal.com/developers/gitignore/api/pycharm,python,django
