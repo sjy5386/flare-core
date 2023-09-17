@@ -15,7 +15,7 @@ services:
     volumes:
       - ./docker/nginx/sites-enabled/web.conf:/etc/nginx/conf.d/web.conf
       - ./docker/nginx/ssl:/root/ssl
-      - ./static:/app/static
+      - ./docker/nginx/static:/home/nginx/static
     ports:
       - 80:80
       - 443:443
