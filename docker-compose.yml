@@ -9,15 +9,3 @@ services:
     extra_hosts:
       - host.docker.internal:host-gateway
     entrypoint: [ "/bin/bash", "./workflows/run.sh" ]
-
-  web:
-    image: nginx
-    volumes:
-      - ./docker/nginx/sites-enabled/subshorts.com.conf:/etc/nginx/conf.d/subshorts.com.conf
-      - ./docker/nginx/ssl:/root/ssl
-      - ./out/static:/home/nginx/static
-    ports:
-      - 80:80
-      - 443:443
-    extra_hosts:
-      - host.docker.internal:host-gateway
