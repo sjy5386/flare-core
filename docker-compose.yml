@@ -13,7 +13,7 @@ services:
   web:
     image: nginx
     volumes:
-      - ./deployment/web.conf:/etc/nginx/conf.d/web.conf
+      - ./docker/nginx/sites-enabled/web.conf:/etc/nginx/conf.d/web.conf
       - ~/ssl:/ssl
       - ./static:/app/static
     ports:
