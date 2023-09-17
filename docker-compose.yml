@@ -8,16 +8,4 @@ services:
       - 8000:8000
     extra_hosts:
       - host.docker.internal:host-gateway
-    entrypoint: [ "/bin/bash", "./deployment/run.sh" ]
-
-  web:
-    image: nginx
-    volumes:
-      - ./deployment/web.conf:/etc/nginx/conf.d/web.conf
-      - ~/ssl:/ssl
-      - ./static:/app/static
-    ports:
-      - 80:80
-      - 443:443
-    extra_hosts:
-      - host.docker.internal:host-gateway
+    entrypoint: [ "/bin/bash", "./workflows/run.sh" ]

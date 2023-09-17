@@ -24,7 +24,7 @@ def get_csrf_trusted_origins():
         f = open(filename, 'r')
         lines = f.readlines()
         f.close()
-        return tuple(lines)
+        return tuple(map(lambda x: x.strip(), lines))
     return (
         'https://subshorts.com',
         'https://admin.subshorts.com',

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-bash ./deployment/build.sh
-bash ./deployment/test.sh
+bash ./workflows/build.sh
+bash ./workflows/test.sh
 
 gunicorn --bind=0.0.0.0:8000 base.wsgi

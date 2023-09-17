@@ -74,6 +74,28 @@ python manage.py migrate
 python manage.py createsuperuser
 ```
 
+### Configure NGINX
+
+1. Copy NGINX configuration file.
+
+```shell
+cp ./docker/nginx/sites-enabled/subshorts.conf <your-nginx-sites-enabled-directory>
+```
+
+2. Edit your NGINX configuration file.
+
+```shell
+nano <your-nginx-sites-enabled-directory>/subshorts.conf
+```
+
+* You can get static files from `./out/static`.
+
+3. Reload NGINX.
+
+```shell
+nginx -s reload
+```
+
 ## Usage
 
 ### Subdomains
