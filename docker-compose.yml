@@ -15,7 +15,7 @@ services:
     volumes:
       - ./docker/nginx/sites-enabled/subshorts.com.conf:/etc/nginx/conf.d/subshorts.com.conf
       - ./docker/nginx/ssl:/root/ssl
-      - ./docker/nginx/static:/home/nginx/static
+      - ./out/static:/home/nginx/static
     ports:
       - 80:80
       - 443:443
