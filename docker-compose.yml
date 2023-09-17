@@ -13,7 +13,7 @@ services:
   web:
     image: nginx
     volumes:
-      - ./docker/nginx/sites-enabled/web.conf:/etc/nginx/conf.d/web.conf
+      - ./docker/nginx/sites-enabled/subshorts.com.conf:/etc/nginx/conf.d/subshorts.com.conf
       - ./docker/nginx/ssl:/root/ssl
       - ./docker/nginx/static:/home/nginx/static
     ports:
