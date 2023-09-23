@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/4.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
+import datetime
 import os
 from pathlib import Path
 
@@ -207,7 +208,7 @@ LOGGING = {
             'level': 'INFO',
             'filters': (),
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': BASE_DIR / 'logs/latest.log',
+            'filename': BASE_DIR / f'logs/{datetime.date.today()}.log',
             'maxBytes': 1024 * 1024 * 5,
             'backupCount': 5,
             'formatter': 'logback',
