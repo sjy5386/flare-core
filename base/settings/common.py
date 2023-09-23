@@ -69,8 +69,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
     'social_django.middleware.SocialAuthExceptionMiddleware',
+    'base.middlewares.LoggingMiddleware',
 ]
 
 ROOT_URLCONF = 'base.urls'
@@ -230,6 +230,11 @@ LOGGING = {
             'handlers': ['mail_admins'],
             'level': 'ERROR',
             'propagate': False,
+        },
+        'LoggingMiddleware': {
+            'handlers': ('console', 'file',),
+            'level': 'DEBUG',
+            'propagate': True,
         },
     }
 }
