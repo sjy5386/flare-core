@@ -1,4 +1,6 @@
 import logging
+import threading
+import uuid
 
 from django.http import HttpRequest, HttpResponse
 
@@ -9,6 +11,7 @@ class LoggingMiddleware:
         self.logger = logging.getLogger(self.__class__.__name__)
 
     def __call__(self, request: HttpRequest) -> HttpResponse:
+        threading.current_thread().name = uuid.uuid4()
         self.logger.info(f'{request.META.get("REMOTE_ADDR")} {request.META.get("HTTP_X_FORWARDED_FOR")} {request.user}')
         request_body = str(request.body, 'utf-8').replace('\n', '')
         self.logger.info(f'Request: {request.method} {request.path} {request.headers} {request_body}')
