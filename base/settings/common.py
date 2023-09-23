@@ -203,7 +203,7 @@ LOGGING = {
             'level': 'INFO',
             'filters': (),
             'class': 'logging.StreamHandler',
-            'formatter': 'standard',
+            'formatter': 'verbose',
         },
         'mail_admins': {
             'level': 'ERROR',
@@ -217,7 +217,7 @@ LOGGING = {
             'filename': BASE_DIR / 'logs/latest.log',
             'maxBytes': 1024 * 1024 * 5,
             'backupCount': 5,
-            'formatter': 'standard',
+            'formatter': 'verbose',
             'encoding': 'utf-8',
         },
     },
