@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/4.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
+import datetime
 import os
 from pathlib import Path
 
@@ -69,8 +70,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
     'social_django.middleware.SocialAuthExceptionMiddleware',
+    'base.middlewares.LoggingMiddleware',
 ]
 
 ROOT_URLCONF = 'base.urls'
@@ -184,16 +185,9 @@ LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'formatters': {
-        'verbose': {
-            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+        'logback': {
+            'format': '{asctime} {levelname} {process:d} --- [{threadName}] {name}: {message}',
             'style': '{',
-        },
-        'simple': {
-            'format': '{levelname} {message}',
-            'style': '{',
-        },
-        'standard': {
-            'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
         },
     },
     'filters': {
@@ -203,7 +197,7 @@ LOGGING = {
             'level': 'INFO',
             'filters': (),
             'class': 'logging.StreamHandler',
-            'formatter': 'standard',
+            'formatter': 'logback',
         },
         'mail_admins': {
             'level': 'ERROR',
@@ -214,10 +208,10 @@ LOGGING = {
             'level': 'INFO',
             'filters': (),
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': BASE_DIR / 'logs/latest.log',
+            'filename': BASE_DIR / f'logs/{datetime.date.today()}.log',
             'maxBytes': 1024 * 1024 * 5,
             'backupCount': 5,
-            'formatter': 'standard',
+            'formatter': 'logback',
             'encoding': 'utf-8',
         },
     },
@@ -230,6 +224,11 @@ LOGGING = {
             'handlers': ['mail_admins'],
             'level': 'ERROR',
             'propagate': False,
+        },
+        'LoggingMiddleware': {
+            'handlers': ('console', 'file',),
+            'level': 'DEBUG',
+            'propagate': True,
         },
     }
 }
