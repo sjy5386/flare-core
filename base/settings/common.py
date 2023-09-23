@@ -195,6 +195,10 @@ LOGGING = {
         'standard': {
             'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
         },
+        'logback': {
+            'format': '{asctime} {levelname} {process:d} --- [{threadName}] {name}: {message}',
+            'style': '{',
+        },
     },
     'filters': {
     },
@@ -203,7 +207,7 @@ LOGGING = {
             'level': 'INFO',
             'filters': (),
             'class': 'logging.StreamHandler',
-            'formatter': 'verbose',
+            'formatter': 'logback',
         },
         'mail_admins': {
             'level': 'ERROR',
@@ -217,7 +221,7 @@ LOGGING = {
             'filename': BASE_DIR / 'logs/latest.log',
             'maxBytes': 1024 * 1024 * 5,
             'backupCount': 5,
-            'formatter': 'verbose',
+            'formatter': 'logback',
             'encoding': 'utf-8',
         },
     },
