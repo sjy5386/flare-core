@@ -23,6 +23,6 @@ def main():
 if __name__ == '__main__':
     if not os.path.isdir('logs'):
         os.makedirs('logs')
-    if 'test' not in sys.argv:
+    if os.path.isfile('.env') and 'test' not in sys.argv:
         dotenv.read_dotenv()
     main()
