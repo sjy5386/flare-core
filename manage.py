@@ -21,5 +21,6 @@ def main():
 
 
 if __name__ == '__main__':
-    dotenv.read_dotenv()
+    if 'test' not in sys.argv:
+        dotenv.read_dotenv()
     main()
