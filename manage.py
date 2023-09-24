@@ -21,5 +21,8 @@ def main():
 
 
 if __name__ == '__main__':
-    dotenv.read_dotenv()
+    if not os.path.isdir('logs'):
+        os.makedirs('logs')
+    if os.path.isfile('.env') and 'test' not in sys.argv:
+        dotenv.read_dotenv()
     main()
