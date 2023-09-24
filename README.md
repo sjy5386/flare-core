@@ -79,13 +79,13 @@ python manage.py createsuperuser
 1. Copy NGINX configuration file.
 
 ```shell
-cp ./docker/nginx/sites-enabled/subshorts.conf <your-nginx-sites-enabled-directory>
+cp ./docker/nginx/sites-enabled/flare.conf <your-nginx-sites-enabled-directory>
 ```
 
 2. Edit your NGINX configuration file.
 
 ```shell
-nano <your-nginx-sites-enabled-directory>/subshorts.conf
+nano <your-nginx-sites-enabled-directory>/flare.conf
 ```
 
 * You can get static files from `./out/static`.
