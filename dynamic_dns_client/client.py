@@ -2,7 +2,7 @@ import requests
 
 
 class DynamicDnsClient:
-    def __init__(self, token: str, host: str = 'https://subshorts.com', endpoint: str = 'dynamic-dns'):
+    def __init__(self, token: str, host: str, endpoint: str = 'dynamic-dns'):
         self.token = token
         self.host = host
         self.endpoint = endpoint

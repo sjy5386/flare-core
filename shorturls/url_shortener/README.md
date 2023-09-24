@@ -1,1 +1,1 @@
-# Subshorts URL Shortener
+# Flare URL Shortener
