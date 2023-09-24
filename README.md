@@ -16,7 +16,7 @@ You must have your domain to run this project.
 ### Clone this project
 
 ```shell
-git clone https://github.com/sjy5386/subshorts
+git clone https://github.com/sjy5386/flare-core
 ```
 
 ### Set environment
