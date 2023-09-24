@@ -261,8 +261,8 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 20,
 }
 
-SITE_NAME = os.environ.get('SITE_NAME', 'Subshorts')
-SITE_DOMAIN_NAME = os.environ.get('SITE_DOMAIN_NAME', 'subshorts.com')
+SITE_NAME = os.environ.get('SITE_NAME', 'Flare')
+SITE_DOMAIN_NAME = os.environ.get('SITE_DOMAIN_NAME', 'example.com')
 
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')
 EMAIL_HOST = os.environ.get('EMAIL_HOST')
