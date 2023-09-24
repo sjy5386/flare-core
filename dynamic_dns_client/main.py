@@ -14,5 +14,5 @@ def main(args: argparse.Namespace) -> None:
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('token', type=str, help='Your authentication token.')
-    parser.add_argument('--host', type=str, default='https://subshorts.com')
+    parser.add_argument('--host', type=str)
     main(parser.parse_args())
