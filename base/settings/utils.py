@@ -26,9 +26,5 @@ def get_csrf_trusted_origins():
         f.close()
         return tuple(map(lambda x: x.strip(), lines))
     return (
-        'https://subshorts.com',
-        'https://admin.subshorts.com',
-        'https://test.subshorts.com',
-        'https://local.subshorts.com',
         'http://localhost:8000',
     )
