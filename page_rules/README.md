@@ -1,6 +1,6 @@
-# Subshorts Page Rules
+# Flare Page Rules
 
-**Page Rules** for **Subshorts** subdomains.
+**Page Rules** for **Flare** subdomains.
 
 ## Available Page Rules
 

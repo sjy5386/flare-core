@@ -1,4 +1,4 @@
-# Subshorts
+# Flare Core
 
 Free **sub**domains and **short** URLs
 

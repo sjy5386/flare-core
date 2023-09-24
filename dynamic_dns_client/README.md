@@ -1,4 +1,4 @@
-# Subshorts Dynamic DNS Client
+# Flare Dynamic DNS Client
 
 ## Usage
 

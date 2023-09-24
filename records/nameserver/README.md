@@ -1,1 +1,1 @@
-# Subshorts Nameserver
+# Flare Nameserver
