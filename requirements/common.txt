@@ -1,6 +1,6 @@
 Django==4.2.3
 django-bootstrap5==23.1
-django-cors-headers==4.0.0
+django-cors-headers==4.2.0
 django-dotenv==1.4.2
 djangorestframework==3.14.0
 djangorestframework-simplejwt==5.2.2
