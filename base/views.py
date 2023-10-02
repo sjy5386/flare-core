@@ -2,6 +2,7 @@ import os
 
 from django.http import HttpRequest, HttpResponse, Http404
 from django.shortcuts import render
+from django.views.decorators.cache import cache_page
 from django.views.decorators.http import require_GET
 
 from .settings.common import BASE_DIR
@@ -27,6 +28,7 @@ def index(request: HttpRequest) -> HttpResponse:
     return render(request, 'index.html', context)
 
 
+@cache_page(86400)
 @require_GET
 def robots_txt(request: HttpRequest) -> HttpResponse:
     filename = BASE_DIR / 'robots.txt'
