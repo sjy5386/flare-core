@@ -8,5 +8,6 @@ urlpatterns = [
     path('profile/update/', views.ProfileUpdateView.as_view(), name='profile_update'),
     path('register/', views.RegisterView.as_view(), name='register'),
     path('unregister/', views.UnregisterView.as_view(), name='unregister'),
+    path('email/validation/sent/', views.email_validation_sent, name='email_validation_sent'),
     path('oauth/', include('social_django.urls', namespace='social')),
 ]
