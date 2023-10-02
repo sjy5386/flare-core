@@ -1,7 +1,10 @@
-from django.http import HttpRequest, HttpResponse
+import os
+
+from django.http import HttpRequest, HttpResponse, Http404
 from django.shortcuts import render
 from django.views.decorators.http import require_GET
 
+from .settings.common import BASE_DIR
 from contacts.models import Contact
 from shorturls.forms import ShortUrlLiteForm
 from shorturls.models import ShortUrl
@@ -22,6 +25,17 @@ def index(request: HttpRequest) -> HttpResponse:
             'shorturls': ShortUrl.objects.filter(user=request.user),
         })
     return render(request, 'index.html', context)
+
+
+@require_GET
+def robots_txt(request: HttpRequest) -> HttpResponse:
+    filename = BASE_DIR / 'robots.txt'
+    if not os.path.isfile(filename):
+        raise Http404('The robot.txt file cannot be found.')
+    f = open(filename, 'r')
+    content = f.read()
+    f.close()
+    return HttpResponse(content, content_type='text/plain')
 
 
 @require_GET

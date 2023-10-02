@@ -25,6 +25,7 @@ ADMIN_URL_PREFIX = os.environ.get('ADMIN_URL_PREFIX', secrets.token_urlsafe(4))
 
 urlpatterns = [
     path('', views.index, name='index'),
+    path('robots.txt', views.robots_txt, name='robots.txt'),
     path('accounts/', include('accounts.urls')),
     path(f'{ADMIN_URL_PREFIX}/admin/', admin.site.urls),
     path('api/', include('apis.urls')),
