@@ -1,5 +1,7 @@
 from django.contrib.auth import get_user_model, login
 from django.contrib.auth.decorators import login_required
+from django.http import HttpRequest, HttpResponse
+from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import TemplateView, FormView
@@ -77,3 +79,9 @@ class UnregisterView(FormView):
         self.request.user.is_active = False
         self.request.user.save()
         return super(UnregisterView, self).form_valid(form)
+
+
+def email_validation_sent(request: HttpRequest) -> HttpResponse:
+    return render(request, 'accounts/email_validation_sent.html', {
+        'email': request.session.get('email_validation_address'),
+    })

@@ -240,6 +240,7 @@ AUTHENTICATION_BACKENDS = (
 )
 
 SOCIAL_AUTH_EMAIL_VALIDATION_FUNCTION = 'accounts.email.send_validation'
+SOCIAL_AUTH_EMAIL_VALIDATION_URL = '/accounts/email/validation/sent'
 
 SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.social_details',
