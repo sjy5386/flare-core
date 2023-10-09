@@ -70,7 +70,8 @@ class VultrRecordProvider(BaseRecordProvider):
     def from_vultr_record(vultr_record: dict[str, Any]) -> dict[str, Any]:
         from ..models import Record
         service, protocol, name = Record.split_name(vultr_record.get('name'))
-        priority, weight, port, target = Record.split_data('0 ' + vultr_record.get('data'))
+        _, weight, port, target = Record.split_data('0 ' + vultr_record.get('data'))
+        priority = vultr_record.get('priority', -1)
         return {
             'provider_id': str(vultr_record.get('id')),
             'name': name,
@@ -79,7 +80,7 @@ class VultrRecordProvider(BaseRecordProvider):
             'service': service,
             'protocol': protocol,
             'target': target,
-            'priority': vultr_record.get('priority'),
+            'priority': priority if priority >= 0 else None,
             'weight': weight,
             'port': port,
         }
