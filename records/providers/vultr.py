@@ -89,6 +89,8 @@ class VultrRecordProvider(BaseRecordProvider):
     def to_vultr_record(record: dict[str, Any]) -> dict[str, Any]:
         from ..models import Record
         name = Record.join_name(record.get('service'), record.get('protocol'), record.get('name'))
+        if record.get('type') in ('NS', 'CNAME', 'MX', 'SRV',) and record.get('target').endswith('.'):
+            record['target'] = record.get('target')[:-1]
         data = Record.join_data(None, record.get('weight'), record.get('port'), record.get('target'))
         return {
             'name': name,
