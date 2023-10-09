@@ -24,7 +24,7 @@ class VultrRecordProvider(BaseRecordProvider):
             response.raise_for_status()
         except requests.HTTPError:
             raise RecordProviderError(response.json())
-        return list(filter(lambda x: x.get('name').endswith(subdomain_name + '.' + domain.name),
+        return list(filter(lambda x: x.get('name').endswith(subdomain_name),
                            map(self.from_vultr_record, response.json().get('records'))))
 
     def create_record(self, subdomain_name: str, domain: Domain, **kwargs) -> dict[str, Any]:
