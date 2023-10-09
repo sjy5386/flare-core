@@ -1,3 +1,4 @@
+import os
 from enum import Enum
 
 from domains.models import Domain
@@ -16,8 +17,8 @@ class RecordProvider(Enum):
         self.provider_class = provider_class
 
 
-PROVIDER_CLASS = RecordProvider.DIGITALOCEAN.provider_class
+DEFAULT_RECORD_PROVIDER = os.environ.get('DEFAULT_RECORD_PROVIDER') or RecordProvider.DIGITALOCEAN.name
 
 
 def get_record_provider(domain: Domain) -> BaseRecordProvider:
-    return PROVIDER_CLASS()
+    return RecordProvider[DEFAULT_RECORD_PROVIDER].provider_class()
