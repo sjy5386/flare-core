@@ -1,8 +1,20 @@
+from enum import Enum
+
 from domains.models import Domain
 from .base import BaseShortUrlProvider
+from .bitly import BitlyShortUrlProvider
 from .firebase import FirebaseDynamicLinksShortUrlProvider
 
-PROVIDER_CLASS = FirebaseDynamicLinksShortUrlProvider
+
+class ShortUrlProvider(Enum):
+    BITLY = (BitlyShortUrlProvider,)
+    FIREBASE_DYNAMIC_LINKS = (FirebaseDynamicLinksShortUrlProvider,)
+
+    def __init__(self, provider_class: type[BaseShortUrlProvider]):
+        self.provider_class = provider_class
+
+
+PROVIDER_CLASS = ShortUrlProvider.FIREBASE_DYNAMIC_LINKS.provider_class
 
 
 def get_short_url_provider(domain: Domain | None) -> BaseShortUrlProvider:
