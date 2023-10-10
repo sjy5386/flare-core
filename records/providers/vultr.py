@@ -24,7 +24,7 @@ class VultrRecordProvider(BaseRecordProvider):
             response.raise_for_status()
         except requests.HTTPError:
             raise RecordProviderError(response.json())
-        return list(filter(lambda x: x.get('name').endswith(subdomain_name + '.' + domain.name),
+        return list(filter(lambda x: x.get('name').endswith(subdomain_name),
                            map(self.from_vultr_record, response.json().get('records'))))
 
     def create_record(self, subdomain_name: str, domain: Domain, **kwargs) -> dict[str, Any]:
@@ -70,7 +70,8 @@ class VultrRecordProvider(BaseRecordProvider):
     def from_vultr_record(vultr_record: dict[str, Any]) -> dict[str, Any]:
         from ..models import Record
         service, protocol, name = Record.split_name(vultr_record.get('name'))
-        priority, weight, port, target = Record.split_data('priority ' + vultr_record.get('data'))
+        _, weight, port, target = Record.split_data('0 ' + vultr_record.get('data'))
+        priority = vultr_record.get('priority', -1)
         return {
             'provider_id': str(vultr_record.get('id')),
             'name': name,
@@ -79,7 +80,7 @@ class VultrRecordProvider(BaseRecordProvider):
             'service': service,
             'protocol': protocol,
             'target': target,
-            'priority': vultr_record.get('priority'),
+            'priority': priority if priority >= 0 else None,
             'weight': weight,
             'port': port,
         }
@@ -88,6 +89,8 @@ class VultrRecordProvider(BaseRecordProvider):
     def to_vultr_record(record: dict[str, Any]) -> dict[str, Any]:
         from ..models import Record
         name = Record.join_name(record.get('service'), record.get('protocol'), record.get('name'))
+        if record.get('type') in ('NS', 'CNAME', 'MX', 'SRV',) and record.get('target').endswith('.'):
+            record['target'] = record.get('target')[:-1]
         data = Record.join_data(None, record.get('weight'), record.get('port'), record.get('target'))
         return {
             'name': name,
