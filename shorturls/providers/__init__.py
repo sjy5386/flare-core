@@ -18,5 +18,7 @@ class ShortUrlProvider(Enum):
 DEFAULT_SHORT_URL_PROVIDER = os.environ.get('DEFAULT_SHORT_URL_PROVIDER') or ShortUrlProvider.FIREBASE_DYNAMIC_LINKS.name
 
 
-def get_short_url_provider(domain: Domain | None) -> BaseShortUrlProvider:
-    return ShortUrlProvider[DEFAULT_SHORT_URL_PROVIDER].provider_class()
+def get_short_url_provider(domain: Domain | None) -> BaseShortUrlProvider | None:
+    if domain is None:
+        return None
+    return ShortUrlProvider[domain.short_url_provider].provider_class()
