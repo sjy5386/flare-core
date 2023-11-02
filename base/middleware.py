@@ -1,5 +1,6 @@
 import logging
 import threading
+import traceback
 import uuid
 
 from django.http import HttpRequest, HttpResponse
@@ -19,3 +20,7 @@ class LoggingMiddleware:
         response_body = str(response.content, 'utf-8').replace('\n', '')
         self.logger.info(f'Response: {response.status_code} {response.headers} {response_body}')
         return response
+
+    def process_exception(self, request: HttpRequest, exception: Exception) -> HttpResponse | None:
+        self.logger.error(''.join(traceback.format_exception(exception)))
+        return
