@@ -217,16 +217,19 @@ LOGGING = {
     },
     'loggers': {
         'django': {
-            'handlers': ['console', 'file'],
             'propagate': True,
         },
         'django.request': {
-            'handlers': ['mail_admins'],
+            'handlers': ('mail_admins',),
             'level': 'ERROR',
             'propagate': False,
         },
-        'LoggingMiddleware': {
+        'root': {
             'handlers': ('console', 'file',),
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'LoggingMiddleware': {
             'level': 'DEBUG',
             'propagate': True,
         },
