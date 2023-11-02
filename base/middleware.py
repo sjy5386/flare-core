@@ -13,12 +13,19 @@ class LoggingMiddleware:
 
     def __call__(self, request: HttpRequest) -> HttpResponse:
         threading.current_thread().name = uuid.uuid4()
-        self.logger.info(f'{request.META.get("REMOTE_ADDR")} {request.META.get("HTTP_X_FORWARDED_FOR")} {request.user}')
+        remote_ip_address = list(map(lambda x: x.strip(),
+                                     request.META.get('HTTP_X_FORWARDED_FOR',
+                                                      request.META.get('REMOTE_ADDR')).split(',')))
+        self.logger.info(f'Request: {remote_ip_address} {request.method} {request.path}')
+        self.logger.info(f'Request Headers: {request.headers}')
         request_body = str(request.body, 'utf-8').replace('\n', '')
-        self.logger.info(f'Request: {request.method} {request.path} {request.headers} {request_body}')
+        self.logger.info(f'Request Body: {request_body}')
         response: HttpResponse = self.get_response(request)
+        self.logger.info(f'User: {request.user}')
+        self.logger.info(f'Response: {response.status_code}')
+        self.logger.info(f'Response Headers: {response.headers}')
         response_body = str(response.content, 'utf-8').replace('\n', '')
-        self.logger.info(f'Response: {response.status_code} {response.headers} {response_body}')
+        self.logger.info(f'Response Body: {response_body}')
         return response
 
     def process_exception(self, request: HttpRequest, exception: Exception) -> HttpResponse | None:
