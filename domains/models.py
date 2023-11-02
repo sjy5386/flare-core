@@ -11,6 +11,7 @@ class Domain(models.Model):
     is_active = models.BooleanField(default=True)
 
     user = models.ForeignKey(AUTH_USER_MODEL, on_delete=models.RESTRICT)  # Domain registrant or administrator
+    is_public = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
