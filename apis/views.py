@@ -37,7 +37,7 @@ class ContactViewSet(viewsets.ModelViewSet):
 
 
 class DomainViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Domain.objects.all()
+    queryset = Domain.objects.filter(is_active=True, is_public=True)
     serializer_class = DomainSerializer
     permission_classes = [permissions.IsAuthenticated]
 

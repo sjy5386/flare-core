@@ -4,4 +4,4 @@ from .models import Domain
 
 
 class DomainListView(ListView):
-    model = Domain
+    queryset = Domain.objects.filter(is_active=True, is_public=True)
