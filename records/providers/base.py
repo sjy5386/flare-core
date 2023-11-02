@@ -4,7 +4,7 @@ from typing import Any
 from domains.models import Domain
 
 
-class BaseRecordProvider(metaclass=ABCMeta):
+class BaseDnsRecordProvider(metaclass=ABCMeta):
     @abstractmethod
     def list_records(self, subdomain_name: str, domain: Domain) -> list[dict[str, Any]]:
         pass

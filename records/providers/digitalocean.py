@@ -4,11 +4,11 @@ from typing import Any
 import requests
 
 from domains.models import Domain
-from .base import BaseRecordProvider
+from .base import BaseDnsRecordProvider
 from ..exceptions import RecordProviderError
 
 
-class DigitalOceanRecordProvider(BaseRecordProvider):
+class DigitalOceanDnsRecordProvider(BaseDnsRecordProvider):
     host = 'https://api.digitalocean.com'
     token = os.environ.get('DIGITALOCEAN_ACCESS_TOKEN')
     headers = {
