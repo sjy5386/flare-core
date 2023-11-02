@@ -2,6 +2,7 @@ from django.db import models
 
 from base.settings.common import AUTH_USER_MODEL
 from records.providers import DnsRecordProvider
+from shorturls.providers import ShortUrlProvider
 
 
 class Domain(models.Model):
@@ -15,6 +16,7 @@ class Domain(models.Model):
     is_public = models.BooleanField(default=False)
 
     dns_record_provider = models.CharField(max_length=63, choices=[(x.name, x) for x in DnsRecordProvider])
+    short_url_provider = models.CharField(max_length=63, choices=[(x.name, x) for x in ShortUrlProvider])
 
     def __str__(self):
         return self.name
