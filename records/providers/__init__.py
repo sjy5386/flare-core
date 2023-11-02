@@ -21,4 +21,4 @@ DEFAULT_DNS_RECORD_PROVIDER = os.environ.get('DEFAULT_DNS_RECORD_PROVIDER') or D
 
 
 def get_dns_record_provider(domain: Domain) -> BaseDnsRecordProvider:
-    return DnsRecordProvider[DEFAULT_DNS_RECORD_PROVIDER].provider_class()
+    return DnsRecordProvider[domain.dns_record_provider].provider_class()
