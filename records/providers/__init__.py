@@ -20,5 +20,5 @@ class DnsRecordProvider(Enum):
 DEFAULT_RECORD_PROVIDER = os.environ.get('DEFAULT_RECORD_PROVIDER') or DnsRecordProvider.DIGITALOCEAN.name
 
 
-def get_record_provider(domain: Domain) -> BaseDnsRecordProvider:
+def get_dns_record_provider(domain: Domain) -> BaseDnsRecordProvider:
     return DnsRecordProvider[DEFAULT_RECORD_PROVIDER].provider_class()
