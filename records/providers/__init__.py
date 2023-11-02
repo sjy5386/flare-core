@@ -8,7 +8,7 @@ from .linode import LinodeDnsRecordProvider
 from .vultr import VultrDnsRecordProvider
 
 
-class RecordProvider(Enum):
+class DnsRecordProvider(Enum):
     DIGITALOCEAN = (DigitalOceanDnsRecordProvider,)
     LINODE = (LinodeDnsRecordProvider,)
     VULTR = (VultrDnsRecordProvider,)
@@ -17,8 +17,8 @@ class RecordProvider(Enum):
         self.provider_class = provider_class
 
 
-DEFAULT_RECORD_PROVIDER = os.environ.get('DEFAULT_RECORD_PROVIDER') or RecordProvider.DIGITALOCEAN.name
+DEFAULT_RECORD_PROVIDER = os.environ.get('DEFAULT_RECORD_PROVIDER') or DnsRecordProvider.DIGITALOCEAN.name
 
 
 def get_record_provider(domain: Domain) -> BaseDnsRecordProvider:
-    return RecordProvider[DEFAULT_RECORD_PROVIDER].provider_class()
+    return DnsRecordProvider[DEFAULT_RECORD_PROVIDER].provider_class()
