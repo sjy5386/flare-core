@@ -15,7 +15,7 @@ from pathlib import Path
 
 from corsheaders.defaults import default_methods, default_headers
 
-from .utils import get_secret_key, get_csrf_trusted_origins
+from .utils import get_secret_key, get_allowed_hosts, get_csrf_trusted_origins
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -29,7 +29,7 @@ SECRET_KEY = get_secret_key()
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = get_allowed_hosts()
 
 # Application definition
 
