@@ -7,7 +7,7 @@ from django.db import models
 from domains.models import Domain
 from subdomains.models import Subdomain
 from .exceptions import RecordBadRequestError, RecordNotFoundError, RecordProviderError
-from .providers.base import BaseRecordProvider
+from .providers.base import BaseDnsRecordProvider
 
 
 class Record(models.Model):
@@ -57,7 +57,7 @@ class Record(models.Model):
         return f'{self.full_name} {self.ttl} IN {self.type} {self.data}'
 
     @classmethod
-    def list_records(cls, provider: BaseRecordProvider | None, subdomain: Subdomain) -> list['Record']:
+    def list_records(cls, provider: BaseDnsRecordProvider | None, subdomain: Subdomain) -> list['Record']:
         if subdomain is None:
             return []
         cache_key = 'records:' + str(subdomain)
@@ -92,7 +92,7 @@ class Record(models.Model):
         return records
 
     @classmethod
-    def create_record(cls, provider: BaseRecordProvider | None, subdomain: Subdomain, **kwargs) -> 'Record':
+    def create_record(cls, provider: BaseDnsRecordProvider | None, subdomain: Subdomain, **kwargs) -> 'Record':
         if not kwargs.get('name', '').endswith(subdomain.name):
             raise RecordBadRequestError('Name is invalid.')
         if kwargs.get('type') in ('NS', 'CNAME', 'MX', 'SRV',) and not kwargs.get('target').endswith('.'):
@@ -110,7 +110,7 @@ class Record(models.Model):
         return record
 
     @classmethod
-    def retrieve_record(cls, provider: BaseRecordProvider | None, subdomain: Subdomain, id: int) -> 'Record':
+    def retrieve_record(cls, provider: BaseDnsRecordProvider | None, subdomain: Subdomain, id: int) -> 'Record':
         cache_key = 'records:' + str(id)
         cache_value = cache.get(cache_key,
                                 next(filter(lambda x: x.id == id, cache.get('records:' + str(subdomain), [])), None))
@@ -138,7 +138,7 @@ class Record(models.Model):
             raise RecordNotFoundError()
 
     @classmethod
-    def update_record(cls, provider: BaseRecordProvider | None, subdomain: Subdomain, id: int, **kwargs) -> 'Record':
+    def update_record(cls, provider: BaseDnsRecordProvider | None, subdomain: Subdomain, id: int, **kwargs) -> 'Record':
         if 'name' in kwargs.keys() and not kwargs.get('name', '').endswith(subdomain.name):
             raise RecordBadRequestError('Name is invalid.')
         if kwargs.get('type') in ('NS', 'CNAME', 'MX', 'SRV',) and not kwargs.get('target').endswith('.'):
@@ -162,7 +162,7 @@ class Record(models.Model):
             raise RecordNotFoundError()
 
     @classmethod
-    def delete_record(cls, provider: BaseRecordProvider | None, subdomain: Subdomain, id: int) -> None:
+    def delete_record(cls, provider: BaseDnsRecordProvider | None, subdomain: Subdomain, id: int) -> None:
         try:
             record = cls.objects.get(subdomain_name=subdomain.name, pk=id)
             if provider:
@@ -177,11 +177,11 @@ class Record(models.Model):
             raise RecordNotFoundError()
 
     @classmethod
-    def export_zone(cls, provider: BaseRecordProvider | None, subdomain: Subdomain) -> str:
+    def export_zone(cls, provider: BaseDnsRecordProvider | None, subdomain: Subdomain) -> str:
         return '\n'.join(map(str, cls.list_records(provider, subdomain)))
 
     @classmethod
-    def import_zone(cls, provider: BaseRecordProvider | None, subdomain: Subdomain, zone: str) -> None:
+    def import_zone(cls, provider: BaseDnsRecordProvider | None, subdomain: Subdomain, zone: str) -> None:
         lines = list(filter(lambda x: x[0] != ';', map(lambda x: x.strip(), zone.splitlines())))
         for line in lines:
             cls.create_record(provider, subdomain, **cls.parse_record(line))
@@ -233,7 +233,7 @@ class Record(models.Model):
         }
 
     @classmethod
-    def synchronize_records(cls, provider: BaseRecordProvider) -> None:
+    def synchronize_records(cls, provider: BaseDnsRecordProvider) -> None:
         logging.info('Start synchronizing records.')
         for subdomain in Subdomain.objects.all():
             cls.list_records(provider, subdomain)

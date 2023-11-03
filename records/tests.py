@@ -19,7 +19,10 @@ class RecordTest(TestCase):
             username='alice', password='test', email='alice@example.com',
             first_name='Alice', last_name='Test',
         )[0]
-        self.domain = get_mock_domains(name='example.com')[0]
+        self.domain = get_mock_domains(
+            name='example.com',
+            user=self.user,
+        )[0]
         self.contact = get_mock_contacts(
             user=self.user,
             name='test',

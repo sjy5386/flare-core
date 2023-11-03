@@ -4,11 +4,11 @@ from typing import Any
 import requests
 
 from domains.models import Domain
-from .base import BaseRecordProvider
+from .base import BaseDnsRecordProvider
 from ..exceptions import RecordProviderError
 
 
-class VultrRecordProvider(BaseRecordProvider):
+class VultrDnsRecordProvider(BaseDnsRecordProvider):
     host = 'https://api.vultr.com'
     api_key = os.environ.get('VULTR_API_KEY')
     headers = {

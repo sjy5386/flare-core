@@ -15,7 +15,10 @@ class ShortUrlTest(TestCase):
             username='bob', password='test', email='bob@example.com',
             first_name='Bob', last_name='Test',
         )[0]
-        self.domain = get_mock_domains(name='example.com')[0]
+        self.domain = get_mock_domains(
+            name='example.com',
+            user=self.user,
+        )[0]
         self.short_url = get_mock_short_urls(
             user=self.user,
             domain=self.domain,
