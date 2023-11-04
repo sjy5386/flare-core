@@ -8,11 +8,11 @@ from . import views
 router = DefaultRouter()
 router.register('contacts', views.ContactViewSet, basename='contact')
 router.register('domains', views.DomainViewSet)
-router.register('short_urls', views.ShortUrlViewSet, basename='short_url')
+router.register('short-urls', views.ShortUrlViewSet, basename='short_url')
 router.register('subdomains', views.SubdomainViewSet, basename='subdomain')
 
 subdomains_router = NestedDefaultRouter(router, 'subdomains', lookup='subdomain')
-subdomains_router.register('records', views.RecordViewSet, basename='record')
+subdomains_router.register('dns-records', views.RecordViewSet, basename='record')
 
 urlpatterns = [
     path('', include(router.urls)),

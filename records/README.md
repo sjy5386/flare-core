@@ -1,6 +1,6 @@
-# Records
+# DNS Records
 
-## Record Providers
+## DNS Record Providers
 
 ### Available Providers
 

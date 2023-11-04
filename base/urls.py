@@ -33,9 +33,9 @@ urlpatterns = [
     path('domains/', include('domains.urls')),
     path('dynamic-dns/', include('dynamic_dns.urls')),
     path('reports/', include('reports.urls')),
-    path('short_urls/', include('shorturls.urls')),
+    path('short-urls/', include('shorturls.urls')),
     path('subdomains/', include('subdomains.urls')),
-    path('subdomains/<int:subdomain_id>/records/', include('records.urls')),
+    path('subdomains/<int:subdomain_id>/dns-records/', include('records.urls')),
     path('what-is-my-ip-address/', views.what_is_my_ip_address, name='what_is_my_ip_address'),
 
     path('', include('shorturls.url_shortener.urls')),

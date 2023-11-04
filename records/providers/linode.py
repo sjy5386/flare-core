@@ -5,11 +5,11 @@ import requests
 from django.core.cache import cache
 
 from domains.models import Domain
-from .base import BaseRecordProvider
+from .base import BaseDnsRecordProvider
 from ..exceptions import RecordProviderError
 
 
-class LinodeRecordProvider(BaseRecordProvider):
+class LinodeDnsRecordProvider(BaseDnsRecordProvider):
     host = 'https://api.linode.com'
     token = os.environ.get('LINODE_ACCESS_TOKEN')
     headers = {

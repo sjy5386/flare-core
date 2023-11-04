@@ -10,7 +10,7 @@ from subdomains.models import Subdomain
 from .exceptions import RecordNotFoundError
 from .forms import ZoneImportForm, RecordForm
 from .models import Record
-from .providers import get_record_provider
+from .providers import get_dns_record_provider
 
 
 @method_decorator(login_required, name='dispatch')
@@ -27,7 +27,7 @@ class RecordListView(ListView):
         return super(RecordListView, self).dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
-        provider = get_record_provider(self.subdomain.domain)
+        provider = get_dns_record_provider(self.subdomain.domain)
         records = Record.list_records(provider, self.subdomain)
         self.subdomain.records = len(records)
         self.subdomain.save()
@@ -67,7 +67,7 @@ class RecordCreateView(FormView):
         }
 
     def form_valid(self, form):
-        provider = get_record_provider(self.subdomain.domain)
+        provider = get_dns_record_provider(self.subdomain.domain)
         Record.create_record(provider, self.subdomain, **form.cleaned_data)
         return super(RecordCreateView, self).form_valid(form)
 
@@ -91,7 +91,7 @@ class RecordDetailView(DetailView):
         return super(RecordDetailView, self).dispatch(request, *args, **kwargs)
 
     def get_object(self, queryset=None):
-        provider = get_record_provider(self.subdomain.domain)
+        provider = get_dns_record_provider(self.subdomain.domain)
         try:
             obj = Record.retrieve_record(provider, self.subdomain, self.kwargs['id'])
             return {
@@ -161,7 +161,7 @@ class RecordUpdateView(FormView):
         return kwargs
 
     def form_valid(self, form):
-        provider = get_record_provider(self.subdomain.domain)
+        provider = get_dns_record_provider(self.subdomain.domain)
         Record.update_record(provider, self.subdomain, self.kwargs['id'], **form.cleaned_data)
         return super(RecordUpdateView, self).form_valid(form)
 
@@ -195,7 +195,7 @@ class RecordDeleteView(FormView):
         return context
 
     def form_valid(self, form):
-        provider = get_record_provider(self.subdomain.domain)
+        provider = get_dns_record_provider(self.subdomain.domain)
         Record.delete_record(provider, self.subdomain, self.kwargs['id'])
         return super(RecordDeleteView, self).form_valid(form)
 
@@ -217,7 +217,7 @@ class ZoneExportView(DetailView):
         return super(ZoneExportView, self).dispatch(request, *args, **kwargs)
 
     def get_object(self, queryset=None):
-        provider = get_record_provider(self.subdomain.domain)
+        provider = get_dns_record_provider(self.subdomain.domain)
         return Record.export_zone(provider, self.subdomain)
 
     def get_context_data(self, **kwargs):
@@ -250,7 +250,7 @@ class ZoneImportView(FormView):
         return context
 
     def form_valid(self, form):
-        provider = get_record_provider(self.subdomain.domain)
+        provider = get_dns_record_provider(self.subdomain.domain)
         zone = form.cleaned_data.get('zone', '')
         Record.import_zone(provider, self.subdomain, zone)
         return super(ZoneImportView, self).form_valid(form)

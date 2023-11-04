@@ -1,24 +1,20 @@
-import os
 from enum import Enum
 
 from domains.models import Domain
-from .base import BaseRecordProvider
-from .digitalocean import DigitalOceanRecordProvider
-from .linode import LinodeRecordProvider
-from .vultr import VultrRecordProvider
+from .base import BaseDnsRecordProvider
+from .digitalocean import DigitalOceanDnsRecordProvider
+from .linode import LinodeDnsRecordProvider
+from .vultr import VultrDnsRecordProvider
 
 
-class RecordProvider(Enum):
-    DIGITALOCEAN = (DigitalOceanRecordProvider,)
-    LINODE = (LinodeRecordProvider,)
-    VULTR = (VultrRecordProvider,)
+class DnsRecordProvider(Enum):
+    DIGITALOCEAN = (DigitalOceanDnsRecordProvider,)
+    LINODE = (LinodeDnsRecordProvider,)
+    VULTR = (VultrDnsRecordProvider,)
 
-    def __init__(self, provider_class: type[BaseRecordProvider]):
+    def __init__(self, provider_class: type[BaseDnsRecordProvider]):
         self.provider_class = provider_class
 
 
-DEFAULT_RECORD_PROVIDER = os.environ.get('DEFAULT_RECORD_PROVIDER') or RecordProvider.DIGITALOCEAN.name
-
-
-def get_record_provider(domain: Domain) -> BaseRecordProvider:
-    return RecordProvider[DEFAULT_RECORD_PROVIDER].provider_class()
+def get_dns_record_provider(domain: Domain) -> BaseDnsRecordProvider:
+    return DnsRecordProvider[domain.dns_record_provider].provider_class()
