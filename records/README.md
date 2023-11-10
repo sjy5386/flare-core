@@ -4,6 +4,7 @@
 
 ### Available Providers
 
+* [Cloudflare](https://www.cloudflare.com/application-services/products/dns/)
 * [DigitalOcean](https://docs.digitalocean.com/products/networking/dns/)
 * [Linode](https://www.linode.com/products/dns-manager/)
 * [Vultr](https://www.vultr.com/docs/introduction-to-vultr-dns/)
