@@ -66,7 +66,12 @@ class CloudflareDnsRecordProvider(BaseDnsRecordProvider):
             raise RecordProviderError(response.json())
 
     def get_nameservers(self, domain: Domain = None) -> list[str]:
-        pass
+        response = requests.get(self.host + f'/client/v4/zones/{self.get_zone_identifier(domain.name)}')
+        try:
+            response.raise_for_status()
+        except requests.HTTPError:
+            raise RecordProviderError(response.json())
+        return response.json().get('result', {}).get('name_servers', [])
 
     def get_zone_identifier(self, domain_name: str) -> str:
         response = requests.get(self.host + '/client/v4/zones', headers=self.headers)
