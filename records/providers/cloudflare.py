@@ -32,13 +32,31 @@ class CloudflareDnsRecordProvider(BaseDnsRecordProvider):
         return self.from_cloudflare_record(response.json().get('result'))
 
     def retrieve_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> dict[str, Any] | None:
-        pass
+        response = requests.get(
+            self.host + f'/client/v4/zones/{self.get_zone_identifier(domain.name)}/dns_records/{provider_id}')
+        try:
+            response.raise_for_status()
+        except requests.HTTPError:
+            raise RecordProviderError(response.json())
+        return self.from_cloudflare_record(response.json().get('result'))
 
     def update_record(self, subdomain_name: str, domain: Domain, provider_id: str, **kwargs) -> dict[str, Any]:
-        pass
+        response = requests.put(
+            self.host + f'/client/v4/zones/{self.get_zone_identifier(domain.name)}/dns_records/{provider_id}',
+            json=self.to_cloudflare_record(kwargs))
+        try:
+            response.raise_for_status()
+        except requests.HTTPError:
+            raise RecordProviderError(response.json())
+        return self.from_cloudflare_record(response.json().get('result'))
 
     def delete_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> None:
-        pass
+        response = requests.delete(
+            self.host + f'/client/v4/zones/{self.get_zone_identifier(domain.name)}/dns_records/{provider_id}')
+        try:
+            response.raise_for_status()
+        except requests.HTTPError:
+            raise RecordProviderError(response.json())
 
     def get_nameservers(self, domain: Domain = None) -> list[str]:
         pass
