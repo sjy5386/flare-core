@@ -1,3 +1,4 @@
+import os
 from typing import Any
 
 import requests
@@ -9,10 +10,14 @@ from ..exceptions import RecordProviderError
 
 class CloudflareDnsRecordProvider(BaseDnsRecordProvider):
     host = 'https://api.cloudflare.com'
+    api_token = os.environ.get('CLOUDFLARE_API_TOKEN')
+    headers = {
+        'Authorization': f'Bearer {api_token}',
+    }
 
     def list_records(self, subdomain_name: str, domain: Domain) -> list[dict[str, Any]]:
         response = requests.get(self.host + f'/client/v4/zones/{self.get_zone_identifier(domain.name)}/dns_records',
-                                params={
+                                headers=self.headers, params={
                                     'per_page': 50000,
                                 })
         try:
@@ -24,7 +29,7 @@ class CloudflareDnsRecordProvider(BaseDnsRecordProvider):
 
     def create_record(self, subdomain_name: str, domain: Domain, **kwargs) -> dict[str, Any]:
         response = requests.post(self.host + f'/client/v4/zones/{self.get_zone_identifier(domain.name)}/dns_records',
-                                 json=self.to_cloudflare_record(kwargs))
+                                 headers=self.headers, json=self.to_cloudflare_record(kwargs))
         try:
             response.raise_for_status()
         except requests.HTTPError:
@@ -33,7 +38,8 @@ class CloudflareDnsRecordProvider(BaseDnsRecordProvider):
 
     def retrieve_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> dict[str, Any] | None:
         response = requests.get(
-            self.host + f'/client/v4/zones/{self.get_zone_identifier(domain.name)}/dns_records/{provider_id}')
+            self.host + f'/client/v4/zones/{self.get_zone_identifier(domain.name)}/dns_records/{provider_id}',
+            headers=self.headers)
         try:
             response.raise_for_status()
         except requests.HTTPError:
@@ -43,7 +49,7 @@ class CloudflareDnsRecordProvider(BaseDnsRecordProvider):
     def update_record(self, subdomain_name: str, domain: Domain, provider_id: str, **kwargs) -> dict[str, Any]:
         response = requests.put(
             self.host + f'/client/v4/zones/{self.get_zone_identifier(domain.name)}/dns_records/{provider_id}',
-            json=self.to_cloudflare_record(kwargs))
+            headers=self.headers, json=self.to_cloudflare_record(kwargs))
         try:
             response.raise_for_status()
         except requests.HTTPError:
@@ -52,7 +58,8 @@ class CloudflareDnsRecordProvider(BaseDnsRecordProvider):
 
     def delete_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> None:
         response = requests.delete(
-            self.host + f'/client/v4/zones/{self.get_zone_identifier(domain.name)}/dns_records/{provider_id}')
+            self.host + f'/client/v4/zones/{self.get_zone_identifier(domain.name)}/dns_records/{provider_id}',
+            headers=self.headers)
         try:
             response.raise_for_status()
         except requests.HTTPError:
@@ -62,7 +69,7 @@ class CloudflareDnsRecordProvider(BaseDnsRecordProvider):
         pass
 
     def get_zone_identifier(self, domain_name: str) -> str:
-        response = requests.get(self.host + '/client/v4/zones')
+        response = requests.get(self.host + '/client/v4/zones', headers=self.headers)
         try:
             response.raise_for_status()
         except requests.HTTPError:
