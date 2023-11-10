@@ -2,6 +2,7 @@ import os
 from typing import Any
 
 import requests
+from django.core.cache import cache
 
 from domains.models import Domain
 from .base import BaseDnsRecordProvider
@@ -74,6 +75,10 @@ class CloudflareDnsRecordProvider(BaseDnsRecordProvider):
         return response.json().get('result', {}).get('name_servers', [])
 
     def get_zone_identifier(self, domain_name: str) -> str:
+        cache_key = 'cloudflare:' + domain_name
+        cache_value = cache.get(cache_key)
+        if cache_value is not None:
+            return cache_value
         response = requests.get(self.host + '/client/v4/zones', headers=self.headers)
         try:
             response.raise_for_status()
@@ -81,6 +86,7 @@ class CloudflareDnsRecordProvider(BaseDnsRecordProvider):
             raise RecordProviderError(response.json())
         zone_identifier = next(map(lambda x: x.get('id'),
                                    filter(lambda x: x.get('name') == domain_name, response.json().get('result', []))))
+        cache.set(cache_key, zone_identifier, timeout=86400)
         return zone_identifier
 
     @staticmethod
