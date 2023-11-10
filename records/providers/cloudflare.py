@@ -5,7 +5,6 @@ import requests
 from domains.models import Domain
 from .base import BaseDnsRecordProvider
 from ..exceptions import RecordProviderError
-from ..models import Record
 
 
 class CloudflareDnsRecordProvider(BaseDnsRecordProvider):
@@ -24,7 +23,13 @@ class CloudflareDnsRecordProvider(BaseDnsRecordProvider):
                            map(self.from_cloudflare_record, response.json().get('result'))))
 
     def create_record(self, subdomain_name: str, domain: Domain, **kwargs) -> dict[str, Any]:
-        pass
+        response = requests.post(self.host + f'/client/v4/zones/{self.get_zone_identifier(domain.name)}/dns_records',
+                                 json=self.to_cloudflare_record(kwargs))
+        try:
+            response.raise_for_status()
+        except requests.HTTPError:
+            raise RecordProviderError(response.json())
+        return self.from_cloudflare_record(response.json().get('result'))
 
     def retrieve_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> dict[str, Any] | None:
         pass
@@ -50,6 +55,7 @@ class CloudflareDnsRecordProvider(BaseDnsRecordProvider):
 
     @staticmethod
     def from_cloudflare_record(cloudflare_record: dict[str, Any]) -> dict[str, Any]:
+        from ..models import Record
         service, protocol, name = Record.split_name(cloudflare_record.get('name'))
         priority, weight, port, target = Record.split_data(cloudflare_record.get('content'))
         return {
@@ -63,4 +69,18 @@ class CloudflareDnsRecordProvider(BaseDnsRecordProvider):
             'priority': priority,
             'weight': weight,
             'port': port,
+        }
+
+    @staticmethod
+    def to_cloudflare_record(record: dict[str, Any]) -> dict[str, Any]:
+        from ..models import Record
+        content = Record.join_data(record.get('priority'), record.get('weight'), record.get('port'),
+                                   record.get('target'))
+        name = Record.join_name(record.get('service'), record.get('protocol'), record.get('name'))
+        return {
+            'content': content,
+            'name': name,
+            'proxied': False,
+            'type': record.get('type'),
+            'ttl': record.get('ttl'),
         }
