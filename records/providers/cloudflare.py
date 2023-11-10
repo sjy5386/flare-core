@@ -75,7 +75,7 @@ class CloudflareDnsRecordProvider(BaseDnsRecordProvider):
     def from_cloudflare_record(cloudflare_record: dict[str, Any]) -> dict[str, Any]:
         from ..models import Record
         service, protocol, name = Record.split_name(cloudflare_record.get('name'))
-        priority, weight, port, target = Record.split_data(cloudflare_record.get('content'))
+        _, weight, port, target = Record.split_data(cloudflare_record.get('content'))
         return {
             'provider_id': cloudflare_record.get('id'),
             'name': name,
@@ -84,7 +84,7 @@ class CloudflareDnsRecordProvider(BaseDnsRecordProvider):
             'service': service,
             'protocol': protocol,
             'target': target,
-            'priority': priority,
+            'priority': cloudflare_record.get('priority'),
             'weight': weight,
             'port': port,
         }
