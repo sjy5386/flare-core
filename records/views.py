@@ -8,7 +8,7 @@ from django.views.generic import ListView, FormView, DetailView
 
 from subdomains.models import Subdomain
 from .exceptions import DnsRecordNotFoundError
-from .forms import ZoneImportForm, RecordForm
+from .forms import DnsRecordForm, ZoneImportForm
 from .models import Record
 from .providers import get_dns_record_provider
 
@@ -44,7 +44,7 @@ class DnsRecordListView(ListView):
 @method_decorator(login_required, name='dispatch')
 class DnsRecordCreateView(FormView):
     template_name = 'records/record_create.html'
-    form_class = RecordForm
+    form_class = DnsRecordForm
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -120,7 +120,7 @@ class DnsRecordDetailView(DetailView):
 @method_decorator(login_required, name='dispatch')
 class DnsRecordUpdateView(FormView):
     template_name = 'records/record_update.html'
-    form_class = RecordForm
+    form_class = DnsRecordForm
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
