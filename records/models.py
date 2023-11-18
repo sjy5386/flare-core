@@ -57,7 +57,7 @@ class Record(models.Model):
         return f'{self.full_name} {self.ttl} IN {self.type} {self.data}'
 
     @classmethod
-    def list_records(cls, provider: BaseDnsRecordProvider | None, subdomain: Subdomain) -> list['Record']:
+    def list_dns_records(cls, provider: BaseDnsRecordProvider | None, subdomain: Subdomain) -> list['Record']:
         if subdomain is None:
             return []
         cache_key = 'records:' + str(subdomain)
@@ -66,111 +66,111 @@ class Record(models.Model):
             return cache_value
         if provider:
             try:
-                provider_records = provider.list_records(subdomain.name, subdomain.domain)
-                provider_record_id_set = set(map(lambda x: x['provider_id'], provider_records))
-                for record in cls.objects.filter(subdomain_name=subdomain.name):
-                    if record.provider_id not in provider_record_id_set:
-                        record.delete()
+                provider_dns_records = provider.list_records(subdomain.name, subdomain.domain)
+                provider_dns_record_id_set = set(map(lambda x: x['provider_id'], provider_dns_records))
+                for dns_record in cls.objects.filter(subdomain_name=subdomain.name):
+                    if dns_record.provider_id not in provider_dns_record_id_set:
+                        dns_record.delete()
                 record_dict = {provider_id: x for provider_id, x in
                                map(lambda x: (x.provider_id, x), cls.objects.filter(subdomain_name=subdomain.name))}
-                for provider_record in provider_records:
-                    provider_id = provider_record.get('provider_id')
+                for provider_dns_record in provider_dns_records:
+                    provider_id = provider_dns_record.get('provider_id')
                     if provider_id in record_dict:
-                        record_dict.get(provider_id).update_by_provider_record(provider_record)
+                        record_dict.get(provider_id).update_by_provider_record(provider_dns_record)
                         continue
-                    provider_record.update({
+                    provider_dns_record.update({
                         'subdomain_name': subdomain.name,
                         'domain': subdomain.domain,
                     })
-                    cls.objects.update_or_create(provider_id=provider_id, defaults=provider_record)
+                    cls.objects.update_or_create(provider_id=provider_id, defaults=provider_dns_record)
             except DnsRecordProviderError as e:
                 logging.error(e)
-        records = cls.objects.filter(subdomain_name=subdomain.name).order_by('type', 'name', '-id')
-        cache.set(cache_key, records, timeout=3600)
-        for record in records:
-            cache.set('records:' + str(record.id), record, timeout=record.ttl)
-        return records
+        dns_records = cls.objects.filter(subdomain_name=subdomain.name).order_by('type', 'name', '-id')
+        cache.set(cache_key, dns_records, timeout=3600)
+        for dns_record in dns_records:
+            cache.set('records:' + str(dns_record.id), dns_record, timeout=dns_record.ttl)
+        return dns_records
 
     @classmethod
-    def create_record(cls, provider: BaseDnsRecordProvider | None, subdomain: Subdomain, **kwargs) -> 'Record':
+    def create_dns_record(cls, provider: BaseDnsRecordProvider | None, subdomain: Subdomain, **kwargs) -> 'Record':
         if not kwargs.get('name', '').endswith(subdomain.name):
             raise DnsRecordBadRequestError('Name is invalid.')
         if kwargs.get('type') in ('NS', 'CNAME', 'MX', 'SRV',) and not kwargs.get('target').endswith('.'):
             kwargs['target'] = kwargs.get('target') + '.'
-        record = cls(subdomain_name=subdomain.name, domain=subdomain.domain, **kwargs)
+        dns_record = cls(subdomain_name=subdomain.name, domain=subdomain.domain, **kwargs)
         if provider:
             try:
-                provider_record = provider.create_record(subdomain.name, subdomain.domain, **kwargs)
-                record.provider_id = provider_record.get('provider_id')
+                provider_dns_record = provider.create_record(subdomain.name, subdomain.domain, **kwargs)
+                dns_record.provider_id = provider_dns_record.get('provider_id')
             except DnsRecordProviderError as e:
                 logging.error(e)
-        record.save()
+        dns_record.save()
         cache.delete('records:' + str(subdomain))
-        cache.set('records:' + str(record.id), record, timeout=record.ttl)
-        return record
+        cache.set('records:' + str(dns_record.id), dns_record, timeout=dns_record.ttl)
+        return dns_record
 
     @classmethod
-    def retrieve_record(cls, provider: BaseDnsRecordProvider | None, subdomain: Subdomain, id: int) -> 'Record':
+    def retrieve_dns_record(cls, provider: BaseDnsRecordProvider | None, subdomain: Subdomain, id: int) -> 'Record':
         cache_key = 'records:' + str(id)
         cache_value = cache.get(cache_key,
                                 next(filter(lambda x: x.id == id, cache.get('records:' + str(subdomain), [])), None))
         if cache_value is not None:
             return cache_value
         try:
-            record = cls.objects.get(subdomain_name=subdomain.name, pk=id)
+            dns_record = cls.objects.get(subdomain_name=subdomain.name, pk=id)
             if provider:
                 try:
-                    provider_record = provider.retrieve_record(subdomain.name, subdomain.domain, record.provider_id)
-                    if provider_record is None:
-                        record.delete()
-                        record = None
+                    provider_dns_record = provider.retrieve_record(subdomain.name, subdomain.domain, dns_record.provider_id)
+                    if provider_dns_record is None:
+                        dns_record.delete()
+                        dns_record = None
                     else:
-                        record.update_by_provider_record(provider_record)
+                        dns_record.update_by_provider_dns_record(provider_dns_record)
                 except DnsRecordProviderError as e:
                     logging.error(e)
-            if record is None:
+            if dns_record is None:
                 cache.delete('records:' + str(subdomain))
                 cache.delete('records:' + str(id))
             else:
-                cache.set(cache_key, record, timeout=record.ttl)
-            return record
+                cache.set(cache_key, dns_record, timeout=dns_record.ttl)
+            return dns_record
         except cls.DoesNotExist:
             raise DnsRecordNotFoundError()
 
     @classmethod
-    def update_record(cls, provider: BaseDnsRecordProvider | None, subdomain: Subdomain, id: int, **kwargs) -> 'Record':
+    def update_dns_record(cls, provider: BaseDnsRecordProvider | None, subdomain: Subdomain, id: int, **kwargs) -> 'Record':
         if 'name' in kwargs.keys() and not kwargs.get('name', '').endswith(subdomain.name):
             raise DnsRecordBadRequestError('Name is invalid.')
         if kwargs.get('type') in ('NS', 'CNAME', 'MX', 'SRV',) and not kwargs.get('target').endswith('.'):
             kwargs['target'] = kwargs.get('target') + '.'
         try:
-            record = cls.objects.get(subdomain_name=subdomain.name, pk=id)
+            dns_record = cls.objects.get(subdomain_name=subdomain.name, pk=id)
             for k, v in kwargs.items():
-                if k in ['name', 'type', 'service', 'protocol'] and v != getattr(record, k):
+                if k in ['name', 'type', 'service', 'protocol'] and v != getattr(dns_record, k):
                     raise DnsRecordBadRequestError(f'{k.capitalize()} cannot be changed.')
-                setattr(record, k, v)
+                setattr(dns_record, k, v)
             if provider:
                 try:
-                    provider.update_record(subdomain.name, subdomain.domain, record.provider_id, **kwargs)
+                    provider.update_record(subdomain.name, subdomain.domain, dns_record.provider_id, **kwargs)
                 except DnsRecordProviderError as e:
                     logging.error(e)
-            record.save()
+            dns_record.save()
             cache.delete('records:' + str(subdomain))
-            cache.set('records:' + str(record.id), record, timeout=record.ttl)
-            return record
+            cache.set('records:' + str(dns_record.id), dns_record, timeout=dns_record.ttl)
+            return dns_record
         except cls.DoesNotExist:
             raise DnsRecordNotFoundError()
 
     @classmethod
-    def delete_record(cls, provider: BaseDnsRecordProvider | None, subdomain: Subdomain, id: int) -> None:
+    def delete_dns_record(cls, provider: BaseDnsRecordProvider | None, subdomain: Subdomain, id: int) -> None:
         try:
-            record = cls.objects.get(subdomain_name=subdomain.name, pk=id)
+            dns_record = cls.objects.get(subdomain_name=subdomain.name, pk=id)
             if provider:
                 try:
-                    provider.delete_record(subdomain.name, subdomain.domain, record.provider_id)
+                    provider.delete_record(subdomain.name, subdomain.domain, dns_record.provider_id)
                 except DnsRecordProviderError as e:
                     logging.error(e)
-            record.delete()
+            dns_record.delete()
             cache.delete('records:' + str(subdomain))
             cache.delete('records:' + str(id))
         except cls.DoesNotExist:
@@ -178,13 +178,13 @@ class Record(models.Model):
 
     @classmethod
     def export_zone(cls, provider: BaseDnsRecordProvider | None, subdomain: Subdomain) -> str:
-        return '\n'.join(map(str, cls.list_records(provider, subdomain)))
+        return '\n'.join(map(str, cls.list_dns_records(provider, subdomain)))
 
     @classmethod
     def import_zone(cls, provider: BaseDnsRecordProvider | None, subdomain: Subdomain, zone: str) -> None:
         lines = list(filter(lambda x: x[0] != ';', map(lambda x: x.strip(), zone.splitlines())))
         for line in lines:
-            cls.create_record(provider, subdomain, **cls.parse_record(line))
+            cls.create_dns_record(provider, subdomain, **cls.parse_dns_record(line))
 
     @staticmethod
     def split_name(full_name: str) -> tuple[str | None, str | None, str]:
@@ -216,7 +216,7 @@ class Record(models.Model):
         return ' '.join(map(str, filter(lambda x: x is not None, [priority, weight, port, target])))
 
     @classmethod
-    def parse_record(cls, raw_record: str) -> dict[str, Any]:
+    def parse_dns_record(cls, raw_record: str) -> dict[str, Any]:
         r = raw_record.split()
         service, protocol, name = cls.split_name(r[0])
         priority, weight, port, target = cls.split_data(r[-1])
@@ -233,15 +233,15 @@ class Record(models.Model):
         }
 
     @classmethod
-    def synchronize_records(cls, provider: BaseDnsRecordProvider) -> None:
+    def synchronize_dns_records(cls, provider: BaseDnsRecordProvider) -> None:
         logging.info('Start synchronizing records.')
         for subdomain in Subdomain.objects.all():
-            cls.list_records(provider, subdomain)
+            cls.list_dns_records(provider, subdomain)
         logging.info('End synchronizing records.')
 
-    def update_by_provider_record(self, provider_record: dict[str, Any]) -> bool:
+    def update_by_provider_dns_record(self, provider_dns_record: dict[str, Any]) -> bool:
         is_updated = False
-        for k, v in provider_record.items():
+        for k, v in provider_dns_record.items():
             if getattr(self, k) != v:
                 setattr(self, k, v)
                 is_updated = True

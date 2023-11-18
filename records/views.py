@@ -28,7 +28,7 @@ class DnsRecordListView(ListView):
 
     def get_queryset(self):
         provider = get_dns_record_provider(self.subdomain.domain)
-        records = Record.list_records(provider, self.subdomain)
+        records = Record.list_dns_records(provider, self.subdomain)
         self.subdomain.records = len(records)
         self.subdomain.save()
         return records
@@ -68,7 +68,7 @@ class DnsRecordCreateView(FormView):
 
     def form_valid(self, form):
         provider = get_dns_record_provider(self.subdomain.domain)
-        Record.create_record(provider, self.subdomain, **form.cleaned_data)
+        Record.create_dns_record(provider, self.subdomain, **form.cleaned_data)
         return super(DnsRecordCreateView, self).form_valid(form)
 
     def get_success_url(self):
@@ -93,7 +93,7 @@ class DnsRecordDetailView(DetailView):
     def get_object(self, queryset=None):
         provider = get_dns_record_provider(self.subdomain.domain)
         try:
-            obj = Record.retrieve_record(provider, self.subdomain, self.kwargs['id'])
+            obj = Record.retrieve_dns_record(provider, self.subdomain, self.kwargs['id'])
             return {
                 'ID': obj.id,
                 'Service': obj.service,
@@ -162,7 +162,7 @@ class DnsRecordUpdateView(FormView):
 
     def form_valid(self, form):
         provider = get_dns_record_provider(self.subdomain.domain)
-        Record.update_record(provider, self.subdomain, self.kwargs['id'], **form.cleaned_data)
+        Record.update_dns_record(provider, self.subdomain, self.kwargs['id'], **form.cleaned_data)
         return super(DnsRecordUpdateView, self).form_valid(form)
 
     def get_success_url(self):
@@ -196,7 +196,7 @@ class DnsRecordDeleteView(FormView):
 
     def form_valid(self, form):
         provider = get_dns_record_provider(self.subdomain.domain)
-        Record.delete_record(provider, self.subdomain, self.kwargs['id'])
+        Record.delete_dns_record(provider, self.subdomain, self.kwargs['id'])
         return super(DnsRecordDeleteView, self).form_valid(form)
 
     def get_success_url(self):
