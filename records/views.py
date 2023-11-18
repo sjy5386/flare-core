@@ -7,14 +7,15 @@ from django.utils.decorators import method_decorator
 from django.views.generic import ListView, FormView, DetailView
 
 from subdomains.models import Subdomain
-from .exceptions import RecordNotFoundError
-from .forms import ZoneImportForm, RecordForm
+from .exceptions import DnsRecordNotFoundError
+from .forms import DnsRecordForm, ZoneImportForm
 from .models import Record
 from .providers import get_dns_record_provider
 
 
 @method_decorator(login_required, name='dispatch')
-class RecordListView(ListView):
+class DnsRecordListView(ListView):
+    template_name = 'records/dns_record_list.html'
     context_object_name = 'records'
     ordering = 'type', 'name', '-id'
 
@@ -24,17 +25,17 @@ class RecordListView(ListView):
 
     def dispatch(self, request, *args, **kwargs):
         self.subdomain = get_object_or_404(Subdomain, id=kwargs['subdomain_id'], user=request.user)
-        return super(RecordListView, self).dispatch(request, *args, **kwargs)
+        return super(DnsRecordListView, self).dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
         provider = get_dns_record_provider(self.subdomain.domain)
-        records = Record.list_records(provider, self.subdomain)
+        records = Record.list_dns_records(provider, self.subdomain)
         self.subdomain.records = len(records)
         self.subdomain.save()
         return records
 
     def get_context_data(self, *, object_list=None, **kwargs):
-        context = super(RecordListView, self).get_context_data(**kwargs)
+        context = super(DnsRecordListView, self).get_context_data(**kwargs)
         context.update({
             'subdomain': self.subdomain
         })
@@ -42,9 +43,9 @@ class RecordListView(ListView):
 
 
 @method_decorator(login_required, name='dispatch')
-class RecordCreateView(FormView):
-    template_name = 'records/record_create.html'
-    form_class = RecordForm
+class DnsRecordCreateView(FormView):
+    template_name = 'records/dns_record_create.html'
+    form_class = DnsRecordForm
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -52,10 +53,10 @@ class RecordCreateView(FormView):
 
     def dispatch(self, request, *args, **kwargs):
         self.subdomain = get_object_or_404(Subdomain, id=kwargs['subdomain_id'], user=request.user)
-        return super(RecordCreateView, self).dispatch(request, *args, **kwargs)
+        return super(DnsRecordCreateView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        context = super(RecordCreateView, self).get_context_data(**kwargs)
+        context = super(DnsRecordCreateView, self).get_context_data(**kwargs)
         context.update({
             'subdomain': self.subdomain,
         })
@@ -68,15 +69,15 @@ class RecordCreateView(FormView):
 
     def form_valid(self, form):
         provider = get_dns_record_provider(self.subdomain.domain)
-        Record.create_record(provider, self.subdomain, **form.cleaned_data)
-        return super(RecordCreateView, self).form_valid(form)
+        Record.create_dns_record(provider, self.subdomain, **form.cleaned_data)
+        return super(DnsRecordCreateView, self).form_valid(form)
 
     def get_success_url(self):
         return reverse('records:list', kwargs=self.kwargs)
 
 
 @method_decorator(login_required, name='dispatch')
-class RecordDetailView(DetailView):
+class DnsRecordDetailView(DetailView):
     template_name = 'objects/object_detail.html'
     extra_context = {
         'title': 'Record detail',
@@ -88,12 +89,12 @@ class RecordDetailView(DetailView):
 
     def dispatch(self, request, *args, **kwargs):
         self.subdomain = get_object_or_404(Subdomain, id=kwargs['subdomain_id'], user=request.user)
-        return super(RecordDetailView, self).dispatch(request, *args, **kwargs)
+        return super(DnsRecordDetailView, self).dispatch(request, *args, **kwargs)
 
     def get_object(self, queryset=None):
         provider = get_dns_record_provider(self.subdomain.domain)
         try:
-            obj = Record.retrieve_record(provider, self.subdomain, self.kwargs['id'])
+            obj = Record.retrieve_dns_record(provider, self.subdomain, self.kwargs['id'])
             return {
                 'ID': obj.id,
                 'Service': obj.service,
@@ -106,11 +107,11 @@ class RecordDetailView(DetailView):
                 'Port': obj.port,
                 'Target': obj.target,
             }
-        except RecordNotFoundError as e:
+        except DnsRecordNotFoundError as e:
             raise Http404(e)
 
     def get_context_data(self, **kwargs):
-        context = super(RecordDetailView, self).get_context_data(**kwargs)
+        context = super(DnsRecordDetailView, self).get_context_data(**kwargs)
         context.update({
             'subdomain': self.subdomain,
         })
@@ -118,9 +119,9 @@ class RecordDetailView(DetailView):
 
 
 @method_decorator(login_required, name='dispatch')
-class RecordUpdateView(FormView):
-    template_name = 'records/record_update.html'
-    form_class = RecordForm
+class DnsRecordUpdateView(FormView):
+    template_name = 'records/dns_record_update.html'
+    form_class = DnsRecordForm
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -130,10 +131,10 @@ class RecordUpdateView(FormView):
     def dispatch(self, request, *args, **kwargs):
         self.subdomain = get_object_or_404(Subdomain, id=kwargs['subdomain_id'], user=request.user)
         self.record = get_object_or_404(Record, id=kwargs['id'])
-        return super(RecordUpdateView, self).dispatch(request, *args, **kwargs)
+        return super(DnsRecordUpdateView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        context = super(RecordUpdateView, self).get_context_data(**kwargs)
+        context = super(DnsRecordUpdateView, self).get_context_data(**kwargs)
         context.update({
             'subdomain': self.subdomain,
             'record': self.record,
@@ -154,7 +155,7 @@ class RecordUpdateView(FormView):
         }
 
     def get_form_kwargs(self):
-        kwargs = super(RecordUpdateView, self).get_form_kwargs()
+        kwargs = super(DnsRecordUpdateView, self).get_form_kwargs()
         kwargs.update({
             'readonly_fields': ['name', 'type', 'service', 'protocol'],
         })
@@ -162,15 +163,15 @@ class RecordUpdateView(FormView):
 
     def form_valid(self, form):
         provider = get_dns_record_provider(self.subdomain.domain)
-        Record.update_record(provider, self.subdomain, self.kwargs['id'], **form.cleaned_data)
-        return super(RecordUpdateView, self).form_valid(form)
+        Record.update_dns_record(provider, self.subdomain, self.kwargs['id'], **form.cleaned_data)
+        return super(DnsRecordUpdateView, self).form_valid(form)
 
     def get_success_url(self):
         return reverse('records:list', kwargs={'subdomain_id': self.kwargs['subdomain_id']})
 
 
 @method_decorator(login_required, name='dispatch')
-class RecordDeleteView(FormView):
+class DnsRecordDeleteView(FormView):
     template_name = 'objects/object_confirm_delete.html'
     form_class = Form
     extra_context = {
@@ -185,10 +186,10 @@ class RecordDeleteView(FormView):
     def dispatch(self, request, *args, **kwargs):
         self.subdomain = get_object_or_404(Subdomain, id=kwargs['subdomain_id'], user=request.user)
         self.record = get_object_or_404(Record, id=kwargs['id'])
-        return super(RecordDeleteView, self).dispatch(request, *args, **kwargs)
+        return super(DnsRecordDeleteView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        context = super(RecordDeleteView, self).get_context_data(**kwargs)
+        context = super(DnsRecordDeleteView, self).get_context_data(**kwargs)
         context.update({
             'object': self.record,
         })
@@ -196,8 +197,8 @@ class RecordDeleteView(FormView):
 
     def form_valid(self, form):
         provider = get_dns_record_provider(self.subdomain.domain)
-        Record.delete_record(provider, self.subdomain, self.kwargs['id'])
-        return super(RecordDeleteView, self).form_valid(form)
+        Record.delete_dns_record(provider, self.subdomain, self.kwargs['id'])
+        return super(DnsRecordDeleteView, self).form_valid(form)
 
     def get_success_url(self):
         return reverse('records:list', kwargs={'subdomain_id': self.kwargs['subdomain_id']})

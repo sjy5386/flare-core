@@ -12,7 +12,7 @@
         <tr>
             <th scope="col">ID</th>
             <th scope="col">Name</th>
-            <th scope="col">Records</th>
+            <th scope="col">DNS Records</th>
         </tr>
         </thead>
         <tbody>
@@ -20,7 +20,7 @@
             <tr>
                 <td><a href="{% url 'subdomains:detail' object.id %}">{{ object.id }}</a></td>
                 <td><a href="http://{{ object }}">{{ object }}</a></td>
-                <td><a href="{% url 'records:list' object.id %}">{{ object.records }}</a></td>
+                <td><a href="{% url 'dns_records:list' object.id %}">{{ object.records }}</a></td>
             </tr>
         {% endfor %}
         </tbody>

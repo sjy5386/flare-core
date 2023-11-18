@@ -103,4 +103,4 @@ nginx -s reload
 1. You must have at least one contact created.
 2. Search for available subdomain names.
 3. Create a available subdomain.
-4. Add records.
+4. Add dns records.

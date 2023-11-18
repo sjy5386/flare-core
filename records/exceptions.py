@@ -1,14 +1,14 @@
-class RecordError(Exception):
+class DnsRecordError(Exception):
     pass
 
 
-class RecordBadRequestError(RecordError):
+class DnsRecordBadRequestError(DnsRecordError):
     pass
 
 
-class RecordNotFoundError(RecordError):
+class DnsRecordNotFoundError(DnsRecordError):
     pass
 
 
-class RecordProviderError(RecordError):
+class DnsRecordProviderError(DnsRecordError):
     pass

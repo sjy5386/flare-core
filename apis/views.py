@@ -88,7 +88,7 @@ class RecordViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         provider = records.providers.get_dns_record_provider(self.subdomain.domain)
-        return Record.list_records(provider, self.subdomain)
+        return Record.list_dns_records(provider, self.subdomain)
 
     def perform_create(self, serializer):
         serializer.save(subdomain=self.subdomain)
@@ -98,4 +98,4 @@ class RecordViewSet(viewsets.ModelViewSet):
 
     def perform_destroy(self, instance):
         provider = records.providers.get_dns_record_provider(self.subdomain.domain)
-        Record.delete_record(provider, self.subdomain, instance.id)
+        Record.delete_dns_record(provider, self.subdomain, instance.id)
