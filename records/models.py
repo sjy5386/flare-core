@@ -60,7 +60,7 @@ class Record(models.Model):
     def list_dns_records(cls, provider: BaseDnsRecordProvider | None, subdomain: Subdomain) -> list['Record']:
         if subdomain is None:
             return []
-        cache_key = 'records:' + str(subdomain)
+        cache_key = 'dns_records:' + str(subdomain)
         cache_value = cache.get(cache_key)
         if cache_value is not None:
             return cache_value
@@ -88,7 +88,7 @@ class Record(models.Model):
         dns_records = cls.objects.filter(subdomain_name=subdomain.name).order_by('type', 'name', '-id')
         cache.set(cache_key, dns_records, timeout=3600)
         for dns_record in dns_records:
-            cache.set('records:' + str(dns_record.id), dns_record, timeout=dns_record.ttl)
+            cache.set('dns_records:' + str(dns_record.id), dns_record, timeout=dns_record.ttl)
         return dns_records
 
     @classmethod
@@ -105,13 +105,13 @@ class Record(models.Model):
             except DnsRecordProviderError as e:
                 logging.error(e)
         dns_record.save()
-        cache.delete('records:' + str(subdomain))
-        cache.set('records:' + str(dns_record.id), dns_record, timeout=dns_record.ttl)
+        cache.delete('dns_records:' + str(subdomain))
+        cache.set('dns_records:' + str(dns_record.id), dns_record, timeout=dns_record.ttl)
         return dns_record
 
     @classmethod
     def retrieve_dns_record(cls, provider: BaseDnsRecordProvider | None, subdomain: Subdomain, id: int) -> 'Record':
-        cache_key = 'records:' + str(id)
+        cache_key = 'dns_records:' + str(id)
         cache_value = cache.get(cache_key,
                                 next(filter(lambda x: x.id == id, cache.get('records:' + str(subdomain), [])), None))
         if cache_value is not None:
@@ -129,8 +129,8 @@ class Record(models.Model):
                 except DnsRecordProviderError as e:
                     logging.error(e)
             if dns_record is None:
-                cache.delete('records:' + str(subdomain))
-                cache.delete('records:' + str(id))
+                cache.delete('dns_records:' + str(subdomain))
+                cache.delete('dns_records:' + str(id))
             else:
                 cache.set(cache_key, dns_record, timeout=dns_record.ttl)
             return dns_record
@@ -155,8 +155,8 @@ class Record(models.Model):
                 except DnsRecordProviderError as e:
                     logging.error(e)
             dns_record.save()
-            cache.delete('records:' + str(subdomain))
-            cache.set('records:' + str(dns_record.id), dns_record, timeout=dns_record.ttl)
+            cache.delete('dns_records:' + str(subdomain))
+            cache.set('dns_records:' + str(dns_record.id), dns_record, timeout=dns_record.ttl)
             return dns_record
         except cls.DoesNotExist:
             raise DnsRecordNotFoundError()
@@ -171,8 +171,8 @@ class Record(models.Model):
                 except DnsRecordProviderError as e:
                     logging.error(e)
             dns_record.delete()
-            cache.delete('records:' + str(subdomain))
-            cache.delete('records:' + str(id))
+            cache.delete('dns_records:' + str(subdomain))
+            cache.delete('dns_records:' + str(id))
         except cls.DoesNotExist:
             raise DnsRecordNotFoundError()
 
