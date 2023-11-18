@@ -7,7 +7,7 @@ from django.utils.decorators import method_decorator
 from django.views.generic import ListView, FormView, DetailView
 
 from subdomains.models import Subdomain
-from .exceptions import RecordNotFoundError
+from .exceptions import DnsRecordNotFoundError
 from .forms import ZoneImportForm, RecordForm
 from .models import Record
 from .providers import get_dns_record_provider
@@ -106,7 +106,7 @@ class DnsRecordDetailView(DetailView):
                 'Port': obj.port,
                 'Target': obj.target,
             }
-        except RecordNotFoundError as e:
+        except DnsRecordNotFoundError as e:
             raise Http404(e)
 
     def get_context_data(self, **kwargs):

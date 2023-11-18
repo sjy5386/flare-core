@@ -6,7 +6,7 @@ from django.core.cache import cache
 
 from domains.models import Domain
 from .base import BaseDnsRecordProvider
-from ..exceptions import RecordProviderError
+from ..exceptions import DnsRecordProviderError
 
 
 class CloudflareDnsRecordProvider(BaseDnsRecordProvider):
@@ -24,7 +24,7 @@ class CloudflareDnsRecordProvider(BaseDnsRecordProvider):
         try:
             response.raise_for_status()
         except requests.HTTPError:
-            raise RecordProviderError(response.json())
+            raise DnsRecordProviderError(response.json())
         return list(filter(lambda x: x.get('name').endswith(subdomain_name),
                            map(self.from_cloudflare_record, response.json().get('result'))))
 
@@ -34,7 +34,7 @@ class CloudflareDnsRecordProvider(BaseDnsRecordProvider):
         try:
             response.raise_for_status()
         except requests.HTTPError:
-            raise RecordProviderError(response.json())
+            raise DnsRecordProviderError(response.json())
         return self.from_cloudflare_record(response.json().get('result'))
 
     def retrieve_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> dict[str, Any] | None:
@@ -44,7 +44,7 @@ class CloudflareDnsRecordProvider(BaseDnsRecordProvider):
         try:
             response.raise_for_status()
         except requests.HTTPError:
-            raise RecordProviderError(response.json())
+            raise DnsRecordProviderError(response.json())
         return self.from_cloudflare_record(response.json().get('result'))
 
     def update_record(self, subdomain_name: str, domain: Domain, provider_id: str, **kwargs) -> dict[str, Any]:
@@ -54,7 +54,7 @@ class CloudflareDnsRecordProvider(BaseDnsRecordProvider):
         try:
             response.raise_for_status()
         except requests.HTTPError:
-            raise RecordProviderError(response.json())
+            raise DnsRecordProviderError(response.json())
         return self.from_cloudflare_record(response.json().get('result'))
 
     def delete_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> None:
@@ -64,14 +64,14 @@ class CloudflareDnsRecordProvider(BaseDnsRecordProvider):
         try:
             response.raise_for_status()
         except requests.HTTPError:
-            raise RecordProviderError(response.json())
+            raise DnsRecordProviderError(response.json())
 
     def get_nameservers(self, domain: Domain = None) -> list[str]:
         response = requests.get(self.host + f'/client/v4/zones/{self.get_zone_identifier(domain.name)}')
         try:
             response.raise_for_status()
         except requests.HTTPError:
-            raise RecordProviderError(response.json())
+            raise DnsRecordProviderError(response.json())
         return response.json().get('result', {}).get('name_servers', [])
 
     def get_zone_identifier(self, domain_name: str) -> str:
@@ -83,7 +83,7 @@ class CloudflareDnsRecordProvider(BaseDnsRecordProvider):
         try:
             response.raise_for_status()
         except requests.HTTPError:
-            raise RecordProviderError(response.json())
+            raise DnsRecordProviderError(response.json())
         zone_identifier = next(map(lambda x: x.get('id'),
                                    filter(lambda x: x.get('name') == domain_name, response.json().get('result', []))))
         cache.set(cache_key, zone_identifier, timeout=86400)

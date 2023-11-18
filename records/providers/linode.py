@@ -6,7 +6,7 @@ from django.core.cache import cache
 
 from domains.models import Domain
 from .base import BaseDnsRecordProvider
-from ..exceptions import RecordProviderError
+from ..exceptions import DnsRecordProviderError
 
 
 class LinodeDnsRecordProvider(BaseDnsRecordProvider):
@@ -24,7 +24,7 @@ class LinodeDnsRecordProvider(BaseDnsRecordProvider):
         try:
             response.raise_for_status()
         except requests.HTTPError:
-            raise RecordProviderError(response.json())
+            raise DnsRecordProviderError(response.json())
         return list(filter(lambda x: x.get('name').endswith(subdomain_name),
                            map(self.from_linode_record, response.json().get('data'))))
 
@@ -34,7 +34,7 @@ class LinodeDnsRecordProvider(BaseDnsRecordProvider):
         try:
             response.raise_for_status()
         except requests.HTTPError:
-            raise RecordProviderError(response.json())
+            raise DnsRecordProviderError(response.json())
         return self.from_linode_record(response.json())
 
     def retrieve_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> dict[str, Any] | None:
@@ -43,7 +43,7 @@ class LinodeDnsRecordProvider(BaseDnsRecordProvider):
         try:
             response.raise_for_status()
         except requests.HTTPError:
-            raise RecordProviderError(response.json())
+            raise DnsRecordProviderError(response.json())
         return self.from_linode_record(response.json())
 
     def update_record(self, subdomain_name: str, domain: Domain, provider_id: str, **kwargs) -> dict[str, Any]:
@@ -52,7 +52,7 @@ class LinodeDnsRecordProvider(BaseDnsRecordProvider):
         try:
             response.raise_for_status()
         except requests.HTTPError:
-            raise RecordProviderError(response.json())
+            raise DnsRecordProviderError(response.json())
         return self.from_linode_record(response.json())
 
     def delete_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> None:
@@ -61,7 +61,7 @@ class LinodeDnsRecordProvider(BaseDnsRecordProvider):
         try:
             response.raise_for_status()
         except requests.HTTPError:
-            raise RecordProviderError(response.json())
+            raise DnsRecordProviderError(response.json())
 
     def get_nameservers(self, domain: Domain = None) -> list[str]:
         return [
@@ -81,7 +81,7 @@ class LinodeDnsRecordProvider(BaseDnsRecordProvider):
         try:
             response.raise_for_status()
         except requests.HTTPError:
-            raise RecordProviderError(response.json())
+            raise DnsRecordProviderError(response.json())
         domain_id = next(map(lambda x: x.get('id'),
                              filter(lambda x: x.get('domain') == domain_name, response.json().get('data', []))))
         cache.set(cache_key, domain_id, timeout=86400)

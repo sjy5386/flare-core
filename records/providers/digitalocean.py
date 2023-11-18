@@ -5,7 +5,7 @@ import requests
 
 from domains.models import Domain
 from .base import BaseDnsRecordProvider
-from ..exceptions import RecordProviderError
+from ..exceptions import DnsRecordProviderError
 
 
 class DigitalOceanDnsRecordProvider(BaseDnsRecordProvider):
@@ -23,7 +23,7 @@ class DigitalOceanDnsRecordProvider(BaseDnsRecordProvider):
         try:
             response.raise_for_status()
         except requests.HTTPError:
-            raise RecordProviderError(response.json())
+            raise DnsRecordProviderError(response.json())
         return list(filter(lambda x: x.get('name').endswith(subdomain_name),
                            map(self.from_digitalocean_record, response.json().get('domain_records'))))
 
@@ -33,7 +33,7 @@ class DigitalOceanDnsRecordProvider(BaseDnsRecordProvider):
         try:
             response.raise_for_status()
         except requests.HTTPError:
-            raise RecordProviderError(response.json())
+            raise DnsRecordProviderError(response.json())
         return self.from_digitalocean_record(response.json().get('domain_record'))
 
     def retrieve_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> dict[str, Any] | None:
@@ -41,7 +41,7 @@ class DigitalOceanDnsRecordProvider(BaseDnsRecordProvider):
         try:
             response.raise_for_status()
         except requests.HTTPError:
-            raise RecordProviderError(response.json())
+            raise DnsRecordProviderError(response.json())
         return self.from_digitalocean_record(response.json().get('domain_record'))
 
     def update_record(self, subdomain_name: str, domain: Domain, provider_id: str, **kwargs) -> dict[str, Any]:
@@ -50,7 +50,7 @@ class DigitalOceanDnsRecordProvider(BaseDnsRecordProvider):
         try:
             response.raise_for_status()
         except requests.HTTPError:
-            raise RecordProviderError(response.json())
+            raise DnsRecordProviderError(response.json())
         return self.from_digitalocean_record(response.json().get('domain_record'))
 
     def delete_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> None:
@@ -58,7 +58,7 @@ class DigitalOceanDnsRecordProvider(BaseDnsRecordProvider):
         try:
             response.raise_for_status()
         except requests.HTTPError:
-            raise RecordProviderError(response.json())
+            raise DnsRecordProviderError(response.json())
 
     def get_nameservers(self, domain: Domain = None) -> list[str]:
         return [
