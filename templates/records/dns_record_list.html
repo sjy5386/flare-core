@@ -1,7 +1,7 @@
 {% extends 'common/base.html' %}
 {% block content %}
     <div class="d-flex justify-content-between mb-3">
-        <h3>Records {{ subdomain }}</h3>
+        <h3>DNS Records {{ subdomain }}</h3>
         <div>
             <a class="btn btn-secondary" href="{% url 'dns_records:zone_export' subdomain.id %}">Export Zone</a>
             <a class="btn btn-secondary" href="{% url 'dns_records:zone_import' subdomain.id %}">Import Zone</a>

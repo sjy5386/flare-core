@@ -15,6 +15,7 @@ from .providers import get_dns_record_provider
 
 @method_decorator(login_required, name='dispatch')
 class DnsRecordListView(ListView):
+    template_name = 'records/dns_record_list.html'
     context_object_name = 'records'
     ordering = 'type', 'name', '-id'
 
@@ -43,7 +44,7 @@ class DnsRecordListView(ListView):
 
 @method_decorator(login_required, name='dispatch')
 class DnsRecordCreateView(FormView):
-    template_name = 'records/record_create.html'
+    template_name = 'records/dns_record_create.html'
     form_class = DnsRecordForm
 
     def __init__(self, **kwargs):
@@ -119,7 +120,7 @@ class DnsRecordDetailView(DetailView):
 
 @method_decorator(login_required, name='dispatch')
 class DnsRecordUpdateView(FormView):
-    template_name = 'records/record_update.html'
+    template_name = 'records/dns_record_update.html'
     form_class = DnsRecordForm
 
     def __init__(self, **kwargs):
