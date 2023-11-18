@@ -66,7 +66,7 @@ class Record(models.Model):
             return cache_value
         if provider:
             try:
-                provider_dns_records = provider.list_records(subdomain.name, subdomain.domain)
+                provider_dns_records = provider.list_dns_records(subdomain.name, subdomain.domain)
                 provider_dns_record_id_set = set(map(lambda x: x['provider_id'], provider_dns_records))
                 for dns_record in cls.objects.filter(subdomain_name=subdomain.name):
                     if dns_record.provider_id not in provider_dns_record_id_set:
@@ -100,7 +100,7 @@ class Record(models.Model):
         dns_record = cls(subdomain_name=subdomain.name, domain=subdomain.domain, **kwargs)
         if provider:
             try:
-                provider_dns_record = provider.create_record(subdomain.name, subdomain.domain, **kwargs)
+                provider_dns_record = provider.create_dns_record(subdomain.name, subdomain.domain, **kwargs)
                 dns_record.provider_id = provider_dns_record.get('provider_id')
             except DnsRecordProviderError as e:
                 logging.error(e)
@@ -120,7 +120,7 @@ class Record(models.Model):
             dns_record = cls.objects.get(subdomain_name=subdomain.name, pk=id)
             if provider:
                 try:
-                    provider_dns_record = provider.retrieve_record(subdomain.name, subdomain.domain, dns_record.provider_id)
+                    provider_dns_record = provider.retrieve_dns_record(subdomain.name, subdomain.domain, dns_record.provider_id)
                     if provider_dns_record is None:
                         dns_record.delete()
                         dns_record = None
@@ -151,7 +151,7 @@ class Record(models.Model):
                 setattr(dns_record, k, v)
             if provider:
                 try:
-                    provider.update_record(subdomain.name, subdomain.domain, dns_record.provider_id, **kwargs)
+                    provider.update_dns_record(subdomain.name, subdomain.domain, dns_record.provider_id, **kwargs)
                 except DnsRecordProviderError as e:
                     logging.error(e)
             dns_record.save()
@@ -167,7 +167,7 @@ class Record(models.Model):
             dns_record = cls.objects.get(subdomain_name=subdomain.name, pk=id)
             if provider:
                 try:
-                    provider.delete_record(subdomain.name, subdomain.domain, dns_record.provider_id)
+                    provider.delete_dns_record(subdomain.name, subdomain.domain, dns_record.provider_id)
                 except DnsRecordProviderError as e:
                     logging.error(e)
             dns_record.delete()

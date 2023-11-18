@@ -16,7 +16,7 @@ class LinodeDnsRecordProvider(BaseDnsRecordProvider):
         'Authorization': f'Bearer {token}',
     }
 
-    def list_records(self, subdomain_name: str, domain: Domain) -> list[dict[str, Any]]:
+    def list_dns_records(self, subdomain_name: str, domain: Domain) -> list[dict[str, Any]]:
         response = requests.get(self.host + f'/v4/domains/{self.get_domain_id(domain.name)}/records',
                                 headers=self.headers, params={
                 'page_size': 500,
@@ -26,36 +26,36 @@ class LinodeDnsRecordProvider(BaseDnsRecordProvider):
         except requests.HTTPError:
             raise DnsRecordProviderError(response.json())
         return list(filter(lambda x: x.get('name').endswith(subdomain_name),
-                           map(self.from_linode_record, response.json().get('data'))))
+                           map(self.from_linode_dns_record, response.json().get('data'))))
 
-    def create_record(self, subdomain_name: str, domain: Domain, **kwargs) -> dict[str, Any]:
+    def create_dns_record(self, subdomain_name: str, domain: Domain, **kwargs) -> dict[str, Any]:
         response = requests.post(self.host + f'/v4/domains/{self.get_domain_id(domain.name)}/records',
-                                 headers=self.headers, json=self.to_linode_record(kwargs))
+                                 headers=self.headers, json=self.to_linode_dns_record(kwargs))
         try:
             response.raise_for_status()
         except requests.HTTPError:
             raise DnsRecordProviderError(response.json())
-        return self.from_linode_record(response.json())
+        return self.from_linode_dns_record(response.json())
 
-    def retrieve_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> dict[str, Any] | None:
+    def retrieve_dns_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> dict[str, Any] | None:
         response = requests.get(self.host + f'/v4/domains/{self.get_domain_id(domain.name)}/records/{provider_id}',
                                 headers=self.headers)
         try:
             response.raise_for_status()
         except requests.HTTPError:
             raise DnsRecordProviderError(response.json())
-        return self.from_linode_record(response.json())
+        return self.from_linode_dns_record(response.json())
 
-    def update_record(self, subdomain_name: str, domain: Domain, provider_id: str, **kwargs) -> dict[str, Any]:
+    def update_dns_record(self, subdomain_name: str, domain: Domain, provider_id: str, **kwargs) -> dict[str, Any]:
         response = requests.put(self.host + f'/v4/domains/{self.get_domain_id(domain.name)}/records/{provider_id}',
-                                headers=self.headers, json=self.to_linode_record(kwargs))
+                                headers=self.headers, json=self.to_linode_dns_record(kwargs))
         try:
             response.raise_for_status()
         except requests.HTTPError:
             raise DnsRecordProviderError(response.json())
-        return self.from_linode_record(response.json())
+        return self.from_linode_dns_record(response.json())
 
-    def delete_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> None:
+    def delete_dns_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> None:
         response = requests.delete(self.host + f'/v4/domains/{self.get_domain_id(domain.name)}/records/{provider_id}',
                                    headers=self.headers)
         try:
@@ -88,30 +88,30 @@ class LinodeDnsRecordProvider(BaseDnsRecordProvider):
         return domain_id
 
     @staticmethod
-    def from_linode_record(linode_record: dict[str, Any]) -> dict[str, Any]:
+    def from_linode_dns_record(linode_dns_record: dict[str, Any]) -> dict[str, Any]:
         return {
-            'provider_id': str(linode_record.get('id')),
-            'name': linode_record.get('name'),
-            'ttl': linode_record.get('ttl_sec'),
-            'type': linode_record.get('type'),
-            'service': linode_record.get('service'),
-            'protocol': linode_record.get('protocol'),
-            'target': linode_record.get('target'),
-            'priority': linode_record.get('priority'),
-            'weight': linode_record.get('weight'),
-            'port': linode_record.get('port'),
+            'provider_id': str(linode_dns_record.get('id')),
+            'name': linode_dns_record.get('name'),
+            'ttl': linode_dns_record.get('ttl_sec'),
+            'type': linode_dns_record.get('type'),
+            'service': linode_dns_record.get('service'),
+            'protocol': linode_dns_record.get('protocol'),
+            'target': linode_dns_record.get('target'),
+            'priority': linode_dns_record.get('priority'),
+            'weight': linode_dns_record.get('weight'),
+            'port': linode_dns_record.get('port'),
         }
 
     @staticmethod
-    def to_linode_record(record: dict[str, Any]) -> dict[str, Any]:
+    def to_linode_dns_record(dns_record: dict[str, Any]) -> dict[str, Any]:
         return {
-            'name': record.get('name'),
-            'ttl_sec': record.get('ttl'),
-            'type': record.get('type'),
-            'service': record.get('service'),
-            'protocol': record.get('protocol'),
-            'target': record.get('target'),
-            'priority': record.get('priority'),
-            'weight': record.get('weight'),
-            'port': record.get('port'),
+            'name': dns_record.get('name'),
+            'ttl_sec': dns_record.get('ttl'),
+            'type': dns_record.get('type'),
+            'service': dns_record.get('service'),
+            'protocol': dns_record.get('protocol'),
+            'target': dns_record.get('target'),
+            'priority': dns_record.get('priority'),
+            'weight': dns_record.get('weight'),
+            'port': dns_record.get('port'),
         }
