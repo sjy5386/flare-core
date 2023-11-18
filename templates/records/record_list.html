@@ -3,9 +3,9 @@
     <div class="d-flex justify-content-between mb-3">
         <h3>Records {{ subdomain }}</h3>
         <div>
-            <a class="btn btn-secondary" href="{% url 'records:zone_export' subdomain.id %}">Export Zone</a>
-            <a class="btn btn-secondary" href="{% url 'records:zone_import' subdomain.id %}">Import Zone</a>
-            <a class="btn btn-primary" href="{% url 'records:create' subdomain.id %}">Create</a>
+            <a class="btn btn-secondary" href="{% url 'dns_records:zone_export' subdomain.id %}">Export Zone</a>
+            <a class="btn btn-secondary" href="{% url 'dns_records:zone_import' subdomain.id %}">Import Zone</a>
+            <a class="btn btn-primary" href="{% url 'dns_records:create' subdomain.id %}">Create</a>
         </div>
     </div>
     <table class="table">
@@ -22,16 +22,16 @@
         <tbody>
         {% for record in records %}
             <tr>
-                <td><a href="{% url 'records:detail' subdomain.id record.id %}">{{ record.id }}</a></td>
+                <td><a href="{% url 'dns_records:detail' subdomain.id record.id %}">{{ record.id }}</a></td>
                 <td>{{ record.full_name }}</td>
                 <td>{{ record.ttl }}</td>
                 <td>{{ record.type }}</td>
                 <td>{{ record.data }}</td>
                 <td>
                     <a class="btn btn-secondary"
-                       href="{% url 'records:update' subdomain.id record.id %}">Edit</a>
+                       href="{% url 'dns_records:update' subdomain.id record.id %}">Edit</a>
                     <a class="btn btn-danger"
-                       href="{% url 'records:delete' subdomain.id record.id %}">Delete</a>
+                       href="{% url 'dns_records:delete' subdomain.id record.id %}">Delete</a>
                 </td>
             </tr>
         {% endfor %}

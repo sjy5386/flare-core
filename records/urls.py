@@ -2,7 +2,7 @@ from django.urls import path
 
 from . import views
 
-app_name = 'records'
+app_name = 'dns_records'
 urlpatterns = [
     path('', views.DnsRecordListView.as_view(), name='list'),
     path('export/', views.ZoneExportView.as_view(), name='zone_export'),
