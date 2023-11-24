@@ -1,6 +1,8 @@
 services:
   api:
     image: python:3.11
+    environment:
+      - APPLICATION_TYPE=API
     volumes:
       - .:/app
     working_dir: /app
@@ -11,6 +13,8 @@ services:
     entrypoint: [ "/bin/bash", "./workflows/run-api.sh" ]
   batch:
     image: python:3.11
+    environment:
+      - APPLICATION_TYPE=BATCH
     volumes:
       - .:/app
     working_dir: /app

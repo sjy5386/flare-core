@@ -33,6 +33,8 @@ ALLOWED_HOSTS = get_allowed_hosts()
 
 # Application definition
 
+APPLICATION_TYPE = os.environ.get('APPLICATION_TYPE')
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
