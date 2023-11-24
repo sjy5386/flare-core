@@ -1,5 +1,5 @@
 services:
-  app:
+  api:
     image: python:3.11
     volumes:
       - .:/app
