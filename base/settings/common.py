@@ -53,6 +53,7 @@ INSTALLED_APPS = [
 
     'accounts.apps.AccountsConfig',
     'apis.apps.ApisConfig',
+    'batches.apps.BatchesConfig',
     'contacts.apps.ContactsConfig',
     'domains.apps.DomainsConfig',
     'dynamic_dns.apps.DynamicDnsConfig',
