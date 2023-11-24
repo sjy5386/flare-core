@@ -15,6 +15,7 @@ from pathlib import Path
 
 from corsheaders.defaults import default_methods, default_headers
 
+from .types import ApplicationType
 from .utils import get_secret_key, get_allowed_hosts, get_csrf_trusted_origins
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -33,7 +34,7 @@ ALLOWED_HOSTS = get_allowed_hosts()
 
 # Application definition
 
-APPLICATION_TYPE = os.environ.get('APPLICATION_TYPE')
+APPLICATION_TYPE = ApplicationType[os.environ.get('APPLICATION_TYPE', 'API')]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
