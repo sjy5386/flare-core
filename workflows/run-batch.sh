@@ -3,4 +3,4 @@
 bash ./workflows/build.sh
 bash ./workflows/test.sh
 
-python manage.py runserver
+python manage.py runapscheduler
