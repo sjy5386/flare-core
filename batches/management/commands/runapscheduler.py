@@ -20,7 +20,6 @@ class Command(BaseCommand):
             self.logger.warning('APPLICATION_TYPE is not BATCH.')
         scheduler = BlockingScheduler()
         scheduler.add_jobstore(DjangoJobStore(), 'default')
-        scheduler.remove_all_jobs('default')
         scheduler.add_job(
             find_expired_subdomains_job,
             trigger=CronTrigger(day='*'),
