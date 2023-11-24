@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'django_apscheduler',
     'django_bootstrap5',
     'drf_yasg',
     'corsheaders',
