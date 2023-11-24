@@ -213,7 +213,7 @@ LOGGING = {
             'level': 'INFO',
             'filters': (),
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': BASE_DIR / f'logs/{datetime.date.today()}.log',
+            'filename': BASE_DIR / f'logs/{datetime.date.today()}_{APPLICATION_TYPE.name}.log',
             'maxBytes': 1024 * 1024 * 5,
             'backupCount': 5,
             'formatter': 'logback',
