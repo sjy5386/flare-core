@@ -14,6 +14,7 @@ services:
   batch:
     image: python:3.11
     environment:
+      - DJANGO_SETTINGS_MODULE=base.settings.prod
       - APPLICATION_TYPE=BATCH
     volumes:
       - .:/app
