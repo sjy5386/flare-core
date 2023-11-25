@@ -15,6 +15,7 @@ from pathlib import Path
 
 from corsheaders.defaults import default_methods, default_headers
 
+from .types import ApplicationType
 from .utils import get_secret_key, get_allowed_hosts, get_csrf_trusted_origins
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -33,6 +34,8 @@ ALLOWED_HOSTS = get_allowed_hosts()
 
 # Application definition
 
+APPLICATION_TYPE = ApplicationType[os.environ.get('APPLICATION_TYPE', 'API')]
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -41,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'django_apscheduler',
     'django_bootstrap5',
     'drf_yasg',
     'corsheaders',
@@ -50,6 +54,7 @@ INSTALLED_APPS = [
 
     'accounts.apps.AccountsConfig',
     'apis.apps.ApisConfig',
+    'batches.apps.BatchesConfig',
     'contacts.apps.ContactsConfig',
     'domains.apps.DomainsConfig',
     'dynamic_dns.apps.DynamicDnsConfig',
@@ -208,7 +213,7 @@ LOGGING = {
             'level': 'INFO',
             'filters': (),
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': BASE_DIR / f'logs/{datetime.date.today()}.log',
+            'filename': BASE_DIR / f'logs/{datetime.date.today()}_{APPLICATION_TYPE.name}.log',
             'maxBytes': 1024 * 1024 * 5,
             'backupCount': 5,
             'formatter': 'logback',
