@@ -14,7 +14,12 @@
             response.json()
         ).then(data => {
             console.log(data);
-            if (!data || data['count'] === 0 || data['results'].length === 0) {
+            if (!data || !data['results'] || data['results'].length === 0) {
+                if (data['detail']) {
+                    const p = document.createElement('p');
+                    p.innerText = data['detail'];
+                    document.querySelector('main .container').append(p);
+                }
                 return;
             }
             const keys = Object.keys(data['results'][0]);
