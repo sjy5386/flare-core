@@ -1,7 +1,9 @@
-from django.views.generic import ListView
-
-from .models import Domain
+from django.views.generic import TemplateView
 
 
-class DomainListView(ListView):
-    queryset = Domain.objects.filter(is_active=True, is_public=True)
+class DomainListView(TemplateView):
+    template_name = 'objects/object_list.html'
+    extra_context = {
+        'title': 'Domains',
+        'url': '/api/domains/',
+    }
