@@ -1,13 +1,11 @@
 from django.contrib.auth.decorators import login_required
 from django.forms import Form
-from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils.decorators import method_decorator
-from django.views.generic import ListView, FormView, DetailView
+from django.views.generic import ListView, FormView, DetailView, TemplateView
 
 from subdomains.models import Subdomain
-from .exceptions import DnsRecordNotFoundError
 from .forms import DnsRecordForm, ZoneImportForm
 from .models import Record
 from .providers import get_dns_record_provider
@@ -77,43 +75,17 @@ class DnsRecordCreateView(FormView):
 
 
 @method_decorator(login_required, name='dispatch')
-class DnsRecordDetailView(DetailView):
+class DnsRecordDetailView(TemplateView):
     template_name = 'objects/object_detail.html'
     extra_context = {
         'title': 'Record detail',
     }
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.subdomain = None
-
-    def dispatch(self, request, *args, **kwargs):
-        self.subdomain = get_object_or_404(Subdomain, id=kwargs['subdomain_id'], user=request.user)
-        return super(DnsRecordDetailView, self).dispatch(request, *args, **kwargs)
-
-    def get_object(self, queryset=None):
-        provider = get_dns_record_provider(self.subdomain.domain)
-        try:
-            obj = Record.retrieve_dns_record(provider, self.subdomain, self.kwargs['id'])
-            return {
-                'ID': obj.id,
-                'Service': obj.service,
-                'Protocol': obj.protocol,
-                'Name': obj.name,
-                'TTL': obj.ttl,
-                'Type': obj.type,
-                'Priority': obj.priority,
-                'Weight': obj.weight,
-                'Port': obj.port,
-                'Target': obj.target,
-            }
-        except DnsRecordNotFoundError as e:
-            raise Http404(e)
-
     def get_context_data(self, **kwargs):
         context = super(DnsRecordDetailView, self).get_context_data(**kwargs)
+        subdomain_id = self.kwargs['subdomain_id']
         context.update({
-            'subdomain': self.subdomain,
+            'url': f'/api/subdomains/{subdomain_id}/dns-records/{self.kwargs['id']}/',
         })
         return context
 
