@@ -1,0 +1,41 @@
+{% extends 'common/base.html' %}
+{% load django_bootstrap5 %}
+{% block content %}
+    <h3>{{ title }}</h3>
+    <table id="list" class="table">
+        <thead>
+        <tr></tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+    <script>
+        fetch('{{ url }}').then(response =>
+            response.json()
+        ).then(data => {
+            console.log(data);
+            if (!data || data['count'] === 0 || data['results'].length === 0) {
+                return;
+            }
+            const keys = Object.keys(data['results'][0]);
+            const theadTr = document.querySelector('#list thead tr');
+            keys.forEach(e => {
+                const th = document.createElement('th');
+                th.innerText = e;
+                theadTr.append(th);
+            });
+            const tbody = document.querySelector('#list tbody');
+            data['results'].forEach(e => {
+                const tr = document.createElement('tr');
+                keys.forEach(f => {
+                    const td = document.createElement('td');
+                    td.innerText = e[f];
+                    tr.append(td);
+                });
+                tbody.append(tr);
+            });
+        }).catch(error => {
+            console.error(error);
+        })
+    </script>
+{% endblock %}
