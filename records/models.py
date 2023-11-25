@@ -71,12 +71,12 @@ class Record(models.Model):
                 for dns_record in cls.objects.filter(subdomain_name=subdomain.name):
                     if dns_record.provider_id not in provider_dns_record_id_set:
                         dns_record.delete()
-                record_dict = {provider_id: x for provider_id, x in
-                               map(lambda x: (x.provider_id, x), cls.objects.filter(subdomain_name=subdomain.name))}
+                dns_record_dict = {provider_id: x for provider_id, x in
+                                   map(lambda x: (x.provider_id, x), cls.objects.filter(subdomain_name=subdomain.name))}
                 for provider_dns_record in provider_dns_records:
                     provider_id = provider_dns_record.get('provider_id')
-                    if provider_id in record_dict:
-                        record_dict.get(provider_id).update_by_provider_record(provider_dns_record)
+                    if provider_id in dns_record_dict:
+                        dns_record_dict.get(provider_id).update_by_provider_dns_record(provider_dns_record)
                         continue
                     provider_dns_record.update({
                         'subdomain_name': subdomain.name,
@@ -120,7 +120,8 @@ class Record(models.Model):
             dns_record = cls.objects.get(subdomain_name=subdomain.name, pk=id)
             if provider:
                 try:
-                    provider_dns_record = provider.retrieve_dns_record(subdomain.name, subdomain.domain, dns_record.provider_id)
+                    provider_dns_record = provider.retrieve_dns_record(subdomain.name, subdomain.domain,
+                                                                       dns_record.provider_id)
                     if provider_dns_record is None:
                         dns_record.delete()
                         dns_record = None
@@ -138,7 +139,8 @@ class Record(models.Model):
             raise DnsRecordNotFoundError()
 
     @classmethod
-    def update_dns_record(cls, provider: BaseDnsRecordProvider | None, subdomain: Subdomain, id: int, **kwargs) -> 'Record':
+    def update_dns_record(cls, provider: BaseDnsRecordProvider | None, subdomain: Subdomain, id: int,
+                          **kwargs) -> 'Record':
         if 'name' in kwargs.keys() and not kwargs.get('name', '').endswith(subdomain.name):
             raise DnsRecordBadRequestError('Name is invalid.')
         if kwargs.get('type') in ('NS', 'CNAME', 'MX', 'SRV',) and not kwargs.get('target').endswith('.'):
