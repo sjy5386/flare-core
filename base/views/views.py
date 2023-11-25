@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.views.decorators.cache import cache_page
 from django.views.decorators.http import require_GET
 
-from .settings.common import BASE_DIR
+from ..settings import BASE_DIR
 from contacts.models import Contact
 from shorturls.forms import ShortUrlLiteForm
 from shorturls.models import ShortUrl
