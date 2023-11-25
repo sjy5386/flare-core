@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
-from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView, TemplateView
 
 from .forms import ContactForm
 from .models import Contact
@@ -31,27 +31,18 @@ class ContactCreateView(CreateView):
 
 
 @method_decorator(login_required, name='dispatch')
-class ContactDetailView(DetailView):
+class ContactDetailView(TemplateView):
     template_name = 'objects/object_detail.html'
     extra_context = {
         'title': 'Contact detail',
     }
 
-    def get_object(self, queryset=None):
-        obj = get_object_or_404(Contact, id=self.kwargs['id'], user=self.request.user)
-        return {
-            "ID": obj.id,
-            'Name': obj.name,
-            'Organization': obj.organization,
-            'Street': obj.street,
-            'City': obj.city,
-            'State/Province': obj.state_province,
-            'Postal Code': obj.postal_code,
-            'Country': obj.country,
-            'Phone': obj.phone,
-            'Fax': obj.fax,
-            'Email': obj.email,
-        }
+    def get_context_data(self, **kwargs):
+        context = super(ContactDetailView, self).get_context_data(**kwargs)
+        context.update({
+            'url': f'/api/contacts/{self.kwargs['id']}/',
+        })
+        return context
 
 
 @method_decorator(login_required, name='dispatch')
