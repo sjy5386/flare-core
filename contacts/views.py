@@ -2,8 +2,9 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView, TemplateView
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 
+from base.views.generic import RestView
 from .forms import ContactForm
 from .models import Contact
 
@@ -31,18 +32,13 @@ class ContactCreateView(CreateView):
 
 
 @method_decorator(login_required, name='dispatch')
-class ContactDetailView(TemplateView):
+class ContactDetailView(RestView):
     template_name = 'objects/object_detail.html'
-    extra_context = {
-        'title': 'Contact detail',
-    }
+    title = 'Contact detail'
 
-    def get_context_data(self, **kwargs):
-        context = super(ContactDetailView, self).get_context_data(**kwargs)
-        context.update({
-            'url': f'/api/contacts/{self.kwargs['id']}/',
-        })
-        return context
+    def get_url(self) -> str:
+        object_id = self.kwargs['id']
+        return f'/api/contacts/{object_id}/'
 
 
 @method_decorator(login_required, name='dispatch')

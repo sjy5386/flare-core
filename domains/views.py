@@ -1,9 +1,7 @@
-from django.views.generic import TemplateView
+from base.views.generic import RestView
 
 
-class DomainListView(TemplateView):
+class DomainListView(RestView):
     template_name = 'objects/object_list.html'
-    extra_context = {
-        'title': 'Domains',
-        'url': '/api/domains/',
-    }
+    title = 'Domains'
+    url = '/api/domains/'

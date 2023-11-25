@@ -3,8 +3,9 @@ from django.forms import Form
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils.decorators import method_decorator
-from django.views.generic import ListView, FormView, DetailView, TemplateView
+from django.views.generic import ListView, FormView, DetailView
 
+from base.views.generic import RestView
 from subdomains.models import Subdomain
 from .forms import DnsRecordForm, ZoneImportForm
 from .models import Record
@@ -75,19 +76,14 @@ class DnsRecordCreateView(FormView):
 
 
 @method_decorator(login_required, name='dispatch')
-class DnsRecordDetailView(TemplateView):
+class DnsRecordDetailView(RestView):
     template_name = 'objects/object_detail.html'
-    extra_context = {
-        'title': 'Record detail',
-    }
+    title = 'DNS Record detail'
 
-    def get_context_data(self, **kwargs):
-        context = super(DnsRecordDetailView, self).get_context_data(**kwargs)
+    def get_url(self) -> str:
         subdomain_id = self.kwargs['subdomain_id']
-        context.update({
-            'url': f'/api/subdomains/{subdomain_id}/dns-records/{self.kwargs['id']}/',
-        })
-        return context
+        object_id = self.kwargs['id']
+        return f'/api/subdomains/{subdomain_id}/dns-records/{object_id}/'
 
 
 @method_decorator(login_required, name='dispatch')
