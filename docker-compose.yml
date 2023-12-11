@@ -1,6 +1,8 @@
 services:
-  app:
+  api:
     image: python:3.11
+    environment:
+      - APPLICATION_TYPE=API
     volumes:
       - .:/app
     working_dir: /app
@@ -8,4 +10,15 @@ services:
       - 8000:8000
     extra_hosts:
       - host.docker.internal:host-gateway
-    entrypoint: [ "/bin/bash", "./workflows/run.sh" ]
+    entrypoint: [ "/bin/bash", "./workflows/run-api.sh" ]
+  batch:
+    image: python:3.11
+    environment:
+      - DJANGO_SETTINGS_MODULE=base.settings.prod
+      - APPLICATION_TYPE=BATCH
+    volumes:
+      - .:/app
+    working_dir: /app
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    entrypoint: [ "/bin/bash", "./workflows/run-batch.sh" ]

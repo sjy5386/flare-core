@@ -2,12 +2,14 @@ from enum import Enum
 
 from domains.models import Domain
 from .base import BaseDnsRecordProvider
+from .cloudflare import CloudflareDnsRecordProvider
 from .digitalocean import DigitalOceanDnsRecordProvider
 from .linode import LinodeDnsRecordProvider
 from .vultr import VultrDnsRecordProvider
 
 
 class DnsRecordProvider(Enum):
+    CLOUDFLARE = (CloudflareDnsRecordProvider,)
     DIGITALOCEAN = (DigitalOceanDnsRecordProvider,)
     LINODE = (LinodeDnsRecordProvider,)
     VULTR = (VultrDnsRecordProvider,)

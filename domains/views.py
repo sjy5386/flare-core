@@ -1,7 +1,7 @@
-from django.views.generic import ListView
-
-from .models import Domain
+from base.views.generic import RestView
 
 
-class DomainListView(ListView):
-    queryset = Domain.objects.filter(is_active=True, is_public=True)
+class DomainListView(RestView):
+    template_name = 'objects/object_list.html'
+    title = 'Domains'
+    url = '/api/domains/'

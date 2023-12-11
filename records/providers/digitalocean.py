@@ -5,7 +5,7 @@ import requests
 
 from domains.models import Domain
 from .base import BaseDnsRecordProvider
-from ..exceptions import RecordProviderError
+from ..exceptions import DnsRecordProviderError
 
 
 class DigitalOceanDnsRecordProvider(BaseDnsRecordProvider):
@@ -15,7 +15,7 @@ class DigitalOceanDnsRecordProvider(BaseDnsRecordProvider):
         'Authorization': f'Bearer {token}',
     }
 
-    def list_records(self, subdomain_name: str, domain: Domain) -> list[dict[str, Any]]:
+    def list_dns_records(self, subdomain_name: str, domain: Domain) -> list[dict[str, Any]]:
         response = requests.get(self.host + f'/v2/domains/{domain.name}/records', headers=self.headers,
                                 params={
                                     'per_page': 200,
@@ -23,42 +23,42 @@ class DigitalOceanDnsRecordProvider(BaseDnsRecordProvider):
         try:
             response.raise_for_status()
         except requests.HTTPError:
-            raise RecordProviderError(response.json())
+            raise DnsRecordProviderError(response.json())
         return list(filter(lambda x: x.get('name').endswith(subdomain_name),
-                           map(self.from_digitalocean_record, response.json().get('domain_records'))))
+                           map(self.from_digitalocean_dns_record, response.json().get('domain_records'))))
 
-    def create_record(self, subdomain_name: str, domain: Domain, **kwargs) -> dict[str, Any]:
+    def create_dns_record(self, subdomain_name: str, domain: Domain, **kwargs) -> dict[str, Any]:
         response = requests.post(self.host + f'/v2/domains/{domain.name}/records', headers=self.headers,
-                                 json=self.to_digitalocean_record(kwargs))
+                                 json=self.to_digitalocean_dns_record(kwargs))
         try:
             response.raise_for_status()
         except requests.HTTPError:
-            raise RecordProviderError(response.json())
-        return self.from_digitalocean_record(response.json().get('domain_record'))
+            raise DnsRecordProviderError(response.json())
+        return self.from_digitalocean_dns_record(response.json().get('domain_record'))
 
-    def retrieve_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> dict[str, Any] | None:
+    def retrieve_dns_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> dict[str, Any] | None:
         response = requests.get(self.host + f'/v2/domains/{domain.name}/records/{provider_id}', headers=self.headers)
         try:
             response.raise_for_status()
         except requests.HTTPError:
-            raise RecordProviderError(response.json())
-        return self.from_digitalocean_record(response.json().get('domain_record'))
+            raise DnsRecordProviderError(response.json())
+        return self.from_digitalocean_dns_record(response.json().get('domain_record'))
 
-    def update_record(self, subdomain_name: str, domain: Domain, provider_id: str, **kwargs) -> dict[str, Any]:
+    def update_dns_record(self, subdomain_name: str, domain: Domain, provider_id: str, **kwargs) -> dict[str, Any]:
         response = requests.put(self.host + f'/v2/domains/{domain.name}/records/{provider_id}', headers=self.headers,
-                                json=self.to_digitalocean_record(kwargs))
+                                json=self.to_digitalocean_dns_record(kwargs))
         try:
             response.raise_for_status()
         except requests.HTTPError:
-            raise RecordProviderError(response.json())
-        return self.from_digitalocean_record(response.json().get('domain_record'))
+            raise DnsRecordProviderError(response.json())
+        return self.from_digitalocean_dns_record(response.json().get('domain_record'))
 
-    def delete_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> None:
+    def delete_dns_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> None:
         response = requests.delete(self.host + f'/v2/domains/{domain.name}/records/{provider_id}', headers=self.headers)
         try:
             response.raise_for_status()
         except requests.HTTPError:
-            raise RecordProviderError(response.json())
+            raise DnsRecordProviderError(response.json())
 
     def get_nameservers(self, domain: Domain = None) -> list[str]:
         return [
@@ -68,32 +68,32 @@ class DigitalOceanDnsRecordProvider(BaseDnsRecordProvider):
         ]
 
     @staticmethod
-    def from_digitalocean_record(digitalocean_record: dict[str, Any]) -> dict[str, Any]:
+    def from_digitalocean_dns_record(digitalocean_dns_record: dict[str, Any]) -> dict[str, Any]:
         from ..models import Record
-        service, protocol, name = Record.split_name(digitalocean_record.get('name'))
+        service, protocol, name = Record.split_name(digitalocean_dns_record.get('name'))
         return {
-            'provider_id': str(digitalocean_record.get('id')),
+            'provider_id': str(digitalocean_dns_record.get('id')),
             'name': name,
-            'ttl': digitalocean_record.get('ttl'),
-            'type': digitalocean_record.get('type'),
+            'ttl': digitalocean_dns_record.get('ttl'),
+            'type': digitalocean_dns_record.get('type'),
             'service': service,
             'protocol': protocol,
-            'target': digitalocean_record.get('data'),
-            'priority': digitalocean_record.get('priority'),
-            'weight': digitalocean_record.get('weight'),
-            'port': digitalocean_record.get('port'),
+            'target': digitalocean_dns_record.get('data'),
+            'priority': digitalocean_dns_record.get('priority'),
+            'weight': digitalocean_dns_record.get('weight'),
+            'port': digitalocean_dns_record.get('port'),
         }
 
     @staticmethod
-    def to_digitalocean_record(record: dict[str, Any]) -> dict[str, Any]:
+    def to_digitalocean_dns_record(dns_record: dict[str, Any]) -> dict[str, Any]:
         from ..models import Record
-        name = Record.join_name(record.get('service'), record.get('protocol'), record.get('name'))
+        name = Record.join_name(dns_record.get('service'), dns_record.get('protocol'), dns_record.get('name'))
         return {
             'name': name,
-            'ttl': record.get('ttl'),
-            'type': record.get('type'),
-            'data': record.get('target'),
-            'priority': record.get('priority'),
-            'weight': record.get('weight'),
-            'port': record.get('port'),
+            'ttl': dns_record.get('ttl'),
+            'type': dns_record.get('type'),
+            'data': dns_record.get('target'),
+            'priority': dns_record.get('priority'),
+            'weight': dns_record.get('weight'),
+            'port': dns_record.get('port'),
         }

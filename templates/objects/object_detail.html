@@ -2,15 +2,46 @@
 {% load django_bootstrap5 %}
 {% block content %}
     <h3>{{ title }}</h3>
-    <table class="table">
-        {% for k, v in object.items %}
-            <tr>
-                <th scope="row">{{ k }}</th>
-                <td>{{ v }}</td>
-            </tr>
-        {% endfor %}
+    <table id="detail" class="table">
+        <tbody></tbody>
+        {% if not url %}
+            {% for k, v in object.items %}
+                <tr>
+                    <th scope="row">{{ k }}</th>
+                    <td>{{ v }}</td>
+                </tr>
+            {% endfor %}
+        {% endif %}
     </table>
     {% bootstrap_button content="OK" button_type="link" button_class="btn-primary" href=".." %}
     {% bootstrap_button content="Update" button_type="link" button_class="btn-secondary" href="./update" %}
     {% bootstrap_button content="Delete" button_type="link" button_class="btn-danger" href="./delete" %}
+    <script>
+        fetch('{{ url }}').then(response =>
+            response.json()
+        ).then(data => {
+            console.log(data);
+            if (!data) {
+                if (data['detail']) {
+                    const p = document.createElement('p');
+                    p.innerText = data['detail'];
+                    document.querySelector('main .container').append(p);
+                }
+                return;
+            }
+            const detailTable = document.querySelector('#detail tbody');
+            Object.entries(data).forEach(([k, v]) => {
+                const tr = document.createElement('tr');
+                const th = document.createElement('th');
+                th.innerText = k;
+                tr.append(th);
+                const td = document.createElement('td');
+                td.innerText = v;
+                tr.append(td);
+                detailTable.append(tr);
+            });
+        }).catch(error => {
+            console.error(error);
+        })
+    </script>
 {% endblock %}

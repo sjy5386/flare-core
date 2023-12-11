@@ -79,8 +79,8 @@ class RecordSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         provider = records.providers.get_dns_record_provider(validated_data.get('subdomain').domain)
-        return Record.create_record(provider, **validated_data)
+        return Record.create_dns_record(provider, **validated_data)
 
     def update(self, instance, validated_data):
         provider = records.providers.get_dns_record_provider(validated_data.get('subdomain').domain)
-        return Record.update_record(provider, id=instance.id, **validated_data)
+        return Record.update_dns_record(provider, id=instance.id, **validated_data)
