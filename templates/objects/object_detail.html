@@ -16,6 +16,9 @@
     {% bootstrap_button content="OK" button_type="link" button_class="btn-primary" href=".." %}
     {% bootstrap_button content="Update" button_type="link" button_class="btn-secondary" href="./update" %}
     {% bootstrap_button content="Delete" button_type="link" button_class="btn-danger" href="./delete" %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"
+            integrity="sha512-CNgIRecGo7nphbeZ04Sc13ka07paqdeTu0WR1IM4kNcpmBAUSHSQX0FslNhTDadL4O5SAGapGt4FodqL8My0mA=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
         fetch('{{ url }}').then(response =>
             response.json()
@@ -36,7 +39,18 @@
                 th.innerText = k;
                 tr.append(th);
                 const td = document.createElement('td');
-                td.innerText = v;
+                if (URL.canParse(v)) {
+                    const a = document.createElement('a');
+                    a.href = v;
+                    a.target = '_blank';
+                    a.innerText = v;
+                    td.append(a);
+                    const qrcodeDiv = document.createElement('div');
+                    new QRCode(qrcodeDiv, v);
+                    td.append(qrcodeDiv);
+                } else {
+                    td.innerText = v;
+                }
                 tr.append(td);
                 detailTable.append(tr);
             });
