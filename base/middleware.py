@@ -24,10 +24,17 @@ class LoggingMiddleware:
         self.logger.info(f'User: {request.user}')
         self.logger.info(f'Response: {response.status_code}')
         self.logger.info(f'Response Headers: {response.headers}')
-        response_body = str(response.content, 'utf-8').replace('\n', '')
+        response_body = self.get_response_body(response)
         self.logger.info(f'Response Body: {response_body}')
         return response
 
     def process_exception(self, request: HttpRequest, exception: Exception) -> HttpResponse | None:
         self.logger.error(''.join(traceback.format_exception(exception)))
         return
+
+    @staticmethod
+    def get_response_body(response: HttpResponse) -> str | bytes:
+        try:
+            return str(response.content, 'utf-8').replace('\n', '')
+        except UnicodeDecodeError:
+            return response.content
