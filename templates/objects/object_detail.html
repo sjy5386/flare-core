@@ -45,9 +45,13 @@
                     a.target = '_blank';
                     a.innerText = v;
                     td.append(a);
-                    const qrcodeDiv = document.createElement('div');
-                    new QRCode(qrcodeDiv, v);
-                    td.append(qrcodeDiv);
+                    try {
+                        const qrcodeDiv = document.createElement('div');
+                        new QRCode(qrcodeDiv, v);
+                        td.append(qrcodeDiv);
+                    } catch (error) {
+                        console.error(error);
+                    }
                 } else {
                     td.innerText = v;
                 }
