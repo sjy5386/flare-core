@@ -30,6 +30,18 @@ def index(request: HttpRequest) -> HttpResponse:
 
 @cache_page(86400)
 @require_GET
+def favicon_ico(request: HttpRequest) -> HttpResponse:
+    filename = BASE_DIR / 'favicon.ico'
+    if not os.path.isfile(filename):
+        raise Http404('The favicon.ico file cannot be found.')
+    f = open(filename, 'rb')
+    content = f.read()
+    f.close()
+    return HttpResponse(content, content_type='image/x-icon')
+
+
+@cache_page(86400)
+@require_GET
 def robots_txt(request: HttpRequest) -> HttpResponse:
     filename = BASE_DIR / 'robots.txt'
     if not os.path.isfile(filename):
