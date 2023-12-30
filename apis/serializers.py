@@ -28,6 +28,7 @@ class DomainSerializer(serializers.ModelSerializer):
 
 class ShortUrlSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    short_url = serializers.URLField(read_only=True)
 
     class Meta:
         model = ShortUrl
