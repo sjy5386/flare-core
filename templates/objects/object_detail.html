@@ -36,7 +36,15 @@
                 th.innerText = k;
                 tr.append(th);
                 const td = document.createElement('td');
-                td.innerText = v;
+                if (URL.canParse(v)) {
+                    const a = document.createElement('a');
+                    a.href = v;
+                    a.target = '_blank';
+                    a.innerText = v;
+                    td.append(a);
+                } else {
+                    td.innerText = v;
+                }
                 tr.append(td);
                 detailTable.append(tr);
             });
