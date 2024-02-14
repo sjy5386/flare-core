@@ -1,8 +1,7 @@
 from rest_framework import serializers
 
-import records.providers
-import records.providers
-from records.models import Record
+from . import providers
+from .models import Record
 
 
 class RecordSerializer(serializers.ModelSerializer):
@@ -16,9 +15,9 @@ class RecordSerializer(serializers.ModelSerializer):
         read_only_fields = ['created_at', 'updated_at']
 
     def create(self, validated_data):
-        provider = records.providers.get_dns_record_provider(validated_data.get('subdomain').domain)
+        provider = providers.get_dns_record_provider(validated_data.get('subdomain').domain)
         return Record.create_dns_record(provider, **validated_data)
 
     def update(self, instance, validated_data):
-        provider = records.providers.get_dns_record_provider(validated_data.get('subdomain').domain)
+        provider = providers.get_dns_record_provider(validated_data.get('subdomain').domain)
         return Record.update_dns_record(provider, id=instance.id, **validated_data)

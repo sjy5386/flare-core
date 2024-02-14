@@ -16,11 +16,11 @@ from contacts.serializers import ContactSerializer
 from domains.models import Domain
 from domains.serializers import DomainSerializer
 from records.models import Record
+from records.serializers import RecordSerializer
 from shorturls.models import ShortUrl
 from shorturls.serializers import ShortUrlSerializer
 from subdomains.models import Subdomain
 from subdomains.serializers import SubdomainSerializer
-from .serializers import RecordSerializer
 
 schema_view = get_schema_view(
     openapi.Info(
