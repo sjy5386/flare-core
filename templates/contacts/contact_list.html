@@ -7,7 +7,7 @@
     <table class="table">
         <thead>
         <tr>
-            <th scope="col">ID</th>
+            <th scope="col">UUID</th>
             <th scope="col">Name</th>
             <th scope="col">Organization</th>
             <th scope="col">Street</th>
@@ -23,7 +23,7 @@
         <tbody>
         {% for object in object_list %}
             <tr>
-                <td><a href="{% url 'contacts:detail' object.id %}">{{ object.id }}</a></td>
+                <td><a href="{% url 'contacts:detail' object.uuid %}">{{ object.uuid }}</a></td>
                 <td>{{ object.name }}</td>
                 <td>{{ object.organization }}</td>
                 <td>{{ object.street }}</td>
