@@ -35,6 +35,7 @@ schema_view = get_schema_view(
 class ContactViewSet(viewsets.ModelViewSet):
     serializer_class = ContactSerializer
     permission_classes = [permissions.IsAuthenticated]
+    lookup_field = 'uuid'
 
     def get_queryset(self):
         return Contact.objects.filter(user=self.request.user)
@@ -44,11 +45,13 @@ class DomainViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Domain.objects.filter(is_active=True, is_public=True)
     serializer_class = DomainSerializer
     permission_classes = [permissions.IsAuthenticated]
+    lookup_field = 'uuid'
 
 
 class ShortUrlViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = ShortUrlSerializer
     permission_classes = [permissions.IsAuthenticated]
+    lookup_field = 'uuid'
 
     def get_queryset(self):
         provider = shorturls.providers.get_short_url_provider(None)
@@ -58,6 +61,7 @@ class ShortUrlViewSet(viewsets.ReadOnlyModelViewSet):
 class SubdomainViewSet(viewsets.ModelViewSet):
     serializer_class = SubdomainSerializer
     permission_classes = [permissions.IsAuthenticated]
+    lookup_field = 'uuid'
 
     def get_queryset(self):
         return Subdomain.objects.filter(user=self.request.user)
@@ -81,13 +85,14 @@ def whois(request: Request) -> Response:
 class RecordViewSet(viewsets.ModelViewSet):
     serializer_class = RecordSerializer
     permission_classes = [permissions.IsAuthenticated]
+    lookup_field = 'uuid'
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.subdomain = None
 
     def dispatch(self, request, *args, **kwargs):
-        self.subdomain = get_object_or_404(Subdomain, pk=kwargs['subdomain_pk'])
+        self.subdomain = get_object_or_404(Subdomain, uuid=kwargs['subdomain_uuid'])
         return super(RecordViewSet, self).dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
