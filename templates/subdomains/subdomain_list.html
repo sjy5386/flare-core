@@ -10,7 +10,7 @@
     <table class="table">
         <thead>
         <tr>
-            <th scope="col">ID</th>
+            <th scope="col">UUID</th>
             <th scope="col">Name</th>
             <th scope="col">DNS Records</th>
         </tr>
@@ -18,7 +18,7 @@
         <tbody>
         {% for object in object_list %}
             <tr>
-                <td><a href="{% url 'subdomains:detail' object.id %}">{{ object.id }}</a></td>
+                <td><a href="{% url 'subdomains:detail' object.uuid %}">{{ object.uuid }}</a></td>
                 <td><a href="http://{{ object }}">{{ object }}</a></td>
                 <td><a href="{% url 'dns_records:list' object.id %}">{{ object.records }}</a></td>
             </tr>
