@@ -20,7 +20,7 @@
             <tr>
                 <td><a href="{% url 'subdomains:detail' object.uuid %}">{{ object.uuid }}</a></td>
                 <td><a href="http://{{ object }}">{{ object }}</a></td>
-                <td><a href="{% url 'dns_records:list' object.id %}">{{ object.records }}</a></td>
+                <td><a href="{% url 'dns_records:list' object.uuid %}">{{ object.records }}</a></td>
             </tr>
         {% endfor %}
         </tbody>
