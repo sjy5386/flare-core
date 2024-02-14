@@ -15,6 +15,8 @@ class RecordSerializer(serializers.ModelSerializer):
             'updated_at',
             'subdomain_name',
             'domain',
+            'domain_uuid',
+            'domain_name',
             'name',
             'ttl',
             'type',
