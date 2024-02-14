@@ -2,6 +2,7 @@ import datetime
 import re
 from typing import List, Tuple, Dict, Optional, Any
 
+import uuid
 from django.db import models
 
 from base.settings.common import AUTH_USER_MODEL
@@ -11,6 +12,7 @@ from .validators import validate_domain_name, validate_reserved_name
 
 
 class Subdomain(models.Model):
+    uuid = models.UUIDField(primary_key=False, unique=True, default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -126,6 +128,7 @@ class ReservedName(models.Model):
 
 
 class SubdomainStatus(models.Model):
+    uuid = models.UUIDField(primary_key=False, unique=True, default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
