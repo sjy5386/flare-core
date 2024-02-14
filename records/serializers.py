@@ -5,14 +5,13 @@ from .models import Record
 
 
 class RecordSerializer(serializers.ModelSerializer):
-    subdomain = serializers.CharField(read_only=True)
-
     class Meta:
         model = Record
         fields = (
             'uuid',
             'created_at',
             'updated_at',
+            'subdomain_uuid',
             'subdomain_name',
             'domain',
             'domain_uuid',
@@ -28,7 +27,6 @@ class RecordSerializer(serializers.ModelSerializer):
             'target',
             'full_name',
             'data',
-            'subdomain',
         )
         read_only_fields = (
             'uuid',

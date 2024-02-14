@@ -56,6 +56,14 @@ class Record(models.Model):
         return Subdomain.objects.get(name=self.subdomain_name, domain=self.domain)
 
     @property
+    def subdomain_uuid(self) -> str:
+        return self.subdomain.uuid
+
+    @subdomain_uuid.setter
+    def subdomain_uuid(self, value: str) -> None:
+        self.subdomain_name = Subdomain.objects.get(uuid=value).name
+
+    @property
     def domain_uuid(self) -> str:
         return self.domain.uuid
 
