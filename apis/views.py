@@ -12,11 +12,12 @@ import records.providers
 import shorturls.providers
 from base.settings.common import SITE_NAME
 from contacts.models import Contact
+from contacts.serializers import ContactSerializer
 from domains.models import Domain
 from records.models import Record
 from shorturls.models import ShortUrl
 from subdomains.models import Subdomain
-from .serializers import ContactSerializer, DomainSerializer, ShortUrlSerializer, SubdomainSerializer, RecordSerializer
+from .serializers import DomainSerializer, ShortUrlSerializer, SubdomainSerializer, RecordSerializer
 
 schema_view = get_schema_view(
     openapi.Info(

@@ -11,15 +11,6 @@ from shorturls.models import ShortUrl
 from subdomains.models import Subdomain
 
 
-class ContactSerializer(serializers.ModelSerializer):
-    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
-
-    class Meta:
-        model = Contact
-        fields = '__all__'
-        read_only_fields = ['created_at', 'updated_at']
-
-
 class DomainSerializer(serializers.ModelSerializer):
     class Meta:
         model = Domain
