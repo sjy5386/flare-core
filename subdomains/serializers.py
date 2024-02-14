@@ -27,6 +27,10 @@ class SubdomainSerializer(serializers.ModelSerializer):
             'admin',
             'tech',
             'billing',
+            'registrant_contact_uuid',
+            'admin_contact_uuid',
+            'tech_contact_uuid',
+            'billing_contact_uuid',
             'is_private',
             'full_name',
         )

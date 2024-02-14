@@ -54,6 +54,38 @@ class Subdomain(models.Model):
     def has_expired(self) -> bool:
         return self.expiry < datetime.datetime.now(tz=datetime.timezone.utc)
 
+    @property
+    def registrant_contact_uuid(self) -> str:
+        return self.registrant.uuid
+
+    @registrant_contact_uuid.setter
+    def registrant_contact_uuid(self, value: str) -> None:
+        self.registrant = Contact.objects.get(uuid=value)
+
+    @property
+    def admin_contact_uuid(self) -> str:
+        return self.admin.uuid
+
+    @admin_contact_uuid.setter
+    def admin_contact_uuid(self, value: str) -> None:
+        self.admin = Contact.objects.get(uuid=value)
+
+    @property
+    def tech_contact_uuid(self) -> str:
+        return self.tech.uuid
+
+    @tech_contact_uuid.setter
+    def tech_contact_uuid(self, value: str) -> None:
+        self.tech = Contact.objects.get(uuid=value)
+
+    @property
+    def billing_contact_uuid(self) -> str:
+        return self.billing.uuid
+
+    @billing_contact_uuid.setter
+    def billing_contact_uuid(self, value: str) -> None:
+        self.billing = Contact.objects.get(uuid=value)
+
     def renew(self, period: datetime.timedelta = datetime.timedelta(days=90)) -> bool:
         now = datetime.datetime.now(tz=datetime.timezone.utc)
         if self.expiry - now <= datetime.timedelta(days=30):
