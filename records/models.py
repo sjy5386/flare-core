@@ -1,6 +1,7 @@
 import logging
 from typing import Any
 
+import uuid
 from django.core.cache import cache
 from django.db import models
 
@@ -20,6 +21,7 @@ class Record(models.Model):
         AAAA = 'AAAA', 'AAAA - IP6 Address',
         SRV = 'SRV', 'SRV - Server Selection'
 
+    uuid = models.UUIDField(primary_key=False, unique=True, default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
