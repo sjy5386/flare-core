@@ -5,16 +5,9 @@ from rest_framework.validators import UniqueTogetherValidator
 
 import records.providers
 from contacts.models import Contact
-from domains.models import Domain
 from records.models import Record
 from shorturls.models import ShortUrl
 from subdomains.models import Subdomain
-
-
-class DomainSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Domain
-        fields = ['id', 'name']
 
 
 class ShortUrlSerializer(serializers.ModelSerializer):

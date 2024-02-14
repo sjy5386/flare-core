@@ -14,10 +14,11 @@ from base.settings.common import SITE_NAME
 from contacts.models import Contact
 from contacts.serializers import ContactSerializer
 from domains.models import Domain
+from domains.serializers import DomainSerializer
 from records.models import Record
 from shorturls.models import ShortUrl
 from subdomains.models import Subdomain
-from .serializers import DomainSerializer, ShortUrlSerializer, SubdomainSerializer, RecordSerializer
+from .serializers import ShortUrlSerializer, SubdomainSerializer, RecordSerializer
 
 schema_view = get_schema_view(
     openapi.Info(
