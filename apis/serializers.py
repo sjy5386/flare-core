@@ -6,18 +6,7 @@ from rest_framework.validators import UniqueTogetherValidator
 import records.providers
 from contacts.models import Contact
 from records.models import Record
-from shorturls.models import ShortUrl
 from subdomains.models import Subdomain
-
-
-class ShortUrlSerializer(serializers.ModelSerializer):
-    user = serializers.HiddenField(default=serializers.CurrentUserDefault())
-    short_url = serializers.URLField(read_only=True)
-
-    class Meta:
-        model = ShortUrl
-        fields = '__all__'
-        read_only_fields = ['created_at', 'updated_at', 'short']
 
 
 class SubdomainSerializer(serializers.ModelSerializer):

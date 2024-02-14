@@ -17,8 +17,9 @@ from domains.models import Domain
 from domains.serializers import DomainSerializer
 from records.models import Record
 from shorturls.models import ShortUrl
+from shorturls.serializers import ShortUrlSerializer
 from subdomains.models import Subdomain
-from .serializers import ShortUrlSerializer, SubdomainSerializer, RecordSerializer
+from .serializers import SubdomainSerializer, RecordSerializer
 
 schema_view = get_schema_view(
     openapi.Info(
