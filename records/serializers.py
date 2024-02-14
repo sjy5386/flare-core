@@ -5,14 +5,36 @@ from .models import Record
 
 
 class RecordSerializer(serializers.ModelSerializer):
-    full_name = serializers.CharField(read_only=True)
-    data = serializers.CharField(read_only=True)
     subdomain = serializers.CharField(read_only=True)
 
     class Meta:
         model = Record
-        exclude = ('provider_id', 'subdomain_name', 'domain',)
-        read_only_fields = ['created_at', 'updated_at']
+        fields = (
+            'uuid',
+            'created_at',
+            'updated_at',
+            'subdomain_name',
+            'domain',
+            'name',
+            'ttl',
+            'type',
+            'service',
+            'protocol',
+            'priority',
+            'weight',
+            'port',
+            'target',
+            'full_name',
+            'data',
+            'subdomain',
+        )
+        read_only_fields = (
+            'uuid',
+            'created_at',
+            'updated_at',
+            'full_name',
+            'data',
+        )
 
     def create(self, validated_data):
         provider = providers.get_dns_record_provider(validated_data.get('subdomain').domain)
