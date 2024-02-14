@@ -35,6 +35,11 @@ class RecordSerializer(serializers.ModelSerializer):
             'full_name',
             'data',
         )
+        extra_kwargs = {
+            'domain': {
+                'write_only': True,
+            },
+        }
 
     def create(self, validated_data):
         provider = providers.get_dns_record_provider(validated_data.get('subdomain').domain)
