@@ -20,6 +20,8 @@ class SubdomainSerializer(serializers.ModelSerializer):
             'user',
             'name',
             'domain',
+            'domain_uuid',
+            'domain_name',
             'expiry',
             'registrant',
             'admin',
