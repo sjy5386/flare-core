@@ -5,9 +5,24 @@ from .models import ShortUrl
 
 class ShortUrlSerializer(serializers.ModelSerializer):
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
-    short_url = serializers.URLField(read_only=True)
 
     class Meta:
         model = ShortUrl
-        fields = '__all__'
-        read_only_fields = ['created_at', 'updated_at', 'short']
+        fields = (
+            'uuid',
+            'created_at',
+            'updated_at',
+            'user',
+            'domain',
+            'name',
+            'short',
+            'long_url',
+            'short_url',
+        )
+        read_only_fields = (
+            'uuid',
+            'created_at',
+            'updated_at',
+            'short',
+            'short_url',
+        )
