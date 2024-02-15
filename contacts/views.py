@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.views.generic import CreateView, UpdateView, DeleteView
 
 from base.views.generic import RestView
 from .forms import ContactForm
@@ -10,9 +10,10 @@ from .models import Contact
 
 
 @method_decorator(login_required, name='dispatch')
-class ContactListView(ListView):
-    def get_queryset(self):
-        return Contact.objects.filter(user=self.request.user)
+class ContactListView(RestView):
+    template_name = 'objects/object_list.html'
+    title = 'Contacts'
+    url = '/api/contacts/'
 
 
 @method_decorator(login_required, name='dispatch')
