@@ -4,7 +4,7 @@ from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, UpdateView, DeleteView
 
-from base.views.generic import RestView, RestListView
+from base.views.generic import RestListView, RestDetailView
 from .forms import ContactForm
 from .models import Contact
 
@@ -32,8 +32,7 @@ class ContactCreateView(CreateView):
 
 
 @method_decorator(login_required, name='dispatch')
-class ContactDetailView(RestView):
-    template_name = 'objects/object_detail.html'
+class ContactDetailView(RestDetailView):
     title = 'Contact detail'
 
     def get_url(self) -> str:

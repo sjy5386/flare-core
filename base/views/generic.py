@@ -32,3 +32,7 @@ class RestListView(RestView):
             'detail': int(self.detail),
         })
         return context
+
+
+class RestDetailView(RestView):
+    template_name = 'objects/object_detail.html'

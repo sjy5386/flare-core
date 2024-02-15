@@ -3,7 +3,7 @@ from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import FormView
 
-from base.views.generic import RestView, RestListView
+from base.views.generic import RestListView, RestDetailView
 from .forms import ShortUrlForm
 from .models import ShortUrl
 from .providers import get_short_url_provider
@@ -36,8 +36,7 @@ class ShortUrlCreateView(FormView):
 
 
 @method_decorator(login_required, name='dispatch')
-class ShortUrlDetailView(RestView):
-    template_name = 'objects/object_detail.html'
+class ShortUrlDetailView(RestDetailView):
     title = 'Short URL detail'
 
     def get_url(self) -> str:

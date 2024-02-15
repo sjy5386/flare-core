@@ -9,7 +9,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_GET
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView, FormView
 
-from base.views.generic import RestView
+from base.views.generic import RestDetailView
 from contacts.models import Contact
 from domains.models import Domain
 from .forms import SubdomainForm, SubdomainSearchForm, SubdomainWhoisForm, SubdomainContactForm
@@ -155,8 +155,7 @@ class SubdomainCreateView(CreateView):
 
 
 @method_decorator(login_required, name='dispatch')
-class SubdomainDetailView(RestView):
-    template_name = 'objects/object_detail.html'
+class SubdomainDetailView(RestDetailView):
     title = 'Subdomain detail'
 
     def get_url(self) -> str:
