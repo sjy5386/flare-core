@@ -1,7 +1,10 @@
 {% extends 'common/base.html' %}
 {% load django_bootstrap5 %}
 {% block content %}
-    <h3>{{ title }}</h3>
+    <div class="d-flex justify-content-between mb-3">
+        <h3>{{ title }}</h3>
+        {% bootstrap_button content="Create" button_type="link" button_class="btn-primary" href="./create" %}
+    </div>
     <table id="list" class="table">
         <thead>
         <tr></tr>
