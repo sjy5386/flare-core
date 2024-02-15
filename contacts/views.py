@@ -4,14 +4,13 @@ from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, UpdateView, DeleteView
 
-from base.views.generic import RestView
+from base.views.generic import RestView, RestListView
 from .forms import ContactForm
 from .models import Contact
 
 
 @method_decorator(login_required, name='dispatch')
-class ContactListView(RestView):
-    template_name = 'objects/object_list.html'
+class ContactListView(RestListView):
     title = 'Contacts'
     url = '/api/contacts/'
 

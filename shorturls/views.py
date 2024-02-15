@@ -3,15 +3,14 @@ from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import FormView
 
-from base.views.generic import RestView
+from base.views.generic import RestView, RestListView
 from .forms import ShortUrlForm
 from .models import ShortUrl
 from .providers import get_short_url_provider
 
 
 @method_decorator(login_required, name='dispatch')
-class ShortUrlListView(RestView):
-    template_name = 'objects/object_list.html'
+class ShortUrlListView(RestListView):
     title = 'Short URLs'
     url = '/api/short-urls/'
 

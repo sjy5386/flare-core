@@ -18,3 +18,7 @@ class RestView(TemplateView):
             'url': self.get_url(),
         })
         return context
+
+
+class RestListView(RestView):
+    template_name = 'objects/object_list.html'

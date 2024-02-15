@@ -1,7 +1,6 @@
-from base.views.generic import RestView
+from base.views.generic import RestListView
 
 
-class DomainListView(RestView):
-    template_name = 'objects/object_list.html'
+class DomainListView(RestListView):
     title = 'Domains'
     url = '/api/domains/'
