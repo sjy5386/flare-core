@@ -42,6 +42,12 @@
                         a.href = './' + e[f];
                         a.innerText = e[f];
                         td.append(a);
+                    } else if (URL.canParse(e[f])) {
+                        const a = document.createElement('a');
+                        a.href = e[f];
+                        a.target = '_blank';
+                        a.innerText = e[f];
+                        td.append(a);
                     } else {
                         td.innerText = e[f];
                     }
