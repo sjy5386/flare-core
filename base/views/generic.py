@@ -36,3 +36,13 @@ class RestListView(RestView):
 
 class RestDetailView(RestView):
     template_name = 'objects/object_detail.html'
+    update = True
+    delete = True
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'update': self.update,
+            'delete': self.delete,
+        })
+        return context

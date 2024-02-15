@@ -38,6 +38,8 @@ class ShortUrlCreateView(FormView):
 @method_decorator(login_required, name='dispatch')
 class ShortUrlDetailView(RestDetailView):
     title = 'Short URL detail'
+    update = False
+    delete = False
 
     def get_url(self) -> str:
         object_id = self.kwargs['id']
