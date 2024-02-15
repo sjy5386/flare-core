@@ -23,7 +23,7 @@ class DnsRecordListView(ListView):
         self.subdomain = None
 
     def dispatch(self, request, *args, **kwargs):
-        self.subdomain = get_object_or_404(Subdomain, id=kwargs['subdomain_id'], user=request.user)
+        self.subdomain = get_object_or_404(Subdomain, uuid=kwargs['subdomain_id'], user=request.user)
         return super(DnsRecordListView, self).dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
@@ -51,7 +51,7 @@ class DnsRecordCreateView(FormView):
         self.subdomain = None
 
     def dispatch(self, request, *args, **kwargs):
-        self.subdomain = get_object_or_404(Subdomain, id=kwargs['subdomain_id'], user=request.user)
+        self.subdomain = get_object_or_404(Subdomain, uuid=kwargs['subdomain_id'], user=request.user)
         return super(DnsRecordCreateView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -97,8 +97,8 @@ class DnsRecordUpdateView(FormView):
         self.record = None
 
     def dispatch(self, request, *args, **kwargs):
-        self.subdomain = get_object_or_404(Subdomain, id=kwargs['subdomain_id'], user=request.user)
-        self.record = get_object_or_404(Record, id=kwargs['id'])
+        self.subdomain = get_object_or_404(Subdomain, uuid=kwargs['subdomain_id'], user=request.user)
+        self.record = get_object_or_404(Record, uuid=kwargs['id'])
         return super(DnsRecordUpdateView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -152,8 +152,8 @@ class DnsRecordDeleteView(FormView):
         self.record = None
 
     def dispatch(self, request, *args, **kwargs):
-        self.subdomain = get_object_or_404(Subdomain, id=kwargs['subdomain_id'], user=request.user)
-        self.record = get_object_or_404(Record, id=kwargs['id'])
+        self.subdomain = get_object_or_404(Subdomain, uuid=kwargs['subdomain_id'], user=request.user)
+        self.record = get_object_or_404(Record, uuid=kwargs['id'])
         return super(DnsRecordDeleteView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -182,7 +182,7 @@ class ZoneExportView(DetailView):
         self.subdomain = None
 
     def dispatch(self, request, *args, **kwargs):
-        self.subdomain = get_object_or_404(Subdomain, id=kwargs['subdomain_id'], user=request.user)
+        self.subdomain = get_object_or_404(Subdomain, uuid=kwargs['subdomain_id'], user=request.user)
         return super(ZoneExportView, self).dispatch(request, *args, **kwargs)
 
     def get_object(self, queryset=None):
@@ -207,7 +207,7 @@ class ZoneImportView(FormView):
         self.subdomain = None
 
     def dispatch(self, request, *args, **kwargs):
-        self.subdomain = get_object_or_404(Subdomain, id=kwargs['subdomain_id'], user=request.user)
+        self.subdomain = get_object_or_404(Subdomain, uuid=kwargs['subdomain_id'], user=request.user)
         return super(ZoneImportView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):

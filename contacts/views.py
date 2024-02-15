@@ -51,7 +51,7 @@ class ContactUpdateView(UpdateView):
     }
 
     def get_object(self, queryset=None):
-        return get_object_or_404(Contact, id=self.kwargs['id'], user=self.request.user)
+        return get_object_or_404(Contact, uuid=self.kwargs['id'], user=self.request.user)
 
 
 @method_decorator(login_required, name='dispatch')
@@ -63,4 +63,4 @@ class ContactDeleteView(DeleteView):
     }
 
     def get_object(self, queryset=None):
-        return get_object_or_404(Contact, id=self.kwargs['id'], user=self.request.user)
+        return get_object_or_404(Contact, uuid=self.kwargs['id'], user=self.request.user)

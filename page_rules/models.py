@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 
 
@@ -6,6 +7,7 @@ class WebForwarding(models.Model):
         MOVED_PERMANENTLY = 301
         FOUND = 302
 
+    uuid = models.UUIDField(primary_key=False, unique=True, default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -17,6 +19,7 @@ class WebForwarding(models.Model):
 
 
 class DomainParking(models.Model):
+    uuid = models.UUIDField(primary_key=False, unique=True, default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

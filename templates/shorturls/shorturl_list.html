@@ -7,7 +7,7 @@
     <table class="table">
         <thead>
         <tr>
-            <th scope="col">ID</th>
+            <th scope="col">UUID</th>
             <th scope="col">Name</th>
             <th scope="col">Short URL</th>
             <th scope="col">Long URL</th>
@@ -17,7 +17,7 @@
         <tbody>
         {% for object in object_list %}
             <tr>
-                <td><a href="{% url 'short_urls:detail' object.id %}">{{ object.id }}</a></td>
+                <td><a href="{% url 'short_urls:detail' object.uuid %}">{{ object.uuid }}</a></td>
                 <td>{{ object.name }}</td>
                 <td><a href="{{ object.short_url }}">{{ object.short_url }}</a></td>
                 <td><a href="{{ object.long_url }}">{{ object.long_url }}</a></td>

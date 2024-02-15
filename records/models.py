@@ -1,6 +1,7 @@
 import logging
 from typing import Any
 
+import uuid
 from django.core.cache import cache
 from django.db import models
 
@@ -20,6 +21,7 @@ class Record(models.Model):
         AAAA = 'AAAA', 'AAAA - IP6 Address',
         SRV = 'SRV', 'SRV - Server Selection'
 
+    uuid = models.UUIDField(primary_key=False, unique=True, default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -52,6 +54,26 @@ class Record(models.Model):
     @property
     def subdomain(self) -> Subdomain:
         return Subdomain.objects.get(name=self.subdomain_name, domain=self.domain)
+
+    @property
+    def subdomain_uuid(self) -> str:
+        return self.subdomain.uuid
+
+    @subdomain_uuid.setter
+    def subdomain_uuid(self, value: str) -> None:
+        self.subdomain_name = Subdomain.objects.get(uuid=value).name
+
+    @property
+    def domain_uuid(self) -> str:
+        return self.domain.uuid
+
+    @domain_uuid.setter
+    def domain_uuid(self, value: str) -> None:
+        self.domain = Domain.objects.get(uuid=value)
+
+    @property
+    def domain_name(self) -> str:
+        return self.domain.name
 
     def __str__(self):
         return f'{self.full_name} {self.ttl} IN {self.type} {self.data}'

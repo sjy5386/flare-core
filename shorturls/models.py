@@ -4,6 +4,7 @@ import secrets
 from typing import Optional
 from urllib.parse import urlparse
 
+import uuid
 from django.core.cache import cache
 from django.db import models
 
@@ -15,6 +16,7 @@ from .validators import validate_filter_long_url
 
 
 class ShortUrl(models.Model):
+    uuid = models.UUIDField(primary_key=False, unique=True, default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -30,6 +32,18 @@ class ShortUrl(models.Model):
         constraints = [
             models.UniqueConstraint(fields=['domain', 'short'], name='unique_domain_short'),
         ]
+
+    @property
+    def domain_uuid(self) -> str:
+        return self.domain.uuid
+
+    @domain_uuid.setter
+    def domain_uuid(self, value: str) -> None:
+        self.domain = Domain.objects.get(uuid=value)
+
+    @property
+    def domain_name(self) -> str:
+        return self.domain.name
 
     @property
     def short_url(self) -> str:
@@ -115,6 +129,7 @@ class Filter(models.Model):
         REGEX = 'RE', 'Regular expression'
         URL = 'UR', 'URL'
 
+    uuid = models.UUIDField(primary_key=False, unique=True, default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

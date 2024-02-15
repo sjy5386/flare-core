@@ -2,6 +2,7 @@ import datetime
 import re
 from typing import List, Tuple, Dict, Optional, Any
 
+import uuid
 from django.db import models
 
 from base.settings.common import AUTH_USER_MODEL
@@ -11,6 +12,7 @@ from .validators import validate_domain_name, validate_reserved_name
 
 
 class Subdomain(models.Model):
+    uuid = models.UUIDField(primary_key=False, unique=True, default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -34,11 +36,55 @@ class Subdomain(models.Model):
         ]
 
     @property
+    def domain_uuid(self) -> str:
+        return self.domain.uuid
+
+    @domain_uuid.setter
+    def domain_uuid(self, value: str) -> None:
+        self.domain = Domain.objects.get(uuid=value)
+
+    @property
+    def domain_name(self) -> str:
+        return self.domain.name
+
+    @property
     def full_name(self) -> str:
         return self.name + '.' + self.domain.name
 
     def has_expired(self) -> bool:
         return self.expiry < datetime.datetime.now(tz=datetime.timezone.utc)
+
+    @property
+    def registrant_contact_uuid(self) -> str:
+        return self.registrant.uuid
+
+    @registrant_contact_uuid.setter
+    def registrant_contact_uuid(self, value: str) -> None:
+        self.registrant = Contact.objects.get(uuid=value)
+
+    @property
+    def admin_contact_uuid(self) -> str:
+        return self.admin.uuid
+
+    @admin_contact_uuid.setter
+    def admin_contact_uuid(self, value: str) -> None:
+        self.admin = Contact.objects.get(uuid=value)
+
+    @property
+    def tech_contact_uuid(self) -> str:
+        return self.tech.uuid
+
+    @tech_contact_uuid.setter
+    def tech_contact_uuid(self, value: str) -> None:
+        self.tech = Contact.objects.get(uuid=value)
+
+    @property
+    def billing_contact_uuid(self) -> str:
+        return self.billing.uuid
+
+    @billing_contact_uuid.setter
+    def billing_contact_uuid(self, value: str) -> None:
+        self.billing = Contact.objects.get(uuid=value)
 
     def renew(self, period: datetime.timedelta = datetime.timedelta(days=90)) -> bool:
         now = datetime.datetime.now(tz=datetime.timezone.utc)
@@ -126,6 +172,7 @@ class ReservedName(models.Model):
 
 
 class SubdomainStatus(models.Model):
+    uuid = models.UUIDField(primary_key=False, unique=True, default=uuid.uuid4, editable=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

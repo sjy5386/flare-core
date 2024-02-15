@@ -3,15 +3,15 @@
     <div class="d-flex justify-content-between mb-3">
         <h3>DNS Records {{ subdomain }}</h3>
         <div>
-            <a class="btn btn-secondary" href="{% url 'dns_records:zone_export' subdomain.id %}">Export Zone</a>
-            <a class="btn btn-secondary" href="{% url 'dns_records:zone_import' subdomain.id %}">Import Zone</a>
-            <a class="btn btn-primary" href="{% url 'dns_records:create' subdomain.id %}">Create</a>
+            <a class="btn btn-secondary" href="{% url 'dns_records:zone_export' subdomain.uuid %}">Export Zone</a>
+            <a class="btn btn-secondary" href="{% url 'dns_records:zone_import' subdomain.uuid %}">Import Zone</a>
+            <a class="btn btn-primary" href="{% url 'dns_records:create' subdomain.uuid %}">Create</a>
         </div>
     </div>
     <table class="table">
         <thead>
         <tr>
-            <th scope="col">ID</th>
+            <th scope="col">UUID</th>
             <th scope="col">Name</th>
             <th scope="col">TTL</th>
             <th scope="col">Type</th>
@@ -22,16 +22,16 @@
         <tbody>
         {% for record in records %}
             <tr>
-                <td><a href="{% url 'dns_records:detail' subdomain.id record.id %}">{{ record.id }}</a></td>
+                <td><a href="{% url 'dns_records:detail' subdomain.uuid record.uuid %}">{{ record.uuid }}</a></td>
                 <td>{{ record.full_name }}</td>
                 <td>{{ record.ttl }}</td>
                 <td>{{ record.type }}</td>
                 <td>{{ record.data }}</td>
                 <td>
                     <a class="btn btn-secondary"
-                       href="{% url 'dns_records:update' subdomain.id record.id %}">Edit</a>
+                       href="{% url 'dns_records:update' subdomain.uuid record.uuid %}">Edit</a>
                     <a class="btn btn-danger"
-                       href="{% url 'dns_records:delete' subdomain.id record.id %}">Delete</a>
+                       href="{% url 'dns_records:delete' subdomain.uuid record.uuid %}">Delete</a>
                 </td>
             </tr>
         {% endfor %}
