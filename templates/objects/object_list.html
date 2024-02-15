@@ -34,7 +34,14 @@
                 const tr = document.createElement('tr');
                 keys.forEach(f => {
                     const td = document.createElement('td');
-                    td.innerText = e[f];
+                    if (f === 'uuid') {
+                        const a = document.createElement('a');
+                        a.href = './' + e[f];
+                        a.innerText = e[f];
+                        td.append(a);
+                    } else {
+                        td.innerText = e[f];
+                    }
                     tr.append(td);
                 });
                 tbody.append(tr);
