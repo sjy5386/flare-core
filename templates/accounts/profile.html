@@ -23,6 +23,9 @@
             {% endfor %}
         </ul>
     </section>
-    <p><a href="{% url 'logout' %}">Logout</a></p>
+    <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <input type="submit" value="Logout">
+    </form>
     <p><a href="{% url 'unregister' %}">Unregister</a></p>
 {% endblock %}
