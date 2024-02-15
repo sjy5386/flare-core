@@ -5,7 +5,7 @@ from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import ListView, FormView, DetailView
 
-from base.views.generic import RestView
+from base.views.generic import RestDetailView
 from subdomains.models import Subdomain
 from .forms import DnsRecordForm, ZoneImportForm
 from .models import Record
@@ -76,8 +76,7 @@ class DnsRecordCreateView(FormView):
 
 
 @method_decorator(login_required, name='dispatch')
-class DnsRecordDetailView(RestView):
-    template_name = 'objects/object_detail.html'
+class DnsRecordDetailView(RestDetailView):
     title = 'DNS Record detail'
 
     def get_url(self) -> str:
