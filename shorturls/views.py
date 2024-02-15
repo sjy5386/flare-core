@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
-from django.views.generic import ListView, FormView
+from django.views.generic import FormView
 
 from base.views.generic import RestView
 from .forms import ShortUrlForm
@@ -10,12 +10,10 @@ from .providers import get_short_url_provider
 
 
 @method_decorator(login_required, name='dispatch')
-class ShortUrlListView(ListView):
-    ordering = '-id'
-
-    def get_queryset(self):
-        provider = get_short_url_provider(None)
-        return ShortUrl.list_short_urls(provider, self.request.user).order_by(self.get_ordering())
+class ShortUrlListView(RestView):
+    template_name = 'objects/object_list.html'
+    title = 'Short URLs'
+    url = '/api/short-urls/'
 
 
 @method_decorator(login_required, name='dispatch')
