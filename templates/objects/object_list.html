@@ -3,7 +3,9 @@
 {% block content %}
     <div class="d-flex justify-content-between mb-3">
         <h3>{{ title }}</h3>
-        {% bootstrap_button content="Create" button_type="link" button_class="btn-primary" href="./create" %}
+        {% if create %}
+            {% bootstrap_button content="Create" button_type="link" button_class="btn-primary" href="./create" %}
+        {% endif %}
     </div>
     <table id="list" class="table">
         <thead>
@@ -37,7 +39,7 @@
                 const tr = document.createElement('tr');
                 keys.forEach(f => {
                     const td = document.createElement('td');
-                    if (f === 'uuid') {
+                    if (f === 'uuid' && {{ detail}}) {
                         const a = document.createElement('a');
                         a.href = './' + e[f];
                         a.innerText = e[f];

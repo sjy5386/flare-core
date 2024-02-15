@@ -22,3 +22,13 @@ class RestView(TemplateView):
 
 class RestListView(RestView):
     template_name = 'objects/object_list.html'
+    create: bool = True
+    detail: bool = True
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            'create': self.create,
+            'detail': int(self.detail),
+        })
+        return context
