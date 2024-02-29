@@ -9,6 +9,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_GET
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView, FormView
 
+from base.views.generic import RestDetailView
 from contacts.models import Contact
 from domains.models import Domain
 from .forms import SubdomainForm, SubdomainSearchForm, SubdomainWhoisForm, SubdomainContactForm
@@ -154,27 +155,12 @@ class SubdomainCreateView(CreateView):
 
 
 @method_decorator(login_required, name='dispatch')
-class SubdomainDetailView(DetailView):
-    template_name = 'objects/object_detail.html'
-    extra_context = {
-        'title': 'Subdomain detail',
-    }
+class SubdomainDetailView(RestDetailView):
+    title = 'Subdomain detail'
 
-    def get_object(self, queryset=None):
-        obj = get_object_or_404(Subdomain, id=self.kwargs['id'], user=self.request.user)
-        return {
-            'ID': obj.id,
-            'Name': obj.full_name,
-            'Creation Date': obj.created_at,
-            'Updated Date': obj.updated_at,
-            'Expiry Date': obj.expiry,
-            'Status': '',
-            'Registrant': obj.registrant,
-            'Admin': obj.admin,
-            'Tech': obj.tech,
-            'Billing': obj.billing,
-            'Is Private': obj.is_private,
-        }
+    def get_url(self) -> str:
+        object_id = self.kwargs['id']
+        return f'/api/subdomains/{object_id}/'
 
 
 @method_decorator(login_required, name='dispatch')
@@ -192,7 +178,7 @@ class SubdomainUpdateView(UpdateView):
         return kwargs
 
     def get_object(self, queryset=None):
-        return get_object_or_404(Subdomain, id=self.kwargs['id'], user=self.request.user)
+        return get_object_or_404(Subdomain, uuid=self.kwargs['id'], user=self.request.user)
 
     def form_valid(self, form):
         subdomain = form.save(commit=False)
@@ -210,4 +196,4 @@ class SubdomainDeleteView(DeleteView):
     }
 
     def get_object(self, queryset=None):
-        return get_object_or_404(Subdomain, id=self.kwargs['id'], user=self.request.user)
+        return get_object_or_404(Subdomain, uuid=self.kwargs['id'], user=self.request.user)

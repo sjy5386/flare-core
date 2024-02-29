@@ -2,17 +2,17 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.views.generic import CreateView, UpdateView, DeleteView
 
-from base.views.generic import RestView
+from base.views.generic import RestListView, RestDetailView
 from .forms import ContactForm
 from .models import Contact
 
 
 @method_decorator(login_required, name='dispatch')
-class ContactListView(ListView):
-    def get_queryset(self):
-        return Contact.objects.filter(user=self.request.user)
+class ContactListView(RestListView):
+    title = 'Contacts'
+    url = '/api/contacts/'
 
 
 @method_decorator(login_required, name='dispatch')
@@ -32,8 +32,7 @@ class ContactCreateView(CreateView):
 
 
 @method_decorator(login_required, name='dispatch')
-class ContactDetailView(RestView):
-    template_name = 'objects/object_detail.html'
+class ContactDetailView(RestDetailView):
     title = 'Contact detail'
 
     def get_url(self) -> str:
@@ -51,7 +50,7 @@ class ContactUpdateView(UpdateView):
     }
 
     def get_object(self, queryset=None):
-        return get_object_or_404(Contact, id=self.kwargs['id'], user=self.request.user)
+        return get_object_or_404(Contact, uuid=self.kwargs['id'], user=self.request.user)
 
 
 @method_decorator(login_required, name='dispatch')
@@ -63,4 +62,4 @@ class ContactDeleteView(DeleteView):
     }
 
     def get_object(self, queryset=None):
-        return get_object_or_404(Contact, id=self.kwargs['id'], user=self.request.user)
+        return get_object_or_404(Contact, uuid=self.kwargs['id'], user=self.request.user)

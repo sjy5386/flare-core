@@ -1,7 +1,12 @@
 {% extends 'common/base.html' %}
 {% load django_bootstrap5 %}
 {% block content %}
-    <h3>{{ title }}</h3>
+    <div class="d-flex justify-content-between mb-3">
+        <h3>{{ title }}</h3>
+        {% if create %}
+            {% bootstrap_button content="Create" button_type="link" button_class="btn-primary" href="./create" %}
+        {% endif %}
+    </div>
     <table id="list" class="table">
         <thead>
         <tr></tr>
@@ -34,7 +39,20 @@
                 const tr = document.createElement('tr');
                 keys.forEach(f => {
                     const td = document.createElement('td');
-                    td.innerText = e[f];
+                    if (f === 'uuid' && {{ detail}}) {
+                        const a = document.createElement('a');
+                        a.href = './' + e[f];
+                        a.innerText = e[f];
+                        td.append(a);
+                    } else if (URL.canParse(e[f])) {
+                        const a = document.createElement('a');
+                        a.href = e[f];
+                        a.target = '_blank';
+                        a.innerText = e[f];
+                        td.append(a);
+                    } else {
+                        td.innerText = e[f];
+                    }
                     tr.append(td);
                 });
                 tbody.append(tr);
