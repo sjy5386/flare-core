@@ -130,7 +130,7 @@ class DnsRecordUpdateView(FormView):
 
     def form_valid(self, form):
         provider = get_dns_record_provider(self.subdomain.domain)
-        Record.update_dns_record(provider, self.subdomain, self.kwargs['id'], **form.cleaned_data)
+        Record.update_dns_record(provider, self.subdomain, self.record.id, **form.cleaned_data)
         return super(DnsRecordUpdateView, self).form_valid(form)
 
     def get_success_url(self):
@@ -164,7 +164,7 @@ class DnsRecordDeleteView(FormView):
 
     def form_valid(self, form):
         provider = get_dns_record_provider(self.subdomain.domain)
-        Record.delete_dns_record(provider, self.subdomain, self.kwargs['id'])
+        Record.delete_dns_record(provider, self.subdomain, self.record.id)
         return super(DnsRecordDeleteView, self).form_valid(form)
 
     def get_success_url(self):
