@@ -72,7 +72,7 @@ class DnsRecordCreateView(FormView):
         return super(DnsRecordCreateView, self).form_valid(form)
 
     def get_success_url(self):
-        return reverse('records:list', kwargs=self.kwargs)
+        return reverse('dns_records:list', kwargs=self.kwargs)
 
 
 @method_decorator(login_required, name='dispatch')
@@ -134,7 +134,7 @@ class DnsRecordUpdateView(FormView):
         return super(DnsRecordUpdateView, self).form_valid(form)
 
     def get_success_url(self):
-        return reverse('records:list', kwargs={'subdomain_id': self.kwargs['subdomain_id']})
+        return reverse('dns_records:list', kwargs={'subdomain_id': self.kwargs['subdomain_id']})
 
 
 @method_decorator(login_required, name='dispatch')
@@ -168,7 +168,7 @@ class DnsRecordDeleteView(FormView):
         return super(DnsRecordDeleteView, self).form_valid(form)
 
     def get_success_url(self):
-        return reverse('records:list', kwargs={'subdomain_id': self.kwargs['subdomain_id']})
+        return reverse('dns_records:list', kwargs={'subdomain_id': self.kwargs['subdomain_id']})
 
 
 @method_decorator(login_required, name='dispatch')
@@ -224,4 +224,4 @@ class ZoneImportView(FormView):
         return super(ZoneImportView, self).form_valid(form)
 
     def get_success_url(self):
-        return reverse('records:list', kwargs=self.kwargs)
+        return reverse('dns_records:list', kwargs=self.kwargs)
