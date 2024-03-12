@@ -6,6 +6,7 @@ from django.views.decorators.cache import cache_page
 from django.views.decorators.http import require_GET
 
 from ..geoip import MaxMindGeoIpWebServicesClient
+from ..http import get_remote_ip_address
 from ..settings import BASE_DIR
 from contacts.models import Contact
 from shorturls.forms import ShortUrlLiteForm
@@ -55,8 +56,7 @@ def robots_txt(request: HttpRequest) -> HttpResponse:
 
 @require_GET
 def what_is_my_ip_address(request: HttpRequest) -> HttpResponse:
-    from base.templates.context_processors import remote_ip_address
-    ip_address = remote_ip_address(request).get('remote_ip_address')
+    ip_address = get_remote_ip_address(request)
     client = MaxMindGeoIpWebServicesClient()
     info = client.lookup(ip_address)
     return render(request, 'what_is_my_ip_address.html', {
