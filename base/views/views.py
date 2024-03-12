@@ -1,10 +1,13 @@
 import os
 
+from django.core.cache import cache
 from django.http import HttpRequest, HttpResponse, Http404
 from django.shortcuts import render
 from django.views.decorators.cache import cache_page
 from django.views.decorators.http import require_GET
 
+from ..geoip import MaxMindGeoIpWebServicesClient
+from ..http import get_remote_ip_address, is_private_ip_address
 from ..settings import BASE_DIR
 from contacts.models import Contact
 from shorturls.forms import ShortUrlLiteForm
@@ -54,4 +57,17 @@ def robots_txt(request: HttpRequest) -> HttpResponse:
 
 @require_GET
 def what_is_my_ip_address(request: HttpRequest) -> HttpResponse:
-    return render(request, 'what_is_my_ip_address.html')
+    ip_address = get_remote_ip_address(request)
+    info = {}
+    if not is_private_ip_address(ip_address):
+        cache_key = 'ip_address:' + ip_address
+        cache_value = cache.get(cache_key)
+        if cache_value:
+            info = cache_value
+        else:
+            client = MaxMindGeoIpWebServicesClient()
+            info = client.lookup(ip_address)
+            cache.set(cache_key, info, timeout=86400)
+    return render(request, 'what_is_my_ip_address.html', {
+        'info': info,
+    })
