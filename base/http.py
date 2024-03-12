@@ -1,6 +1,7 @@
 import ipaddress
 
 from django.http import HttpRequest
+from django.test import TestCase
 
 
 def get_remote_ip_address(request: HttpRequest) -> str:
@@ -15,3 +16,27 @@ def is_private_ip_address(ip_address: str) -> bool:
         '172.16.0.0/12',
         '192.168.0.0/16',
     )))
+
+
+class Test(TestCase):
+    def test_get_remote_ip_address(self):
+        request = HttpRequest()
+        request.META['REMOTE_ADDR'] = '127.0.0.1'
+        self.assertEqual('127.0.0.1', get_remote_ip_address(request))
+
+    def test_is_private_ip_address(self):
+        # class A
+        self.assertFalse(is_private_ip_address('9.0.0.254'))
+        self.assertTrue(is_private_ip_address('10.0.0.1'))
+        self.assertTrue(is_private_ip_address('10.255.255.254'))
+        self.assertFalse(is_private_ip_address('11.0.0.1'))
+        # class B
+        self.assertFalse(is_private_ip_address('172.15.255.254'))
+        self.assertTrue(is_private_ip_address('172.16.0.1'))
+        self.assertTrue(is_private_ip_address('172.31.255.254'))
+        self.assertFalse(is_private_ip_address('172.32.0.1'))
+        # class C
+        self.assertFalse(is_private_ip_address('192.167.255.254'))
+        self.assertTrue(is_private_ip_address('192.168.0.1'))
+        self.assertTrue(is_private_ip_address('192.168.255.254'))
+        self.assertFalse(is_private_ip_address('192.169.0.1'))
