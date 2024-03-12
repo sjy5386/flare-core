@@ -1,3 +1,4 @@
+import logging
 import os
 from typing import Any
 
@@ -10,10 +11,14 @@ class MaxMindGeoIpWebServicesClient:
     account_id = int(os.environ.get('MAXMIND_ACCOUNT_ID', 0))
     license_key = os.environ.get('MAXMIND_LICENSE_KEY')
 
+    def __init__(self):
+        self.logger = logging.getLogger(self.__class__.__name__)
+
     def lookup(self, ip_address: str) -> dict[str, Any]:
         with geoip2.webservice.Client(self.account_id, self.license_key, self.host) as client:
             try:
                 response = client.city(ip_address)
+                self.logger.info(response)
                 return {
                     'ip_address': response.traits.ip_address or ip_address,
                     'continent': response.continent.name,
@@ -22,7 +27,8 @@ class MaxMindGeoIpWebServicesClient:
                     'city': response.city.name,
                     'isp': response.traits.isp or response.traits.autonomous_system_organization,
                 }
-            except GeoIP2Error:
+            except GeoIP2Error as e:
+                self.logger.error(e)
                 return {
                     'ip_address': ip_address,
                     'continent': None,
