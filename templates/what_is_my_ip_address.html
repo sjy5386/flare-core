@@ -1,7 +1,16 @@
 {% extends 'common/base.html' %}
+{% load django_bootstrap5 %}
 {% block content %}
     <h3>What is my IP address?</h3>
     <p>My IP address is <strong>{{ remote_ip_address }}</strong>.</p>
+    <table class="table">
+        {% for k, v in info.items %}
+            <tr>
+                <th>{{ k }}</th>
+                <td>{{ v }}</td>
+            </tr>
+        {% endfor %}
+    </table>
     <ul>
         <li><a href="https://iplookup.flagfox.net/?ip={{ remote_ip_address }}" target="_blank">Lookup</a></li>
         <li><a href="https://speed.cloudflare.com" target="_blank">Internet Speed Test</a></li>
