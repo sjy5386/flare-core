@@ -1,5 +1,6 @@
 import os
 
+from django.core.cache import cache
 from django.http import HttpRequest, HttpResponse, Http404
 from django.shortcuts import render
 from django.views.decorators.cache import cache_page
@@ -59,8 +60,14 @@ def what_is_my_ip_address(request: HttpRequest) -> HttpResponse:
     ip_address = get_remote_ip_address(request)
     info = {}
     if not is_private_ip_address(ip_address):
-        client = MaxMindGeoIpWebServicesClient()
-        info = client.lookup(ip_address)
+        cache_key = 'ip_address:' + ip_address
+        cache_value = cache.get(cache_key)
+        if cache_value:
+            info = cache_value
+        else:
+            client = MaxMindGeoIpWebServicesClient()
+            info = client.lookup(ip_address)
+            cache.set(cache_key, info, timeout=86400)
     return render(request, 'what_is_my_ip_address.html', {
         'info': info,
     })
