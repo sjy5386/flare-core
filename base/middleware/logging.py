@@ -1,6 +1,4 @@
-import threading
 import traceback
-import uuid
 
 from django.http import HttpRequest, HttpResponse
 
@@ -9,7 +7,6 @@ from .base import BaseMiddleware
 
 class LoggingMiddleware(BaseMiddleware):
     def __call__(self, request: HttpRequest) -> HttpResponse:
-        threading.current_thread().name = uuid.uuid4()
         remote_ip_address = list(map(lambda x: x.strip(),
                                      request.META.get('HTTP_X_FORWARDED_FOR',
                                                       request.META.get('REMOTE_ADDR')).split(',')))
