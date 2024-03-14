@@ -6,7 +6,7 @@ from accounts.tests import get_mock_users
 from contacts.tests import get_mock_contacts
 from domains.tests import get_mock_domains
 from subdomains.tests import get_mock_subdomains
-from .models import Record
+from records.models import Record
 
 
 def get_mock_dns_records(count: int = 1, **kwargs) -> list[Record]:

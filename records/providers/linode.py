@@ -77,7 +77,7 @@ class LinodeDnsRecordProvider(BaseDnsRecordProvider):
         cache_value = cache.get(cache_key)
         if cache_value is not None:
             return cache_value
-        response = requests.get(self.host + '/domains', headers=self.headers)
+        response = requests.get(self.host + '/v4/domains', headers=self.headers)
         try:
             response.raise_for_status()
         except requests.HTTPError:
