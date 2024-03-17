@@ -51,6 +51,9 @@ class VultrDnsRecordProvider(BaseDnsRecordProvider):
             response.raise_for_status()
         except requests.HTTPError:
             raise DnsRecordProviderError(response.json())
+        kwargs.update({
+            'provider_id': provider_id,
+        })
         return kwargs
 
     def delete_dns_record(self, subdomain_name: str, domain: Domain, provider_id: str) -> None:
