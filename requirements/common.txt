@@ -12,4 +12,4 @@ geoip2==4.8.0
 requests==2.31.0
 social-auth-app-django==5.4.1
 setuptools==69.5.1
-social-auth-core==4.5.3
+social-auth-core==4.5.4
