@@ -1,4 +1,4 @@
-Django==5.0.4
+Django==5.0.6
 django-apscheduler==0.6.2
 django-bootstrap5==24.2
 django-cors-headers==4.3.1
