@@ -3,7 +3,7 @@ django-apscheduler==0.6.2
 django-bootstrap5==24.2
 django-cors-headers==4.4.0
 django-dotenv==1.4.2
-djangorestframework==3.15.1
+djangorestframework==3.15.2
 djangorestframework-simplejwt==5.3.1
 dnslib==0.9.24
 drf-nested-routers==0.94.1
