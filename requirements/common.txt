@@ -5,7 +5,7 @@ django-cors-headers==4.4.0
 django-dotenv==1.4.2
 djangorestframework==3.15.2
 djangorestframework-simplejwt==5.3.1
-dnslib==0.9.24
+dnslib==0.9.25
 drf-nested-routers==0.94.1
 drf-yasg==1.21.7
 geoip2==4.8.0
