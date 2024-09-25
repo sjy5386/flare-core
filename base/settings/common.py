@@ -193,7 +193,7 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'logback': {
-            'format': '{asctime} {levelname} {process:d} --- [{threadName}] {name}: {message}',
+            'format': '{asctime} {levelname} {process:d} --- [{threadName}] {name}:{lineno} {message}',
             'style': '{',
         },
     },
