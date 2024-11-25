@@ -11,5 +11,5 @@ drf-yasg==1.21.8
 geoip2==4.8.0
 requests==2.32.3
 social-auth-app-django==5.4.2
-setuptools==75.5.0
+setuptools==75.6.0
 social-auth-core==4.5.4
