@@ -2,8 +2,6 @@ SECRET_KEY
 CSRF_TRUSTED_ORIGINS
 my.cnf
 
-*/migrations/*
-!*/migrations/__init__.py
 out/
 logs/
 
