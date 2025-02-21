@@ -64,7 +64,6 @@ sh deploy.sh
 ### Migrate database
 
 ```shell
-python manage.py makemigrations
 python manage.py migrate
 ```
 
