@@ -8,7 +8,7 @@ djangorestframework-simplejwt==5.5.0
 dnslib==0.9.26
 drf-nested-routers==0.94.1
 drf-yasg==1.21.10
-geoip2==5.0.1
+geoip2==5.1.0
 requests==2.32.3
 social-auth-app-django==5.4.3
 social-auth-core==4.6.1
