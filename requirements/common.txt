@@ -9,7 +9,7 @@ dnslib==0.9.25
 drf-nested-routers==0.94.1
 drf-yasg==1.21.8
 geoip2==5.0.1
-requests==2.32.3
+requests==2.32.4
 social-auth-app-django==5.4.3
 setuptools==75.8.0
 social-auth-core==4.5.6
