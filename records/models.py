@@ -107,7 +107,10 @@ class Record(models.Model):
                     cls.objects.update_or_create(provider_id=provider_id, defaults=provider_dns_record)
             except DnsRecordProviderError as e:
                 logging.error(e)
-        dns_records = cls.objects.filter(subdomain_name=subdomain.name).order_by('type', 'name', '-id')
+        dns_records = cls.objects.filter(
+            subdomain_name=subdomain.name,
+            domain=subdomain.domain,
+        ).order_by('type', 'name', '-id')
         cache.set(cache_key, dns_records, timeout=3600)
         for dns_record in dns_records:
             cache.set('dns_records:' + str(dns_record.id), dns_record, timeout=dns_record.ttl)
