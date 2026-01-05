@@ -1,6 +1,6 @@
 Django==6.0
 django-apscheduler==0.7.0
-django-bootstrap5==25.3
+django-bootstrap5==26.1
 django-cors-headers==4.9.0
 django-dotenv==1.4.2
 djangorestframework==3.16.1
