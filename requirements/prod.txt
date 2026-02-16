@@ -1,5 +1,5 @@
 -r common.txt
 
-gunicorn==25.0.3
+gunicorn==25.1.0
 mysqlclient==2.2.7
 redis==7.1.0
