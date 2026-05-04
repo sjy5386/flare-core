@@ -10,6 +10,6 @@ drf-nested-routers==0.95.0
 drf-yasg==1.21.15
 geoip2==5.2.0
 requests==2.33.1
-social-auth-app-django==5.8.0
+social-auth-app-django==5.9.0
 social-auth-core==4.8.7
 setuptools==82.0.1
