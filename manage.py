@@ -9,6 +9,11 @@ import dotenv
 def main():
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'base.settings.dev')
+    # Optional APM bootstrap (no-op if unconfigured). Web request APM is covered
+    # via WSGI/ASGI; individual scheduled jobs are not instrumented here.
+    from base.newrelic import initialize_newrelic
+
+    initialize_newrelic()
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
