@@ -33,6 +33,7 @@ dev = [
 prod = [
     "gunicorn==26.0.0",
     "mysqlclient==2.2.8",
+    "newrelic==13.4.0",
     "redis==8.1.0",
 ]
 

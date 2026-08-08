@@ -9,6 +9,10 @@ import dotenv
 def main():
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'base.settings.dev')
+    # Optional APM for management commands / batch workers (no-op if unconfigured).
+    from base.newrelic import initialize_newrelic
+
+    initialize_newrelic()
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
