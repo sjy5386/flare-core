@@ -28,5 +28,9 @@
     <p><a href="{% url 'password_reset' %}">Lost password?</a></p>
     <p><a href="{% url 'register' %}">Register</a></p>
 
-    <a href="{% url "social:begin" "github" %}">Login with GitHub</a>
+    <form method="post" action="{% url 'social:begin' 'github' %}" class="d-inline">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ next }}">
+        <button type="submit" class="btn btn-link p-0">Login with GitHub</button>
+    </form>
 {% endblock %}
