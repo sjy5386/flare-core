@@ -1,5 +1,0 @@
--r common.txt
-
-gunicorn==26.0.0
-mysqlclient==2.2.8
-redis==8.1.0
