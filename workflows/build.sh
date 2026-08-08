@@ -1,7 +1,7 @@
 #!/bin/bash
 
 pip freeze | xargs pip uninstall -y
-pip install -r requirements.txt
+pip install ".[prod]"
 
 if [ -d ./out/static ]
 then
