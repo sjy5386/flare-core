@@ -1,4 +1,4 @@
-# Flare Core
+# Flare
 
 Free **sub**domains and **short** URLs
 
@@ -16,7 +16,7 @@ You must have your domain to run this project.
 ### Clone this project
 
 ```shell
-git clone https://github.com/sjy5386/flare-core
+git clone https://github.com/sjy5386/flare
 ```
 
 ### Set environment
