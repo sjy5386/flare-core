@@ -9,7 +9,8 @@ import dotenv
 def main():
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'base.settings.dev')
-    # Optional APM for management commands / batch workers (no-op if unconfigured).
+    # Optional APM bootstrap (no-op if unconfigured). Web request APM is covered
+    # via WSGI/ASGI; individual scheduled jobs are not instrumented here.
     from base.newrelic import initialize_newrelic
 
     initialize_newrelic()

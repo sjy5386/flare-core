@@ -32,6 +32,31 @@ def _default_app_name() -> str:
     return f'{site_name} {application_type}'
 
 
+def _resolve_config_file() -> str | None:
+    """Return a usable config path, or None to use environment variables only.
+
+    ``newrelic.agent.initialize()`` re-reads ``NEW_RELIC_CONFIG_FILE`` from the
+    process environment even when ``None`` is passed as the config path. An
+    invalid path must therefore be removed from the environment before init,
+    otherwise initialization fails with ``ConfigurationError``.
+    """
+    config_file = os.environ.get('NEW_RELIC_CONFIG_FILE', '').strip() or None
+    if not config_file:
+        return None
+
+    if os.path.isfile(config_file):
+        return config_file
+
+    logger.warning(
+        'NEW_RELIC_CONFIG_FILE=%s does not exist; '
+        'initializing New Relic from environment variables only.',
+        config_file,
+    )
+    # Prevent the agent from re-reading the invalid path via the environment.
+    os.environ.pop('NEW_RELIC_CONFIG_FILE', None)
+    return None
+
+
 def initialize_newrelic() -> bool:
     """Initialize the New Relic agent when configured.
 
@@ -61,15 +86,7 @@ def initialize_newrelic() -> bool:
     if not os.environ.get('NEW_RELIC_APP_NAME', '').strip():
         os.environ['NEW_RELIC_APP_NAME'] = _default_app_name()
 
-    config_file = os.environ.get('NEW_RELIC_CONFIG_FILE', '').strip() or None
-    if config_file and not os.path.isfile(config_file):
-        logger.warning(
-            'NEW_RELIC_CONFIG_FILE=%s does not exist; '
-            'initializing New Relic from environment variables only.',
-            config_file,
-        )
-        config_file = None
-
+    config_file = _resolve_config_file()
     environment = os.environ.get('NEW_RELIC_ENVIRONMENT', '').strip() or None
 
     try:
